@@ -53,6 +53,7 @@
     <Compile Include="Model\SignalValueDescription.cs" />
     <Compile Include="Model\ValueDescription.cs" />
     <Compile Include="Model\ValueTable.cs" />
+    <Compile Include="Parser\DbcParser.cs" />
     <Compile Include="Parser\TokenStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
