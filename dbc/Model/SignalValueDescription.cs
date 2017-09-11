@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class SignalValueDescription
+    public class SignalValueDescription
     {
         public string messageId;
         public string name;

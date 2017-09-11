@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class ValueTable
+    public class ValueTable
     {
         public string name;
         public List<ValueDescription> descriptions = new List<ValueDescription>();

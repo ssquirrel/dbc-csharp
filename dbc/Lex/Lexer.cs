@@ -9,30 +9,30 @@ namespace DbcLib.DBC.Lex
 {
     public class Lexer
     {
-        private DbcReader reader;
+        private StreamReader reader;
         private List<Token> list = new List<Token>();
 
         public Lexer(StreamReader reader)
         {
-            this.reader = new DbcReader(reader);
+            this.reader = reader;
         }
 
         public List<Token> Lex()
         {
             while (!reader.EndOfStream)
             {
-                char ch = reader.Curr();
+                char ch = (char)reader.Peek();
 
                 if (char.IsWhiteSpace(ch))
                 {
-                    reader.Advance();
+                    reader.Read();
                     continue;
                 }
 
 
                 if (IsDigit(ch))
                 {
-                    list.Add(LexNumber(new LexContext()));
+                    list.Add(LexNumber(new StringBuilder()));
                 }
                 else if (ch == '-')
                 {
@@ -48,7 +48,8 @@ namespace DbcLib.DBC.Lex
                 }
                 else
                 {
-                    list.Add(new Token(reader.Consume().ToString()));
+                    list.Add(new Token(ch.ToString()));
+                    reader.Read();
                 }
             }
 
@@ -65,40 +66,40 @@ namespace DbcLib.DBC.Lex
             return ch >= '0' && ch <= '9';
         }
 
-        private Token LexNumber(LexContext ctx)
+        private Token LexNumber(StringBuilder builder)
         {
-            ctx.Append(reader.Consume());
+            TokenType type =
+                builder.Length > 0 ? TokenType.SIGNED : TokenType.UNSIGNED;
+
+            builder.Append((char)reader.Read());
 
             while (!reader.EndOfStream)
             {
-                if (!IsDigit(reader.Curr()))
+                char ch = (char)reader.Peek();
+
+                if (!IsDigit(ch))
                 {
-                    if (reader.Curr() == '.' && ctx.Type != TokenType.DOUBLE)
-                        ctx.Type = TokenType.DOUBLE;
+                    if (ch == '.' && type != TokenType.DOUBLE)
+                        type = TokenType.DOUBLE;
                     else
                         break;
                 }
 
-                ctx.Append(reader.Consume());
+                builder.Append(ch);
+
+                reader.Read();
             }
 
-            if (ctx.Type == TokenType.TOKEN)
-                ctx.Type = TokenType.UNSIGNED;
-
-            return ctx.Finish();
+            return new Token(builder.ToString(), type);
         }
 
         private Token LexMinusSign()
         {
-            reader.Advance();
+            reader.Read();
 
-            if (!reader.EndOfStream && IsDigit(reader.Curr()))
+            if (!reader.EndOfStream && IsDigit((char)reader.Peek()))
             {
-                LexContext ctx = new LexContext { Type = TokenType.SIGNED };
-
-                ctx.Append('-');
-
-                return LexNumber(ctx);
+                return LexNumber(new StringBuilder("-"));
             }
 
             return new Token("-");
@@ -106,45 +107,47 @@ namespace DbcLib.DBC.Lex
 
         private Token LexCharString()
         {
-            LexContext ctx = new LexContext { Type = TokenType.STRING };
+            StringBuilder builder = new StringBuilder();
 
-            ctx.Append(reader.Consume());
+            builder.Append((char)reader.Read());
 
             while (!reader.EndOfStream)
             {
-                char last = reader.Consume();
-                ctx.Append(last);
+                char ch = (char)reader.Read();
+                builder.Append(ch);
 
-                if (last == '"')
+                if (ch == '"')
                     break;
             }
 
-            return ctx.Finish();
+            return new Token(builder.ToString(), TokenType.STRING);
         }
 
         private Token LexIdentifier()
         {
-            LexContext ctx = new LexContext();
+            StringBuilder builder = new StringBuilder();
 
-            ctx.Append(reader.Consume());
+            builder.Append((char)reader.Read());
 
             while (!reader.EndOfStream)
             {
-                if (!IsDigit(reader.Curr()) &&
-                    !IsLetter(reader.Curr()) &&
-                    reader.Curr() != '_')
+                char ch = (char)reader.Peek();
+
+                if (!IsDigit(ch) &&
+                    !IsLetter(ch) &&
+                    ch != '_')
                     break;
 
-                ctx.Append(reader.Consume());
+                builder.Append(ch);
+
+                reader.Read();
             }
 
 
-            if (Keyword.IsKeyword(ctx.Val))
-                ctx.Type = TokenType.KEYWORD;
+            if (Keyword.IsKeyword(builder.ToString()))
+                return new Token(builder.ToString(), TokenType.KEYWORD);
             else
-                ctx.Type = TokenType.IDENTIFIER;
-
-            return ctx.Finish();
+                return new Token(builder.ToString(), TokenType.IDENTIFIER);
         }
     }
 }

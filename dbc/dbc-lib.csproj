@@ -41,10 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Lex\Keyword.cs" />
-    <Compile Include="Lex\LexContext.cs" />
     <Compile Include="Lex\Lexer.cs" />
     <Compile Include="Lex\Token.cs" />
-    <Compile Include="Lex\DbcReader.cs" />
     <Compile Include="Model\AttributeDefault.cs" />
     <Compile Include="Model\AttributeDefinition.cs" />
     <Compile Include="Model\AttributeValue.cs" />

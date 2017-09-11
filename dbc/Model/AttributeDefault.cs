@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class AttributeDefault
+    public class AttributeDefault
     {
         public const string KEYWORD = "BA_DEF_DEF_";
 

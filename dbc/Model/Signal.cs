@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class Signal
+    public class Signal
     {
         public string name;
         public string multiplexerIndicator;

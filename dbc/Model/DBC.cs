@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class DBC
+    public class DBC
     {
         public string version = null;
         public List<string> newSymbols = new List<string>();

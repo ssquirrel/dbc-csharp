@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class ValueDescription
+    public class ValueDescription
     {
         public string num;
         public string str;

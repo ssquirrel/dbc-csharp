@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class AttributeValue
+    public class AttributeValue
     {
         public string attributeName;
         public string attributeValue;

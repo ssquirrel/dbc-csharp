@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class Comment
+    public class Comment
     {
         public const string KEYWORD = "CM_";
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    class Message
+    public class Message
     {
         public string id;
         public string name;
