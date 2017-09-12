@@ -27,6 +27,11 @@ namespace DbcLib.DBC.Lex
             Val = v;
         }
 
+        public Token(TokenType t)
+        {
+            Type = t;
+        }
+
         public Token(string v, TokenType t)
         {
             Val = v;

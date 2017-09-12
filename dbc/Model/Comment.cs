@@ -8,8 +8,6 @@ namespace DbcLib.DBC.Model
 {
     public class Comment
     {
-        public const string KEYWORD = "CM_";
-
         public string msg;
         public string type;
         public string id;

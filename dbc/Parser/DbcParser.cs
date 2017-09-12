@@ -12,8 +12,39 @@ namespace DbcLib.DBC.Parser
 
     public class DbcParser
     {
-        private DBC dbc = new DBC();
+        private static readonly Token[] MESSAGES_PATTERN = new Token[] {
+            new Token(TokenType.UNSIGNED),
+            new Token(TokenType.IDENTIFIER),
+            new Token(":"),
+            new Token(TokenType.UNSIGNED),
+            new Token(TokenType.IDENTIFIER)
+        };
 
+        private static readonly Token[] SIGNAL_PATTERN1 = new Token[] {
+            new Token(":"),
+            new Token(TokenType.UNSIGNED),
+            new Token("|"),
+            new Token(TokenType.UNSIGNED),
+            new Token("@")};
+
+        private static readonly Token[] SIGNAL_PATTERN2 = new Token[] {
+            new Token("("),
+            new Token(TokenType.DOUBLE),
+            new Token(","),
+            new Token(TokenType.DOUBLE),
+            new Token(")"),
+            new Token("["),
+            new Token(TokenType.DOUBLE),
+            new Token("|"),
+            new Token(TokenType.DOUBLE),
+            new Token("]"),
+            new Token(TokenType.STRING),
+            new Token(TokenType.IDENTIFIER)
+        };
+
+
+
+        private DBC dbc = new DBC();
         private TokenStream stream;
 
         public DbcParser(StreamReader reader)
@@ -60,40 +91,50 @@ namespace DbcLib.DBC.Parser
         //transmitter = node_name | 'Vector__XXX' ;
         private void Messages()
         {
-            while (stream.ConsumeIf(t => t.Val == Keyword.MESSAGES))
+            while (stream.ConsumeIf(p => p.Val == Keyword.MESSAGES))
             {
-                Message msg = new Message();
+                Token[] parsed = stream.Consume(MESSAGES_PATTERN);
 
-                dbc.messages.Add(msg);
+                if (parsed.Length == 0)
+                    break;
 
+                if (parsed.Length != MESSAGES_PATTERN.Length)
+                    throw new Exception();
 
-                stream.ConsumeIf(t => t.IsUnsigned(),
-                    t => msg.id = t.Val,
-                    t => throw new Exception());
-
-                stream.ConsumeIf(t => t.IsIdentifier(),
-                    t => msg.name = t.Val,
-                    t => throw new Exception());
-
-                stream.ConsumeIf(t => t.Val == ":",
-                   t => throw new Exception());
-
-                stream.ConsumeIf(t => t.IsUnsigned(),
-                 t => msg.size = t.Val,
-                 t => throw new Exception());
-
-                stream.ConsumeIf(t => t.IsIdentifier(),
-                    t => msg.transmitter = t.Val,
-                    t => throw new Exception());
+                Message msg = new Message
+                {
+                    id = parsed[0].Val,
+                    name = parsed[1].Val,
+                    size = parsed[3].Val,
+                    transmitter = parsed[4].Val
+                };
 
                 while (stream.ConsumeIf(t => t.Val == Keyword.SIGNAL))
                     msg.signals.Add(Signal());
+
+                dbc.messages.Add(msg);
             }
 
             if (dbc.messages.Count == 0)
                 throw new Exception();
         }
 
+        //signal = 'SG_' signal_name multiplexer_indicator ':' start_bit '|'
+        //signal_size '@' byte_order value_type '(' factor ',' offset ')'
+        //       '[' minimum '|' maximum ']' unit receiver {',' receiver} ;
+        //signal_name = C_identifier ;
+        //multiplexer_indicator = ' ' | 'M' | 'm' multiplexer_switch_value ;
+        //multiplexer_switch_value = unsigned_integer;
+        //start_bit = unsigned_integer ;
+        //signal_size = unsigned_integer ;
+        //byte_order = '0' | '1' ; (* 0=little endian, 1=big endian *)
+        //value_type = '+' | '-' ; (* +=unsigned, -=signed *)
+        //factor = double ;
+        //offset = double ;
+        //minimum = double ;
+        //maximum = double ;
+        //unit = char_string ;
+        //receiver = node_name | 'Vector__XXX' ;
         private Signal Signal()
         {
             Signal signal = new Signal();
@@ -113,22 +154,15 @@ namespace DbcLib.DBC.Parser
                     t => throw new Exception());
             }
 
-            stream.ConsumeIf(t => t.Val == ":",
-                   t => throw new Exception());
+            {
+                Token[] parsed = stream.Consume(SIGNAL_PATTERN1);
 
-            stream.ConsumeIf(t => t.IsUnsigned(),
-                    t => signal.startBit = t.Val,
-                    t => throw new Exception());
+                if (parsed.Length != SIGNAL_PATTERN1.Length)
+                    throw new Exception();
 
-            stream.ConsumeIf(t => t.Val == "|",
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.IsUnsigned(),
-                    t => signal.signalSize = t.Val,
-                    t => throw new Exception());
-
-            stream.ConsumeIf(t => t.Val == "@",
-                t => throw new Exception());
+                signal.startBit = parsed[1].Val;
+                signal.signalSize = parsed[3].Val;
+            }
 
             stream.ConsumeIf(t => t.Val == "0" || t.Val == "1",
                     t => signal.byteOrder = t.Val,
@@ -138,47 +172,19 @@ namespace DbcLib.DBC.Parser
                     t => signal.valueType = t.Val,
                     t => throw new Exception());
 
-            stream.ConsumeIf(t => t.Val == "(",
-                    t => throw new Exception());
+            {
+                Token[] parsed = stream.Consume(SIGNAL_PATTERN2);
 
-            stream.ConsumeIf(t => t.IsDouble(),
-                t => signal.factor = t.Val,
-                t => throw new Exception());
+                if (parsed.Length != SIGNAL_PATTERN2.Length)
+                    throw new Exception();
 
-            stream.ConsumeIf(t => t.Val == ",",
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.IsDouble(),
-                t => signal.offset = t.Val,
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.Val == ")",
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.Val == "[",
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.IsDouble(),
-                t => signal.min = t.Val,
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.Val == "|",
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.IsDouble(),
-                t => signal.max = t.Val,
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.Val == "]",
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.IsString(),
-                t => signal.unit = t.Val,
-                t => throw new Exception());
-
-            stream.ConsumeIf(t => t.IsIdentifier(),
-                t => signal.receivers.Add(t.Val),
-                t => throw new Exception());
+                signal.factor = parsed[1].Val;
+                signal.offset = parsed[3].Val;
+                signal.min = parsed[6].Val;
+                signal.max = parsed[8].Val;
+                signal.unit = parsed[10].Val;
+                signal.receivers.Add(parsed[11].Val);
+            }
 
             while (stream.ConsumeIf(t => t.Val == ","))
             {

@@ -9,6 +9,12 @@ namespace DbcLib.DBC.Parser
 {
     using DBC.Lex;
 
+    class Pattern
+    {
+        public List<Token> path = new List<Token>();
+        public List<Pattern> branch = new List<Pattern>();
+    }
+
     class TokenStream
     {
         private List<Token> tokens;
@@ -37,6 +43,41 @@ namespace DbcLib.DBC.Parser
         public bool Curr(Predicate<Token> p)
         {
             return !EndOfStream && p(Curr());
+        }
+
+        public Token[] Consume(Token[] pattern)
+        {
+            Token[] result = new Token[pattern.Length];
+
+            for (int i = 0; !EndOfStream && i < pattern.Length; ++i)
+            {
+                Token t = pattern[i];
+
+                if (t.Val != null)
+                {
+                    if (t.Val != Curr().Val)
+                        break;
+                }
+                else if (t.Type == TokenType.SIGNED)
+                {
+                    if (!Curr().IsUnsigned())
+                        break;
+                }
+                else if (t.Type == TokenType.DOUBLE)
+                {
+                    if (!Curr().IsDouble())
+                        break;
+                }
+                else
+                {
+                    if (t.Type != Curr().Type)
+                        break;
+                }
+
+                result[i] = Consume();
+            }
+
+            return result;
         }
 
         public bool Consume(Predicate<Token> p)
