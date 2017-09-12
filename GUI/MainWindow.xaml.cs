@@ -57,7 +57,7 @@ namespace GUI
                 DbcParser parser = new DbcParser(reader);
                 //var job = await Task.Run(() => parser.Parse());
                 var job =  parser.Parse();
-                DbcMessage.Text = String.Join(",", job.messages[0].signals[0].receivers);
+                //DbcMessage.Text = String.Join(",", job.messages[0].signals[0].receivers);
             }
         }
     }
