@@ -9,12 +9,6 @@ namespace DbcLib.DBC.Parser
 {
     using DBC.Lex;
 
-    class Pattern
-    {
-        public List<Token> path = new List<Token>();
-        public List<Pattern> branch = new List<Pattern>();
-    }
-
     class TokenStream
     {
         private List<Token> tokens;
@@ -43,6 +37,11 @@ namespace DbcLib.DBC.Parser
         public bool Curr(Predicate<Token> p)
         {
             return !EndOfStream && p(Curr());
+        }
+
+        public bool Consume(Predicate<Token> p)
+        {
+            return !EndOfStream && p(Consume());
         }
 
         public Token[] Consume(Token[] pattern)
@@ -80,11 +79,6 @@ namespace DbcLib.DBC.Parser
             return result;
         }
 
-        public bool Consume(Predicate<Token> p)
-        {
-            return !EndOfStream && p(Consume());
-        }
-
         public bool ConsumeIf(Predicate<Token> p)
         {
             if (EndOfStream)
@@ -96,22 +90,6 @@ namespace DbcLib.DBC.Parser
                 ++pointer;
 
             return result;
-        }
-
-        public void ConsumeIf(Predicate<Token> p, Action<Token> failure)
-        {
-            if (!ConsumeIf(p))
-                failure(Curr());
-        }
-
-        public void ConsumeIf(Predicate<Token> p,
-            Action<Token> success,
-            Action<Token> failure)
-        {
-            if (ConsumeIf(p))
-                success(tokens[pointer - 1]);
-            else
-                failure(Curr());
         }
     }
 }

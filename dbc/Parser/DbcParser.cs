@@ -139,9 +139,10 @@ namespace DbcLib.DBC.Parser
         {
             Signal signal = new Signal();
 
-            stream.ConsumeIf(t => t.IsIdentifier(),
-                    t => signal.name = t.Val,
-                    t => throw new Exception());
+            if (stream.Curr(t => t.IsIdentifier()))
+                signal.name = stream.Consume().Val;
+            else
+                throw new Exception();
 
             if (stream.ConsumeIf(t => t.Val == "M"))
             {
@@ -149,9 +150,10 @@ namespace DbcLib.DBC.Parser
             }
             else if (stream.ConsumeIf(t => t.Val == "m"))
             {
-                stream.ConsumeIf(t => t.IsUnsigned(),
-                    t => signal.multiplexerIndicator = t.Val,
-                    t => throw new Exception());
+                if (stream.Curr(t => t.IsUnsigned()))
+                    signal.multiplexerIndicator = stream.Consume().Val;
+                else
+                    throw new Exception();
             }
 
             {
@@ -164,13 +166,15 @@ namespace DbcLib.DBC.Parser
                 signal.signalSize = parsed[3].Val;
             }
 
-            stream.ConsumeIf(t => t.Val == "0" || t.Val == "1",
-                    t => signal.byteOrder = t.Val,
-                    t => throw new Exception());
+            if (stream.Curr(t => t.Val == "0" || t.Val == "1"))
+                signal.byteOrder = stream.Consume().Val;
+            else
+                throw new Exception();
 
-            stream.ConsumeIf(t => t.Val == "+" || t.Val == "-",
-                    t => signal.valueType = t.Val,
-                    t => throw new Exception());
+            if (stream.Curr(t => t.Val == "+" || t.Val == "-"))
+                signal.valueType = stream.Consume().Val;
+            else
+                throw new Exception();
 
             {
                 Token[] parsed = stream.Consume(SIGNAL_PATTERN2);
@@ -188,9 +192,10 @@ namespace DbcLib.DBC.Parser
 
             while (stream.ConsumeIf(t => t.Val == ","))
             {
-                stream.ConsumeIf(t => t.IsIdentifier(),
-                    t => signal.receivers.Add(t.Val),
-                    t => throw new Exception());
+                if (stream.Curr(t => t.IsIdentifier()))
+                    signal.receivers.Add(stream.Consume().Val);
+                else
+                    throw new Exception();
             }
 
             return signal;
