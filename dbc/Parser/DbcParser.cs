@@ -12,7 +12,8 @@ namespace DbcLib.DBC.Parser
 
     public class DbcParser
     {
-        private static readonly Token[] MESSAGES_PATTERN = new Token[] {
+        private static readonly Token[] MESSAGES_PATTERN = new Token[]
+        {
             new Token(Keyword.MESSAGES),
             new Token(TokenType.UNSIGNED),
             new Token(TokenType.IDENTIFIER),
@@ -21,14 +22,16 @@ namespace DbcLib.DBC.Parser
             new Token(TokenType.IDENTIFIER)
         };
 
-        private static readonly Token[] SIGNAL_PATTERN1 = new Token[] {
+        private static readonly Token[] SIGNAL_PATTERN1 = new Token[]
+        {
             new Token(":"),
             new Token(TokenType.UNSIGNED),
             new Token("|"),
             new Token(TokenType.UNSIGNED),
             new Token("@")};
 
-        private static readonly Token[] SIGNAL_PATTERN2 = new Token[] {
+        private static readonly Token[] SIGNAL_PATTERN2 = new Token[]
+        {
             new Token("("),
             new Token(TokenType.DOUBLE),
             new Token(","),
@@ -43,44 +46,57 @@ namespace DbcLib.DBC.Parser
             new Token(TokenType.IDENTIFIER)
         };
 
-        private static readonly Token CM_TOKEN =
-            new Token(Keyword.COMMENTS);
 
-        private static readonly Token STRING_TOKEN =
-            new Token(TokenType.STRING);
+        private static readonly Token[] CM_PATTERN = new Token[]
+        {
+            new Token(TokenType.STRING),
+            new Token(";")
+        };
 
-        private static readonly Token IDENTIFIER_TOKEN =
-            new Token(TokenType.IDENTIFIER);
-
-        private static readonly Token SEMI_COLON_TOKEN =
-            new Token(";");
-
-        private static readonly Token[] CM_PATTERN = new Token[] {
-            CM_TOKEN,
-            IDENTIFIER_TOKEN,
-            STRING_TOKEN,
-            SEMI_COLON_TOKEN};
-
-        private static readonly Token[] CM_NODES_PATTERN = new Token[] {
+        private static readonly Token[] CM_NODES_PATTERN = new Token[]
+        {
+            new Token(Keyword.NODES),
             new Token(TokenType.IDENTIFIER),
             new Token(TokenType.STRING),
             new Token(";")};
 
-        private static readonly Token[] CM_MESSAGES_PATTERN = new Token[] {
+        private static readonly Token[] CM_MESSAGES_PATTERN = new Token[]
+        {
             new Token(Keyword.MESSAGES),
             new Token(TokenType.UNSIGNED),
             new Token(TokenType.STRING),
             new Token(";")};
 
-        private static readonly Token[] CM_SIGNAL_PATTERN = new Token[] {
+        private static readonly Token[] CM_SIGNAL_PATTERN = new Token[]
+        {
             new Token(Keyword.SIGNAL),
             new Token(TokenType.UNSIGNED),
             new Token(TokenType.IDENTIFIER),
             new Token(TokenType.STRING),
             new Token(";")};
 
-        private static readonly Token[] AD_INT_HEX_PATTERN = new Token[]
+        private static readonly Token[] CM_ENV_PATTERN = new Token[]
         {
+            new Token(Keyword.SIGNAL),
+            new Token(TokenType.IDENTIFIER),
+            new Token(TokenType.STRING),
+            new Token(";")
+        };
+
+
+        private static readonly Token[] AD_INT_PATTERN = new Token[]
+        {
+            new Token(TokenType.STRING),
+            new Token("INT"),
+            new Token(TokenType.SIGNED),
+            new Token(TokenType.SIGNED),
+            new Token(";")
+        };
+
+        private static readonly Token[] AD_HEX_PATTERN = new Token[]
+        {
+            new Token(TokenType.STRING),
+            new Token("HEX"),
             new Token(TokenType.SIGNED),
             new Token(TokenType.SIGNED),
             new Token(";")
@@ -88,10 +104,49 @@ namespace DbcLib.DBC.Parser
 
         private static readonly Token[] AD_FLOAT_PATTERN = new Token[]
         {
+            new Token(TokenType.STRING),
             new Token("FLOAT"),
             new Token(TokenType.DOUBLE),
             new Token(TokenType.DOUBLE),
             new Token(";")
+        };
+
+        private static readonly Token[] AD_STRING_PATTERN = new Token[]
+        {
+            new Token(TokenType.STRING),
+            new Token("STRING"),
+            new Token(";")
+        };
+
+        private static readonly Token[] AD_ENUM_PATTERN = new Token[]
+        {
+            new Token(TokenType.STRING),
+            new Token("ENUM")
+        };
+
+        private static readonly Token[] AV_NODES_PATTERN = new Token[]
+        {
+            new Token(Keyword.NODES),
+            new Token(TokenType.IDENTIFIER),
+        };
+
+        private static readonly Token[] AV_MESSAGES_PATTERN = new Token[]
+        {
+            new Token(Keyword.MESSAGES),
+            new Token(TokenType.UNSIGNED),
+        };
+
+        private static readonly Token[] AV_SIGNAL_PATTERN = new Token[]
+        {
+            new Token(Keyword.SIGNAL),
+            new Token(TokenType.UNSIGNED),
+            new Token(TokenType.IDENTIFIER)
+        };
+
+        private static readonly Token[] AV_ENV_PATTERN = new Token[]
+        {
+            new Token(Keyword.ENVIRONMENT_VARIABLES),
+            new Token(TokenType.IDENTIFIER)
         };
 
         private DBC dbc = new DBC();
@@ -121,9 +176,9 @@ namespace DbcLib.DBC.Parser
             Comments();
             AttributeDefinitions();
             //SIGTYPE_ATTR_LIST
-            //public List<AttributeDefault> attributeDefaults = new List<AttributeDefault>();
-            //public List<AttributeValue> attributeValues = new List<AttributeValue>();
-            //public List<SignalValueDescription> valueDescriptions = new List<SignalValueDescription>();
+            AttributeDefaults();
+            AttributeValues();
+            SignalValueDescriptions();
             //CATEGORY_DEFINITIONS
             //CATEGORIES
             //FILTER
@@ -131,6 +186,36 @@ namespace DbcLib.DBC.Parser
             //SIGNAL_GROUPS
             //SIGNAL_EXTENDED_VALUE_TYPE_LIST
             return dbc;
+        }
+
+        private Tuple<Token[], Token[]> TryParse(params Token[][] patterns)
+        {
+            foreach (Token[] pattern in patterns)
+            {
+                Token[] parsed = stream.ConsumeIf(pattern);
+
+                if (parsed.Last() != null)
+                    return new Tuple<Token[], Token[]>(pattern, parsed);
+            }
+
+            return new Tuple<Token[], Token[]>(null, null);
+        }
+
+        private ValueDescription ValueDescriptions()
+        {
+            ValueDescription vd = new ValueDescription();
+
+            if (stream.Curr.IsDouble())
+                vd.num = stream.Consume().Val;
+            else
+                throw new Exception();
+
+            if (stream.Curr.IsString())
+                vd.str = stream.Consume().Val;
+            else
+                throw new Exception();
+
+            return vd;
         }
 
         private void Version()
@@ -205,24 +290,10 @@ namespace DbcLib.DBC.Parser
                 else
                     throw new Exception();
 
-                while (stream.Curr.Val != ";")
+                while (!stream.ConsumeIf(stream.Curr.Val == ";"))
                 {
-                    ValueDescription vd = new ValueDescription();
-                    vt.descriptions.Add(vd);
-
-                    if (stream.Curr.IsDouble())
-                        vd.num = stream.Consume().Val;
-                    else
-                        throw new Exception();
-
-                    if (stream.Curr.IsString())
-                        vd.str = stream.Consume().Val;
-                    else
-                        throw new Exception();
+                    vt.descriptions.Add(ValueDescriptions());
                 }
-
-                if (!stream.ConsumeIf(stream.Curr.Val == ";"))
-                    throw new Exception();
             }
         }
 
@@ -236,7 +307,7 @@ namespace DbcLib.DBC.Parser
         {
             while (!stream.EndOfStream)
             {
-                Token[] parsed = stream.Consume(MESSAGES_PATTERN);
+                Token[] parsed = stream.ConsumeIf(MESSAGES_PATTERN);
 
                 if (parsed.First() == null)
                     break;
@@ -301,7 +372,7 @@ namespace DbcLib.DBC.Parser
             }
 
             {
-                Token[] parsed = stream.Consume(SIGNAL_PATTERN1);
+                Token[] parsed = stream.ConsumeIf(SIGNAL_PATTERN1);
 
                 if (parsed.Last() == null)
                     throw new Exception();
@@ -321,7 +392,7 @@ namespace DbcLib.DBC.Parser
                 throw new Exception();
 
             {
-                Token[] parsed = stream.Consume(SIGNAL_PATTERN2);
+                Token[] parsed = stream.ConsumeIf(SIGNAL_PATTERN2);
 
                 if (parsed.Last() == null)
                     throw new Exception();
@@ -354,40 +425,35 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Curr.Val == Keyword.COMMENTS))
             {
-                if (stream.Curr.IsString())
+                Tuple<Token[], Token[]> result = TryParse(
+                    CM_PATTERN,
+                    CM_NODES_PATTERN,
+                    CM_MESSAGES_PATTERN,
+                    CM_SIGNAL_PATTERN
+                    );
+
+                Token[] pattern = result.Item1;
+                Token[] parsed = result.Item2;
+
+                if (pattern == CM_PATTERN)
                 {
                     dbc.comments.Add(new Comment
                     {
-                        msg = stream.Consume().Val
+                        msg = parsed[0].Val
                     });
-
-                    if (!stream.ConsumeIf(stream.Curr.Val == ";"))
-                        throw new Exception();
                 }
-                else if (stream.Curr.Val == Keyword.NODES ||
-                    stream.Curr.Val == Keyword.ENVIRONMENT_VARIABLES)
+                else if (pattern == CM_NODES_PATTERN ||
+                    pattern == CM_ENV_PATTERN)
                 {
-                    Comment cm = new Comment
+                    dbc.comments.Add(new Comment
                     {
-                        type = stream.Consume().Val
-                    };
-                    dbc.comments.Add(cm);
-
-                    Token[] parsed = stream.Consume(CM_NODES_PATTERN);
-
-                    if (parsed.Last() == null)
-                        throw new Exception();
-
-                    cm.name = parsed[0].Val;
-                    cm.msg = parsed[1].Val;
+                        type = parsed[0].Val,
+                        name = parsed[1].Val,
+                        msg = parsed[2].Val
+                    });
                 }
-                else if (stream.Curr.Val == Keyword.MESSAGES)
+                else if (pattern == CM_MESSAGES_PATTERN)
                 {
-                    Token[] parsed = stream.Consume(CM_MESSAGES_PATTERN);
-
-                    if (parsed.Last() == null)
-                        throw new Exception();
-
                     dbc.comments.Add(new Comment
                     {
                         type = parsed[0].Val,
@@ -395,13 +461,8 @@ namespace DbcLib.DBC.Parser
                         msg = parsed[2].Val
                     });
                 }
-                else if (stream.Curr.Val == Keyword.SIGNAL)
+                else if (pattern == CM_SIGNAL_PATTERN)
                 {
-                    Token[] parsed = stream.Consume(CM_SIGNAL_PATTERN);
-
-                    if (parsed.Last() == null)
-                        throw new Exception();
-
                     dbc.comments.Add(new Comment
                     {
                         type = parsed[0].Val,
@@ -414,25 +475,176 @@ namespace DbcLib.DBC.Parser
                 {
                     throw new Exception();
                 }
-
             }
         }
 
         private void AttributeDefinitions()
         {
-            while (stream.ConsumeIf(
-                stream.Curr.Val == Keyword.ATTRIBUTE_DEFINITIONS
-                ))
+            while (stream.ConsumeIf(stream.Curr.Val == Keyword.ATTRIBUTE_DEFINITIONS))
             {
+                AttributeDefinition ad = new AttributeDefinition();
 
-                if (!stream.Curr.IsString())
+                switch (stream.Curr.Val)
+                {
+                    case Keyword.NODES:
+                    case Keyword.MESSAGES:
+                    case Keyword.SIGNAL:
+                    case Keyword.ENVIRONMENT_VARIABLES:
+                        ad.objectType = stream.Consume().Val;
+                        break;
+                }
+
+                Tuple<Token[], Token[]> result = TryParse(
+                    AD_INT_PATTERN,
+                    AD_HEX_PATTERN,
+                    AD_FLOAT_PATTERN,
+                    AD_STRING_PATTERN,
+                    AD_ENUM_PATTERN
+                    );
+
+                Token[] pattern = result.Item1;
+                Token[] parsed = result.Item2;
+
+                if (pattern == null)
+                {
+                    throw new Exception();
+                }
+
+                ad.attributeName = parsed[0].Val;
+                ad.valueType = parsed[1].Val;
+
+                if (pattern == AD_INT_PATTERN ||
+                    pattern == AD_HEX_PATTERN ||
+                    pattern == AD_FLOAT_PATTERN)
+                {
+                    ad.values.Add(parsed[2].Val);
+                    ad.values.Add(parsed[3].Val);
+                }
+                else if (pattern == AD_ENUM_PATTERN)
                 {
 
+                    while (!stream.ConsumeIf(stream.Curr.Val == ";"))
+                    {
+                        if (stream.ConsumeIf(stream.Curr.Val == ","))
+                            continue;
+
+                        if (stream.Curr.IsString())
+                            ad.values.Add(stream.Consume().Val);
+                        else
+                            throw new Exception();
+                    }
                 }
 
             }
         }
 
+        private void AttributeDefaults()
+        {
+            while (stream.ConsumeIf(stream.Curr.Val == Keyword.ATTRIBUTE_DEFAULTS))
+            {
+                AttributeDefault ad = new AttributeDefault();
+                dbc.attributeDefaults.Add(ad);
+
+                if (stream.Curr.IsString())
+                    ad.attributeName = stream.Consume().Val;
+                else
+                    throw new Exception();
+
+                if (stream.Curr.IsDouble() || stream.Curr.IsString())
+                    ad.attributeValue = stream.Consume().Val;
+                else
+                    throw new Exception();
+
+                if (!stream.ConsumeIf(stream.Curr.Val == ";"))
+                    throw new Exception();
+            }
+        }
+
+        private void AttributeValues()
+        {
+            while (stream.ConsumeIf(stream.Curr.Val == Keyword.ATTRIBUTE_VALUES))
+            {
+                AttributeValue av = new AttributeValue();
+                dbc.attributeValues.Add(av);
+
+                if (stream.Curr.IsString())
+                    av.attributeName = stream.Consume().Val;
+                else
+                    throw new Exception();
+
+                Tuple<Token[], Token[]> result = TryParse(
+                   AV_NODES_PATTERN,
+                   AV_MESSAGES_PATTERN,
+                   AV_SIGNAL_PATTERN,
+                   AV_ENV_PATTERN
+                   );
+
+                Token[] pattern = result.Item1;
+                Token[] parsed = result.Item2;
+
+                if (pattern != null)
+                {
+                    av.type = parsed[0].Val;
+
+                    if (pattern == AV_NODES_PATTERN || pattern == AV_ENV_PATTERN)
+                    {
+                        av.name = parsed[1].Val;
+                    }
+                    else if (pattern == AV_MESSAGES_PATTERN)
+                    {
+                        av.messageId = parsed[1].Val;
+                    }
+                    else if (pattern == AV_SIGNAL_PATTERN)
+                    {
+                        av.messageId = parsed[1].Val;
+                        av.name = parsed[2].Val;
+                    }
+                }
+
+                if (stream.Curr.IsDouble() || stream.Curr.IsString())
+                    av.attributeValue = stream.Consume().Val;
+                else
+                    throw new Exception();
+
+                if (!stream.ConsumeIf(stream.Curr.Val == ";"))
+                    throw new Exception();
+            }
+        }
+
+        //value_descriptions = { value_descriptions_for_signal | value_descriptions_for_env_var } ;
+        //value_descriptions_for_signal = 'VAL_' message_id signal_name { value_description } ';' ;
+        //value_descriptions_for_env_var = 'VAL_' env_var_aname { value_description } ';'
+        //message_id = unsigned_integer ;
+        //signal_name = C_identifier ;
+        //env_var_name = C_identifier ;
+        //value_description = double char_string
+        private void SignalValueDescriptions()
+        {
+            while (stream.ConsumeIf(stream.Curr.Val == Keyword.VALUE_DESCRIPTIONS))
+            {
+                SignalValueDescription vd = new SignalValueDescription();
+                dbc.valueDescriptions.Add(vd);
+
+                if (stream.Curr.IsUnsigned())
+                {
+                    vd.messageId = stream.Consume().Val;
+                }
+
+                if (stream.Curr.IsIdentifier())
+                {
+                    vd.name = stream.Consume().Val;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+
+                while (!stream.ConsumeIf(stream.Curr.Val == ";"))
+                {
+                    vd.descriptions.Add(ValueDescriptions());
+                }
+            }
+        }
 
     }
 }

@@ -20,6 +20,6 @@ namespace DbcLib.DBC.Model
         public string objectType;
         public string attributeName;
         public string valueType;
-        public List<String> values;
+        public List<String> values = new List<string>();
     }
 }

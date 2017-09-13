@@ -18,7 +18,7 @@ namespace DbcLib.DBC.Parser
 
         public bool EndOfStream
         {
-            get { return pointer < tokens.Count; }
+            get { return pointer >= tokens.Count; }
         }
 
         public Token Curr
@@ -39,17 +39,31 @@ namespace DbcLib.DBC.Parser
 
         public Token Consume()
         {
+            Token old = Curr;
+
             ++pointer;
-            return Curr;
+
+            return old;
         }
 
-        public Token[] Consume(Token[] pattern)
+        public bool ConsumeIf(bool pred)
+        {
+            if (pred)
+                ++pointer;
+
+            return pred;
+        }
+
+        public Token[] ConsumeIf(Token[] pattern)
         {
             Token[] result = new Token[pattern.Length];
 
-            for (int i = 0; !EndOfStream && i < pattern.Length; ++i)
+
+            int i = 0;
+
+            for (; !EndOfStream && i < pattern.Length; ++i)
             {
-                Token curr = tokens[pointer];
+                Token curr = tokens[pointer + i];
                 Token p = pattern[i];
 
                 if (p.Val.Length != 0)
@@ -73,18 +87,13 @@ namespace DbcLib.DBC.Parser
                         break;
                 }
 
-                result[i] = tokens[pointer++];
+                result[i] = tokens[pointer + i];
             }
 
+            if (i == pattern.Length)
+                pointer += i;
+
             return result;
-        }
-
-        public bool ConsumeIf(bool pred)
-        {
-            if (pred)
-                ++pointer;
-
-            return pred;
         }
     }
 }
