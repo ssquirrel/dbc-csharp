@@ -8,6 +8,7 @@ namespace DbcLib.DBC.Lex
 {
     public enum TokenType
     {
+        None,
         TOKEN,
         UNSIGNED,
         SIGNED,
@@ -19,12 +20,19 @@ namespace DbcLib.DBC.Lex
 
     public class Token
     {
-        public string Val { get; private set; }
-        public TokenType Type { get; private set; } = TokenType.TOKEN;
+        public string Val { get; private set; } = "";
+        public TokenType Type { get; private set; } = TokenType.None;
+
+        //creates a sentinel token
+        public Token()
+        {
+            
+        }
 
         public Token(string v)
         {
             Val = v;
+            Type = TokenType.TOKEN;
         }
 
         public Token(TokenType t)

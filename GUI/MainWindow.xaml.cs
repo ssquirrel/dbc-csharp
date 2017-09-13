@@ -23,21 +23,64 @@ namespace GUI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        async void Open_File(object sender, RoutedEventArgs e)
+        private string From = "";
+        private string To = "";
+        private string Status = "Ready";
+
+        public string FromPath
+        {
+            get { return From; }
+            set
+            {
+                From = value;
+
+                OnPropertyChanged("FromPath");
+            }
+        }
+
+        public string ToPath
+        {
+            get { return To; }
+            set
+            {
+                To = value;
+
+                OnPropertyChanged("ToPath");
+            }
+        }
+
+        public string StatusText
+        {
+            get { return Status; }
+            set
+            {
+                Status = value;
+
+                OnPropertyChanged("StatusText");
+            }
+        }
+
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        void Open_File(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
             {
-                FileName = "Document", // Default file name
+                FileName = "", // Default file name
                 DefaultExt = ".dbc", // Default file extension
-                Filter = "DBC file (*.dbc)|*.dbc" // Filter files by extension
+                Filter = "CANdb Network (*.dbc)|*.dbc" // Filter files by extension
             };
 
             // Show save file dialog box
@@ -51,13 +94,20 @@ namespace GUI
 
             // Save document
             string filename = dlg.FileName;
+            FromPath = filename;
 
-            using (StreamReader reader = new StreamReader(filename))
+
+        }
+
+        async void Convert(object sender, RoutedEventArgs e)
+        {
+            using (StreamReader reader = new StreamReader(FromPath))
             {
                 DbcParser parser = new DbcParser(reader);
-                //var job = await Task.Run(() => parser.Parse());
-                var job =  parser.Parse();
-                //DbcMessage.Text = String.Join(",", job.messages[0].signals[0].receivers);
+
+                DBC dbc = await Task.Run(() => parser.Parse());
+
+                StatusText = dbc.messages[0].name;
             }
         }
     }

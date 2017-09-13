@@ -13,6 +13,7 @@ namespace DbcLib.DBC.Parser
     public class DbcParser
     {
         private static readonly Token[] MESSAGES_PATTERN = new Token[] {
+            new Token(Keyword.MESSAGES),
             new Token(TokenType.UNSIGNED),
             new Token(TokenType.IDENTIFIER),
             new Token(":"),
@@ -42,7 +43,56 @@ namespace DbcLib.DBC.Parser
             new Token(TokenType.IDENTIFIER)
         };
 
+        private static readonly Token CM_TOKEN =
+            new Token(Keyword.COMMENTS);
 
+        private static readonly Token STRING_TOKEN =
+            new Token(TokenType.STRING);
+
+        private static readonly Token IDENTIFIER_TOKEN =
+            new Token(TokenType.IDENTIFIER);
+
+        private static readonly Token SEMI_COLON_TOKEN =
+            new Token(";");
+
+        private static readonly Token[] CM_PATTERN = new Token[] {
+            CM_TOKEN,
+            IDENTIFIER_TOKEN,
+            STRING_TOKEN,
+            SEMI_COLON_TOKEN};
+
+        private static readonly Token[] CM_NODES_PATTERN = new Token[] {
+            new Token(TokenType.IDENTIFIER),
+            new Token(TokenType.STRING),
+            new Token(";")};
+
+        private static readonly Token[] CM_MESSAGES_PATTERN = new Token[] {
+            new Token(Keyword.MESSAGES),
+            new Token(TokenType.UNSIGNED),
+            new Token(TokenType.STRING),
+            new Token(";")};
+
+        private static readonly Token[] CM_SIGNAL_PATTERN = new Token[] {
+            new Token(Keyword.SIGNAL),
+            new Token(TokenType.UNSIGNED),
+            new Token(TokenType.IDENTIFIER),
+            new Token(TokenType.STRING),
+            new Token(";")};
+
+        private static readonly Token[] AD_INT_HEX_PATTERN = new Token[]
+        {
+            new Token(TokenType.SIGNED),
+            new Token(TokenType.SIGNED),
+            new Token(";")
+        };
+
+        private static readonly Token[] AD_FLOAT_PATTERN = new Token[]
+        {
+            new Token("FLOAT"),
+            new Token(TokenType.DOUBLE),
+            new Token(TokenType.DOUBLE),
+            new Token(";")
+        };
 
         private DBC dbc = new DBC();
         private TokenStream stream;
@@ -58,18 +108,18 @@ namespace DbcLib.DBC.Parser
 
         public DBC Parse()
         {
-            //public string version = null;
-            //public List<string> newSymbols = new List<string>();
-            //BIT_TIMING
-            //public List<string> nodes = new List<string>();
-            //public List<ValueTable> valueTables = new List<ValueTable>();
+            Version();
+            NewSymbols();
+            BitTiming();
+            Nodes();
+            ValueTables();
             Messages();
-            //MESSAGE_TRANSMITTERS
+            //MessageTransmitters();
             //ENVIRONMENT_VARIABLES
             //ENVIRONMENT_VARIABLES_DATA
             //SIGNAL_TYPES
-            //public List<Comment> comments = new List<Comment>();
-            //public List<AttributeDefinition> attributeDefinitions = new List<AttributeDefinition>();
+            Comments();
+            AttributeDefinitions();
             //SIGTYPE_ATTR_LIST
             //public List<AttributeDefault> attributeDefaults = new List<AttributeDefault>();
             //public List<AttributeValue> attributeValues = new List<AttributeValue>();
@@ -83,6 +133,99 @@ namespace DbcLib.DBC.Parser
             return dbc;
         }
 
+        private void Version()
+        {
+            if (!stream.ConsumeIf(stream.Curr.Val == Keyword.VERSION))
+                return;
+
+            if (stream.Curr.IsString())
+                dbc.version = stream.Consume().Val;
+            else
+                throw new Exception();
+
+        }
+
+        private void NewSymbols()
+        {
+            if (!stream.ConsumeIf(stream.Curr.Val == Keyword.NEW_SYMBOLS))
+                return;
+
+            if (!stream.ConsumeIf(stream.Curr.Val == ":"))
+                throw new Exception();
+
+
+            while (stream.Curr.Val != Keyword.BIT_TIMING)
+            {
+                dbc.newSymbols.Add(stream.Consume().Val);
+            }
+        }
+
+
+        //bit_timing = 'BS_:' [baudrate ':' BTR1 ',' BTR2 ] ;
+        //This section is obsolete. skip to the next mandatory section
+        private void BitTiming()
+        {
+            if (!stream.ConsumeIf(stream.Curr.Val == Keyword.BIT_TIMING))
+                throw new Exception();
+
+            if (!stream.ConsumeIf(stream.Curr.Val == ":"))
+                throw new Exception();
+
+            while (stream.ConsumeIf(stream.Curr.Val != Keyword.NODES)) { }
+        }
+
+        //'BU_' ':' {node_name} ;
+        //node_name = C_identifier
+        private void Nodes()
+        {
+            if (!stream.ConsumeIf(stream.Curr.Val == Keyword.NODES))
+                throw new Exception();
+
+            if (!stream.ConsumeIf(stream.Curr.Val == ":"))
+                throw new Exception();
+
+            while (stream.Curr.IsIdentifier())
+            {
+                dbc.newSymbols.Add(stream.Consume().Val);
+            }
+        }
+
+        //value_tables = {value_table} ;
+        //value_table = 'VAL_TABLE_' C_identifier {value_description} ';'
+        //value_description = double char_string ;
+        private void ValueTables()
+        {
+            while (stream.ConsumeIf(stream.Curr.Val == Keyword.VALUE_TABLES))
+            {
+                ValueTable vt = new ValueTable();
+                dbc.valueTables.Add(vt);
+
+                if (stream.Curr.IsIdentifier())
+                    vt.name = stream.Consume().Val;
+                else
+                    throw new Exception();
+
+                while (stream.Curr.Val != ";")
+                {
+                    ValueDescription vd = new ValueDescription();
+                    vt.descriptions.Add(vd);
+
+                    if (stream.Curr.IsDouble())
+                        vd.num = stream.Consume().Val;
+                    else
+                        throw new Exception();
+
+                    if (stream.Curr.IsString())
+                        vd.str = stream.Consume().Val;
+                    else
+                        throw new Exception();
+                }
+
+                if (!stream.ConsumeIf(stream.Curr.Val == ";"))
+                    throw new Exception();
+            }
+        }
+
         //messages = {message} ;
         //message = BO_ message_id message_name ':' message_size transmitter {signal} ;
         //message_id = unsigned_integer ;
@@ -91,28 +234,29 @@ namespace DbcLib.DBC.Parser
         //transmitter = node_name | 'Vector__XXX' ;
         private void Messages()
         {
-            while (stream.ConsumeIf(p => p.Val == Keyword.MESSAGES))
+            while (!stream.EndOfStream)
             {
                 Token[] parsed = stream.Consume(MESSAGES_PATTERN);
 
-                if (parsed.Length == 0)
+                if (parsed.First() == null)
                     break;
 
-                if (parsed.Length != MESSAGES_PATTERN.Length)
+                if (parsed.Last() == null)
                     throw new Exception();
 
                 Message msg = new Message
                 {
-                    id = parsed[0].Val,
-                    name = parsed[1].Val,
-                    size = parsed[3].Val,
-                    transmitter = parsed[4].Val
+                    id = parsed[1].Val,
+                    name = parsed[2].Val,
+                    size = parsed[4].Val,
+                    transmitter = parsed[5].Val
                 };
-
-                while (stream.ConsumeIf(t => t.Val == Keyword.SIGNAL))
-                    msg.signals.Add(Signal());
-
                 dbc.messages.Add(msg);
+
+                while (stream.ConsumeIf(stream.Curr.Val == Keyword.SIGNAL))
+                {
+                    msg.signals.Add(Signal());
+                }
             }
 
             if (dbc.messages.Count == 0)
@@ -139,18 +283,18 @@ namespace DbcLib.DBC.Parser
         {
             Signal signal = new Signal();
 
-            if (stream.Curr(t => t.IsIdentifier()))
+            if (stream.Curr.IsIdentifier())
                 signal.name = stream.Consume().Val;
             else
                 throw new Exception();
 
-            if (stream.ConsumeIf(t => t.Val == "M"))
+            if (stream.Curr.Val == "M")
             {
-                signal.multiplexerIndicator = "M";
+                signal.multiplexerIndicator = stream.Consume().Val;
             }
-            else if (stream.ConsumeIf(t => t.Val == "m"))
+            else if (stream.ConsumeIf(stream.Curr.Val == "m"))
             {
-                if (stream.Curr(t => t.IsUnsigned()))
+                if (stream.Curr.IsUnsigned())
                     signal.multiplexerIndicator = stream.Consume().Val;
                 else
                     throw new Exception();
@@ -159,19 +303,19 @@ namespace DbcLib.DBC.Parser
             {
                 Token[] parsed = stream.Consume(SIGNAL_PATTERN1);
 
-                if (parsed.Length != SIGNAL_PATTERN1.Length)
+                if (parsed.Last() == null)
                     throw new Exception();
 
                 signal.startBit = parsed[1].Val;
                 signal.signalSize = parsed[3].Val;
             }
 
-            if (stream.Curr(t => t.Val == "0" || t.Val == "1"))
+            if (stream.Curr.Val == "0" || stream.Curr.Val == "1")
                 signal.byteOrder = stream.Consume().Val;
             else
                 throw new Exception();
 
-            if (stream.Curr(t => t.Val == "+" || t.Val == "-"))
+            if (stream.Curr.Val == "+" || stream.Curr.Val == "-")
                 signal.valueType = stream.Consume().Val;
             else
                 throw new Exception();
@@ -179,7 +323,7 @@ namespace DbcLib.DBC.Parser
             {
                 Token[] parsed = stream.Consume(SIGNAL_PATTERN2);
 
-                if (parsed.Length != SIGNAL_PATTERN2.Length)
+                if (parsed.Last() == null)
                     throw new Exception();
 
                 signal.factor = parsed[1].Val;
@@ -190,9 +334,9 @@ namespace DbcLib.DBC.Parser
                 signal.receivers.Add(parsed[11].Val);
             }
 
-            while (stream.ConsumeIf(t => t.Val == ","))
+            while (stream.ConsumeIf(stream.Curr.Val == ","))
             {
-                if (stream.Curr(t => t.IsIdentifier()))
+                if (stream.Curr.IsIdentifier())
                     signal.receivers.Add(stream.Consume().Val);
                 else
                     throw new Exception();
@@ -200,5 +344,95 @@ namespace DbcLib.DBC.Parser
 
             return signal;
         }
+
+        private void MessageTransmitters()
+        {
+
+        }
+
+        private void Comments()
+        {
+            while (stream.ConsumeIf(stream.Curr.Val == Keyword.COMMENTS))
+            {
+                if (stream.Curr.IsString())
+                {
+                    dbc.comments.Add(new Comment
+                    {
+                        msg = stream.Consume().Val
+                    });
+
+                    if (!stream.ConsumeIf(stream.Curr.Val == ";"))
+                        throw new Exception();
+                }
+                else if (stream.Curr.Val == Keyword.NODES ||
+                    stream.Curr.Val == Keyword.ENVIRONMENT_VARIABLES)
+                {
+                    Comment cm = new Comment
+                    {
+                        type = stream.Consume().Val
+                    };
+                    dbc.comments.Add(cm);
+
+                    Token[] parsed = stream.Consume(CM_NODES_PATTERN);
+
+                    if (parsed.Last() == null)
+                        throw new Exception();
+
+                    cm.name = parsed[0].Val;
+                    cm.msg = parsed[1].Val;
+                }
+                else if (stream.Curr.Val == Keyword.MESSAGES)
+                {
+                    Token[] parsed = stream.Consume(CM_MESSAGES_PATTERN);
+
+                    if (parsed.Last() == null)
+                        throw new Exception();
+
+                    dbc.comments.Add(new Comment
+                    {
+                        type = parsed[0].Val,
+                        id = parsed[1].Val,
+                        msg = parsed[2].Val
+                    });
+                }
+                else if (stream.Curr.Val == Keyword.SIGNAL)
+                {
+                    Token[] parsed = stream.Consume(CM_SIGNAL_PATTERN);
+
+                    if (parsed.Last() == null)
+                        throw new Exception();
+
+                    dbc.comments.Add(new Comment
+                    {
+                        type = parsed[0].Val,
+                        id = parsed[1].Val,
+                        name = parsed[2].Val,
+                        msg = parsed[3].Val
+                    });
+                }
+                else
+                {
+                    throw new Exception();
+                }
+
+            }
+        }
+
+        private void AttributeDefinitions()
+        {
+            while (stream.ConsumeIf(
+                stream.Curr.Val == Keyword.ATTRIBUTE_DEFINITIONS
+                ))
+            {
+
+                if (!stream.Curr.IsString())
+                {
+
+                }
+
+            }
+        }
+
+
     }
 }

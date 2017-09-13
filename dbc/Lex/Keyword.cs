@@ -44,6 +44,7 @@ namespace DbcLib.DBC.Lex
                 case MESSAGES:
                 case SIGNAL:
                 case MESSAGE_TRANSMITTERS:
+                case ENVIRONMENT_VARIABLES:
                 case ENVIRONMENT_VARIABLES_DATA:
                 //case SIGNAL_TYPES:
                 case COMMENTS:

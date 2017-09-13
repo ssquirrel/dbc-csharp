@@ -11,12 +11,25 @@ namespace DbcLib.DBC.Parser
 
     class TokenStream
     {
+        private static Token sentinel = new Token();
+
         private List<Token> tokens;
         private int pointer = 0;
 
         public bool EndOfStream
         {
-            get { return tokens.Count == pointer; }
+            get { return pointer < tokens.Count; }
+        }
+
+        public Token Curr
+        {
+            get
+            {
+                if (EndOfStream)
+                    return sentinel;
+                else
+                    return tokens[pointer];
+            }
         }
 
         public TokenStream(List<Token> tokens)
@@ -24,24 +37,10 @@ namespace DbcLib.DBC.Parser
             this.tokens = tokens;
         }
 
-        public Token Curr()
-        {
-            return tokens[pointer];
-        }
-
         public Token Consume()
         {
-            return tokens[pointer++];
-        }
-
-        public bool Curr(Predicate<Token> p)
-        {
-            return !EndOfStream && p(Curr());
-        }
-
-        public bool Consume(Predicate<Token> p)
-        {
-            return !EndOfStream && p(Consume());
+            ++pointer;
+            return Curr;
         }
 
         public Token[] Consume(Token[] pattern)
@@ -50,46 +49,42 @@ namespace DbcLib.DBC.Parser
 
             for (int i = 0; !EndOfStream && i < pattern.Length; ++i)
             {
-                Token t = pattern[i];
+                Token curr = tokens[pointer];
+                Token p = pattern[i];
 
-                if (t.Val != null)
+                if (p.Val.Length != 0)
                 {
-                    if (t.Val != Curr().Val)
+                    if (p.Val != curr.Val)
                         break;
                 }
-                else if (t.Type == TokenType.SIGNED)
+                else if (p.Type == TokenType.SIGNED)
                 {
-                    if (!Curr().IsUnsigned())
+                    if (!curr.IsSigned())
                         break;
                 }
-                else if (t.Type == TokenType.DOUBLE)
+                else if (p.Type == TokenType.DOUBLE)
                 {
-                    if (!Curr().IsDouble())
+                    if (!curr.IsDouble())
                         break;
                 }
                 else
                 {
-                    if (t.Type != Curr().Type)
+                    if (p.Type != curr.Type)
                         break;
                 }
 
-                result[i] = Consume();
+                result[i] = tokens[pointer++];
             }
 
             return result;
         }
 
-        public bool ConsumeIf(Predicate<Token> p)
+        public bool ConsumeIf(bool pred)
         {
-            if (EndOfStream)
-                return false;
-
-            bool result = p(Curr());
-
-            if (result)
+            if (pred)
                 ++pointer;
 
-            return result;
+            return pred;
         }
     }
 }
