@@ -166,10 +166,8 @@ namespace DbcLib.DBC.Parser
 
             dbc = new DBC();
 
-            using(StreamReader reader = new StreamReader(filename))
+            using(Lexer lexer = new Lexer(filename))
             {
-                Lexer lexer = new Lexer(reader);
-
                 List<Token> tokens = lexer.Lex();
 
                 stream = new TokenStream(tokens);

@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System;
 
 namespace DbcLib.DBC.Lex
 {
-    class Lexer
+    class Lexer : IDisposable
     {
         private StreamReader reader;
         private List<Token> list = new List<Token>();
 
-        public Lexer(StreamReader reader)
+        public Lexer(string filename)
         {
-            this.reader = reader;
+            reader = new StreamReader(filename);
+        }
+
+        public void Dispose()
+        {
+            reader.Dispose();
         }
 
         public List<Token> Lex()
