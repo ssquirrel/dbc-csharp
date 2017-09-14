@@ -8,6 +8,7 @@ using System.IO;
 
 using DbcLib.DBC.Parser;
 using DbcLib.DBC.Model;
+using DbcLib.Excel;
 
 namespace dbc_test
 {
@@ -15,22 +16,30 @@ namespace dbc_test
     {
         static void Main(string[] args)
         {
+            using (ExcelReader reader = new ExcelReader("sample.xls"))
+            {
+                List<DbcExcelRow> rows = reader.Read();
+            }
+
+        }
+
+        static void DbcParser()
+        {
             try
             {
-                using (StreamReader reader = new StreamReader("sample.dbc"))
+
+                /*
+                Lexer lexer = new Lexer(reader);
+
+                foreach (Token t in lexer.Lex())
                 {
-                    /*
-                    Lexer lexer = new Lexer(reader);
-
-                    foreach (Token t in lexer.Lex())
-                    {
-                        System.Console.WriteLine(t.Val + " " + t.Type.ToString());
-                    }
-                    */
-
-                    DbcParser parser = new DbcParser(reader);
-                    DBC dbc = parser.Parse();
+                    System.Console.WriteLine(t.Val + " " + t.Type.ToString());
                 }
+                */
+
+                DbcParser parser = new DbcParser("sample.dbc");
+                DBC dbc = parser.Parse();
+
             }
             catch (Exception e)
             {
@@ -42,5 +51,6 @@ namespace dbc_test
 
             System.Console.ReadKey();
         }
+
     }
 }

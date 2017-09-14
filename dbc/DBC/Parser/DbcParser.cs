@@ -149,30 +149,45 @@ namespace DbcLib.DBC.Parser
             new Token(TokenType.IDENTIFIER)
         };
 
-        private DBC dbc = new DBC();
+        private String filename;
+
+        private DBC dbc;
         private TokenStream stream;
 
-        public DbcParser(StreamReader reader)
+        public DbcParser(String fn)
         {
-            Lexer lexer = new Lexer(reader);
-
-            List<Token> tokens = lexer.Lex();
-
-            stream = new TokenStream(tokens);
+            filename = fn;
         }
 
         public DBC Parse()
         {
+            if (dbc != null)
+                return dbc;
+
+            dbc = new DBC();
+
+            using(StreamReader reader = new StreamReader(filename))
+            {
+                Lexer lexer = new Lexer(reader);
+
+                List<Token> tokens = lexer.Lex();
+
+                stream = new TokenStream(tokens);
+            }
+
             Version();
             NewSymbols();
             BitTiming();
             Nodes();
             ValueTables();
             Messages();
+
             //MessageTransmitters();
             //ENVIRONMENT_VARIABLES
             //ENVIRONMENT_VARIABLES_DATA
             //SIGNAL_TYPES
+            JumpToComments();
+
             Comments();
             AttributeDefinitions();
             //SIGTYPE_ATTR_LIST
@@ -416,9 +431,9 @@ namespace DbcLib.DBC.Parser
             return signal;
         }
 
-        private void MessageTransmitters()
+        private void JumpToComments()
         {
-
+            while (stream.ConsumeIf(stream.Curr.Val != Keyword.COMMENTS)) { }
         }
 
         private void Comments()

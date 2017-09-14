@@ -30,6 +30,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,9 +55,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Lex\Keyword.cs" />
-    <Compile Include="Lex\Lexer.cs" />
-    <Compile Include="Lex\Token.cs" />
+    <Compile Include="Excel\DbcExcelRow.cs" />
+    <Compile Include="Excel\ExcelParser.cs" />
+    <Compile Include="Excel\ExcelReader.cs" />
+    <Compile Include="DBC\Lex\Keyword.cs" />
+    <Compile Include="DBC\Lex\Lexer.cs" />
+    <Compile Include="DBC\Lex\Token.cs" />
     <Compile Include="Model\AttributeDefault.cs" />
     <Compile Include="Model\AttributeDefinition.cs" />
     <Compile Include="Model\AttributeValue.cs" />
@@ -53,10 +71,12 @@
     <Compile Include="Model\SignalValueDescription.cs" />
     <Compile Include="Model\ValueDescription.cs" />
     <Compile Include="Model\ValueTable.cs" />
-    <Compile Include="Parser\DbcParser.cs" />
-    <Compile Include="Parser\TokenStream.cs" />
+    <Compile Include="DBC\Parser\DbcParser.cs" />
+    <Compile Include="DBC\Parser\TokenStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

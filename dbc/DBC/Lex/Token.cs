@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Lex
 {
-    public enum TokenType
+    enum TokenType
     {
         None,
         TOKEN,
@@ -18,7 +18,7 @@ namespace DbcLib.DBC.Lex
         KEYWORD,
     }
 
-    public class Token
+    class Token
     {
         public string Val { get; private set; } = "";
         public TokenType Type { get; private set; } = TokenType.None;

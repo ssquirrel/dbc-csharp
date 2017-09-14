@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Lex
 {
-    public class Lexer
+    class Lexer
     {
         private StreamReader reader;
         private List<Token> list = new List<Token>();

@@ -32,16 +32,16 @@ namespace GUI
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string From = "";
-        private string To = "";
-        private string Status = "Ready";
+        private string from = "";
+        private string to = "";
+        private string status = "Ready";
 
         public string FromPath
         {
-            get { return From; }
+            get { return from; }
             set
             {
-                From = value;
+                from = value;
 
                 OnPropertyChanged("FromPath");
             }
@@ -49,10 +49,10 @@ namespace GUI
 
         public string ToPath
         {
-            get { return To; }
+            get { return to; }
             set
             {
-                To = value;
+                to = value;
 
                 OnPropertyChanged("ToPath");
             }
@@ -60,10 +60,10 @@ namespace GUI
 
         public string StatusText
         {
-            get { return Status; }
+            get { return status; }
             set
             {
-                Status = value;
+                status = value;
 
                 OnPropertyChanged("StatusText");
             }
@@ -74,13 +74,14 @@ namespace GUI
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        void Open_File(object sender, RoutedEventArgs e)
+        void Set_From_Path(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
             {
-                FileName = "", // Default file name
-                DefaultExt = ".dbc", // Default file extension
-                Filter = "CANdb Network (*.dbc)|*.dbc" // Filter files by extension
+                FileName = "",
+                Filter = "Target Files (*.dbc, *.xlsx, *xls)|*.dbc;*.xlsx;*.xls|" +
+                "CANdb Network (*.dbc)|*.dbc|"+
+                "Excel Worksheets (*.xlsx)|*.xlsx;*.xls"
             };
 
             // Show save file dialog box
@@ -96,19 +97,20 @@ namespace GUI
             string filename = dlg.FileName;
             FromPath = filename;
 
-
+            if (FromPath.EndsWith(".dbc"))
+                ToPath = FromPath.Substring(0, FromPath.Length - 4) + ".xlsx";
+            else if(FromPath.EndsWith(".xlsx") || FromPath.EndsWith(".xls"))
+                ToPath = FromPath.Substring(0, FromPath.Length - 5) + ".dbc";
         }
 
         async void Convert(object sender, RoutedEventArgs e)
         {
-            using (StreamReader reader = new StreamReader(FromPath))
-            {
-                DbcParser parser = new DbcParser(reader);
 
-                DBC dbc = await Task.Run(() => parser.Parse());
+            DbcParser parser = new DbcParser(from);
 
-                StatusText = dbc.messages[0].name;
-            }
+            DBC dbc = await Task.Run(() => parser.Parse());
+
+            StatusText = dbc.messages[0].name;
         }
     }
 }
