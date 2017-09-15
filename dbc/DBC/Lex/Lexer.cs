@@ -14,7 +14,7 @@ namespace DbcLib.DBC.Lex
 
         public Lexer(string filename)
         {
-            reader = new StreamReader(filename);
+            reader = new StreamReader(filename, Encoding.Default);
         }
 
         public void Dispose()

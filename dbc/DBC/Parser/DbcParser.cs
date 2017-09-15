@@ -120,7 +120,7 @@ namespace DbcLib.DBC.Parser
 
             while (stream.Curr.IsIdentifier())
             {
-                dbc.newSymbols.Add(stream.Consume().Val);
+                dbc.nodes.Add(stream.Consume().Val);
             }
         }
 

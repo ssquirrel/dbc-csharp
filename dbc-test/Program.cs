@@ -9,6 +9,7 @@ using System.IO;
 using DbcLib.DBC.Parser;
 using DbcLib.DBC.Model;
 using DbcLib.DBC.Lex;
+using DbcLib.DBC.Out;
 using DbcLib.Excel;
 
 namespace dbc_test
@@ -42,14 +43,14 @@ namespace dbc_test
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.DOUBLE | TokenType.STRING));
             */
 
-
-
-
-
-
             DbcParser parser = new DbcParser("sample.dbc");
             DBC dbc = parser.Parse();
 
+            using (DbcWriter writer =
+                new DbcWriter(new StreamWriter(File.Open("out.dbc", FileMode.Create), Encoding.Default))) {
+
+                writer.Write(dbc);
+            }
         }
 
         static bool Assert(TokenType t, TokenType e)
@@ -71,12 +72,7 @@ namespace dbc_test
             {
 
                 /*
-                           Lexer lexer = new Lexer("sample.dbc");
-
-            foreach (Token t in lexer.Lex())
-            {
-                Console.WriteLine(t.Val + " " + t.Type.ToString());
-            }
+                          
                 */
 
                 DbcParser parser = new DbcParser("sample.dbc");
