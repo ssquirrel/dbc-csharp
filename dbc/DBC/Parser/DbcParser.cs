@@ -196,16 +196,6 @@ namespace DbcLib.DBC.Parser
 
             signal.name = stream.Consume(TokenType.IDENTIFIER).Val;
 
-            if (stream.Curr.Val == "M")
-            {
-                signal.multiplexerIndicator = stream.Consume().Val;
-            }
-            else if (stream.ConsumeIf(stream.Curr.Val == "m"))
-            {
-                signal.multiplexerIndicator =
-                    stream.Consume(TokenType.UNSIGNED).Val;
-            }
-
             stream.Consume(":");
             signal.startBit = stream.Consume(TokenType.UNSIGNED).Val;
             stream.Consume("|");

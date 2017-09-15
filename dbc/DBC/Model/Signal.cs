@@ -9,7 +9,7 @@ namespace DbcLib.DBC.Model
     public class Signal
     {
         public string name;
-        public string multiplexerIndicator;
+        //public string multiplexerIndicator;
         public string startBit;
         public string signalSize;
         public string byteOrder;

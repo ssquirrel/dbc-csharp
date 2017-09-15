@@ -55,7 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBC\Out\DbcWriter.cs" />
+    <Compile Include="DBC\Writer\DbcWriter.cs" />
     <Compile Include="Excel\DbcExcelRow.cs" />
     <Compile Include="Excel\ExcelParser.cs" />
     <Compile Include="Excel\ExcelReader.cs" />

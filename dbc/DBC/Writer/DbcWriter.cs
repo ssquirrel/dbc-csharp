@@ -123,12 +123,14 @@ namespace DbcLib.DBC.Out
         {
             writer.Write(" " + Keyword.SIGNAL + " " + signal.name);
 
+            /*
             if (signal.multiplexerIndicator == null)
                 writer.Write(" ");
             else if (signal.multiplexerIndicator == "M")
                 writer.Write(" M");
             else
                 writer.Write(" m" + signal.multiplexerIndicator);
+            */
 
             writer.Write(": " + signal.startBit + "|" + signal.signalSize +
                 "@" + signal.byteOrder + signal.valueType + " " +
