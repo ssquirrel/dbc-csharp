@@ -7,7 +7,7 @@ using System;
 
 namespace DbcLib.DBC.Lex
 {
-    class Lexer : IDisposable
+    public class Lexer : IDisposable
     {
         private StreamReader reader;
         private List<Token> list = new List<Token>();
@@ -47,7 +47,7 @@ namespace DbcLib.DBC.Lex
                 {
                     list.Add(LexCharString());
                 }
-                else if (IsLetter(ch) || ch == '_')
+                else if (IsIdentifierStart(ch))
                 {
                     list.Add(LexIdentifier());
                 }
@@ -59,6 +59,34 @@ namespace DbcLib.DBC.Lex
             }
 
             return list;
+        }
+
+        public static bool IsIdentifierStart(char ch)
+        {
+            if (IsLetter(ch) || ch == '_')
+                return true;
+
+            return false;
+        }
+
+        public static bool IsIdentifierEnd(char ch)
+        {
+            if (IsIdentifierStart(ch) || IsDigit(ch))
+                return true;
+
+            return false;
+        }
+
+        public static bool IsIdentifier(string str)
+        {
+            if (!IsIdentifierStart(str[0]))
+                return false;
+
+            for (int i = 1; i < str.Length; ++i)
+                if (!IsIdentifierEnd(str[i]))
+                    return false;
+
+            return true;
         }
 
         private static bool IsLetter(char ch)
@@ -138,13 +166,12 @@ namespace DbcLib.DBC.Lex
             {
                 char ch = (char)reader.Peek();
 
-                if (!IsDigit(ch) &&
-                    !IsLetter(ch) &&
-                    ch != '_')
+                if (!IsIdentifierEnd(ch))
                     break;
 
                 builder.Append(ch);
 
+                //Read() returns int not char!!!
                 reader.Read();
             }
 

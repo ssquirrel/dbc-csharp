@@ -46,54 +46,59 @@ namespace DbcLib.DBC.Parser
             return old;
         }
 
+        public Token Consume(string expected)
+        {
+            if (expected.Length == 0)
+                throw new ArgumentException();
+
+            Token old = Curr;
+
+            if (old.Val != expected)
+                throw new Exception();
+
+            ++pointer;
+
+            return old;
+        }
+
+        public Token Consume(string[] args)
+        {
+            Token old = Curr;
+
+            foreach (string expected in args)
+            {
+                if (expected.Length == 0)
+                    throw new ArgumentException();
+
+                if (old.Val == expected)
+                {
+                    ++pointer;
+
+                    return old;
+                }
+            }
+
+            throw new Exception();
+        }
+
+        public Token Consume(TokenType expected)
+        {
+            Token old = Curr;
+
+            if ((old.Type & expected) != old.Type)
+                throw new Exception();
+
+            ++pointer;
+
+            return old;
+        }
+
         public bool ConsumeIf(bool pred)
         {
             if (pred)
                 ++pointer;
 
             return pred;
-        }
-
-        public Token[] ConsumeIf(Token[] pattern)
-        {
-            Token[] result = new Token[pattern.Length];
-
-
-            int i = 0;
-
-            for (; !EndOfStream && i < pattern.Length; ++i)
-            {
-                Token curr = tokens[pointer + i];
-                Token p = pattern[i];
-
-                if (p.Val.Length != 0)
-                {
-                    if (p.Val != curr.Val)
-                        break;
-                }
-                else if (p.Type == TokenType.SIGNED)
-                {
-                    if (!curr.IsSigned())
-                        break;
-                }
-                else if (p.Type == TokenType.DOUBLE)
-                {
-                    if (!curr.IsDouble())
-                        break;
-                }
-                else
-                {
-                    if (p.Type != curr.Type)
-                        break;
-                }
-
-                result[i] = tokens[pointer + i];
-            }
-
-            if (i == pattern.Length)
-                pointer += i;
-
-            return result;
         }
     }
 }

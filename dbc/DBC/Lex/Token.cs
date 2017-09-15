@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Lex
 {
-    enum TokenType
+    [Flags]
+    public enum TokenType
     {
-        None,
-        TOKEN,
-        UNSIGNED,
-        SIGNED,
-        DOUBLE,
-        STRING,
-        IDENTIFIER,
-        KEYWORD,
+        None = 0x0,
+        TOKEN = 0x1,
+        UNSIGNED = 0x2,
+        SIGNED = 0x4 | UNSIGNED,
+        DOUBLE = 0X8 | SIGNED,
+        STRING = 0x10,
+        IDENTIFIER = 0x20,
+        KEYWORD = 0x40,
     }
 
-    class Token
+    public class Token
     {
         public string Val { get; private set; } = "";
         public TokenType Type { get; private set; } = TokenType.None;
@@ -26,7 +27,7 @@ namespace DbcLib.DBC.Lex
         //creates a sentinel token
         public Token()
         {
-            
+
         }
 
         public Token(string v)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Lex
 {
-    static class Keyword
+    public static class Keyword
     {
         public const string VERSION = "VERSION";
         public const string NEW_SYMBOLS = "NS_";
