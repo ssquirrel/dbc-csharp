@@ -58,7 +58,7 @@
     <Compile Include="DBC\Writer\DbcWriter.cs" />
     <Compile Include="Excel\DbcExcelRow.cs" />
     <Compile Include="Excel\ExcelParser.cs" />
-    <Compile Include="Excel\ExcelReader.cs" />
+    <Compile Include="Excel\DbcExcelStream.cs" />
     <Compile Include="DBC\Lex\Keyword.cs" />
     <Compile Include="DBC\Lex\Lexer.cs" />
     <Compile Include="DBC\Lex\Token.cs" />

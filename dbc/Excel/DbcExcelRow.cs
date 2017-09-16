@@ -6,6 +6,32 @@ using System.Threading.Tasks;
 
 namespace DbcLib.Excel
 {
+    [Flags]
+    public enum CellType
+    {
+        None = 0,
+        UNSIGNED = 0x1,
+        SIGNED = 0x2 | UNSIGNED,
+        DOUBLE = 0X4 | SIGNED,
+        STRING = 0x8 | DOUBLE
+    }
+
+    class Cell
+    {
+        public Cell()
+        {
+        }
+
+        public Cell(string value, CellType type)
+        {
+            Value = value;
+            Type = type;
+        }
+
+        public string Value { get; private set; } = "";
+        public CellType Type { get; private set; } = CellType.None;
+    }
+
     class DbcExcelRow
     {
         /*
@@ -35,176 +61,178 @@ namespace DbcLib.Excel
         MsgComment
         */
 
-        public string[] row = new string[24];
+        public static Cell EmptyCell = new Cell();
+
+        public Cell[] row = new Cell[24];
 
         public DbcExcelRow()
         {
             for (int i = 0; i < row.Length; ++i)
-                row[i] = "";
+                row[i] = EmptyCell;
         }
 
-        public string Transmitter
+        public Cell Transmitter
         {
             get
             {
                 return row[0];
             }
         }
-        public string MsgID
+        public Cell MsgID
         {
             get
             {
                 return row[1];
             }
         }
-        public string MsgName
+        public Cell MsgName
         {
             get
             {
                 return row[2];
             }
         }
-        public string FixedPeriodic
+        public Cell FixedPeriodic
         {
             get
             {
                 return row[3];
             }
         }
-        public string Event
+        public Cell Event
         {
             get
             {
                 return row[4];
             }
         }
-        public string PeriodicEvent
+        public Cell PeriodicEvent
         {
             get
             {
                 return row[5];
             }
         }
-        public string MsgSize
+        public Cell MsgSize
         {
             get
             {
                 return row[6];
             }
         }
-        public string SignalName
+        public Cell SignalName
         {
             get
             {
                 return row[7];
             }
         }
-        public string SignalSize
+        public Cell SignalSize
         {
             get
             {
                 return row[8];
             }
         }
-        public string BitPos
+        public Cell BitPos
         {
             get
             {
                 return row[9];
             }
         }
-        public string SignalComment
+        public Cell SignalComment
         {
             get
             {
                 return row[10];
             }
         }
-        public string SignalValDef
+        public Cell SignalValDef
         {
             get
             {
                 return row[11];
             }
         }
-        public string Unit
+        public Cell Unit
         {
             get
             {
                 return row[12];
             }
         }
-        public string Factor
+        public Cell Factor
         {
             get
             {
                 return row[13];
             }
         }
-        public string Offset
+        public Cell Offset
         {
             get
             {
                 return row[14];
             }
         }
-        public string LogicalMin
+        public Cell LogicalMin
         {
             get
             {
                 return row[15];
             }
         }
-        public string PhysicalMin
+        public Cell PhysicalMin
         {
             get
             {
                 return row[16];
             }
         }
-        public string LogicalMax
+        public Cell LogicalMax
         {
             get
             {
                 return row[17];
             }
         }
-        public string PhysicalMax
+        public Cell PhysicalMax
         {
             get
             {
                 return row[18];
             }
         }
-        public string DefaultVal
+        public Cell DefaultVal
         {
             get
             {
                 return row[19];
             }
         }
-        public string DefaultTimeout
+        public Cell DefaultTimeout
         {
             get
             {
                 return row[20];
             }
         }
-        public string Storage
+        public Cell Storage
         {
             get
             {
                 return row[21];
             }
         }
-        public string Receiver
+        public Cell Receiver
         {
             get
             {
                 return row[22];
             }
         }
-        public string MsgComment
+        public Cell MsgComment
         {
             get
             {

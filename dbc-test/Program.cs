@@ -16,18 +16,6 @@ namespace dbc_test
 {
     class Program
     {
-        [Flags]
-        public enum TokenType
-        {
-            None = 0x0,
-            TOKEN = 0x1,
-            UNSIGNED = 0x2,
-            SIGNED = 0x4 | UNSIGNED,
-            DOUBLE = 0X8 | SIGNED,
-            STRING = 0x10,
-            IDENTIFIER = 0x20,
-            KEYWORD = 0x40,
-        }
 
         static void Main(string[] args)
         {
@@ -43,14 +31,8 @@ namespace dbc_test
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.DOUBLE | TokenType.STRING));
             */
 
-            DbcParser parser = new DbcParser("sample.dbc");
-            DBC dbc = parser.Parse();
-
-            using (DbcWriter writer =
-                new DbcWriter(new StreamWriter(File.Open("out.dbc", FileMode.Create), Encoding.Default))) {
-
-                writer.Write(dbc);
-            }
+            DbcWorkbook book = new  DbcWorkbook("sample.xlsx");
+            book.Consume();
         }
 
         static bool Assert(TokenType t, TokenType e)
@@ -60,10 +42,7 @@ namespace dbc_test
 
         static void ExcelReader()
         {
-            using (ExcelReader reader = new ExcelReader("sample.xls"))
-            {
-                List<DbcExcelRow> rows = reader.Read();
-            }
+
         }
 
         static void DbcParser()
@@ -77,6 +56,13 @@ namespace dbc_test
 
                 DbcParser parser = new DbcParser("sample.dbc");
                 DBC dbc = parser.Parse();
+
+                using (DbcWriter writer =
+                    new DbcWriter(new StreamWriter(File.Open("out.dbc", FileMode.Create), Encoding.Default)))
+                {
+
+                    writer.Write(dbc);
+                }
 
             }
             catch (Exception e)
