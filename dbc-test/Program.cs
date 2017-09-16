@@ -9,8 +9,8 @@ using System.IO;
 using DbcLib.DBC.Parser;
 using DbcLib.DBC.Model;
 using DbcLib.DBC.Lex;
-using DbcLib.DBC.Out;
-using DbcLib.Excel;
+using DbcLib.DBC.Writer;
+using DbcLib.Excel.Reader;
 
 namespace dbc_test
 {
@@ -31,8 +31,7 @@ namespace dbc_test
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.DOUBLE | TokenType.STRING));
             */
 
-            DbcWorkbook book = new  DbcWorkbook("sample.xlsx");
-            book.Consume();
+            DbcWorkbook book = new DbcWorkbook("sample.xlsx");
         }
 
         static bool Assert(TokenType t, TokenType e)

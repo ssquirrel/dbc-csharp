@@ -8,15 +8,6 @@ namespace DbcLib.DBC.Model
 {
     public class AttributeDefinition
     {
-        public class ValueType
-        {
-            public const string INT = "INT";
-            public const string HEX = "HEX";
-            public const string FLOAT = "FLOAT";
-            public const string STRING = "STRING";
-            public const string ENUM = "ENUM";
-        }
-
         public string objectType;
         public string attributeName;
         public string valueType;

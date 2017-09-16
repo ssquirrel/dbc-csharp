@@ -10,63 +10,8 @@ using NPOI.XSSF.UserModel;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 
-namespace DbcLib.Excel
+namespace DbcLib.Excel.Reader
 {
-    class DbcSheet
-    {
-        private IEnumerator rowIter;
-
-        public DbcSheet(ISheet sheet)
-        {
-            rowIter = sheet.GetEnumerator();
-
-            EndOfStream = !rowIter.MoveNext();
-        }
-
-        public bool EndOfStream { get; private set; }
-
-        public DbcExcelRow Consume()
-        {
-            if (EndOfStream)
-                return null;
-
-            IRow row = (IRow)rowIter.Current;
-
-            DbcExcelRow data = new DbcExcelRow();
-            Cell[] raw = data.row;
-
-            for (int i = 0; i < raw.Length; ++i)
-            {
-                ICell cell = row.GetCell(i);
-
-                if (cell == null)
-                    continue;
-
-                switch (cell.CellType)
-                {
-                    case NPOI.SS.UserModel.CellType.Numeric:
-                        double num = cell.NumericCellValue;
-
-                        if ((int)num != num)
-                            raw[i] = new Cell(cell.StringCellValue, CellType.DOUBLE);
-                        else if ((int)num < 0)
-                            raw[i] = new Cell(cell.StringCellValue, CellType.SIGNED);
-                        else
-                            raw[i] = new Cell(cell.StringCellValue, CellType.UNSIGNED);
-
-                        break;
-                    case NPOI.SS.UserModel.CellType.String:
-                        raw[i] = new Cell(cell.StringCellValue, CellType.STRING);
-                        break;
-                }
-            }
-
-            EndOfStream = !rowIter.MoveNext();
-
-            return data;
-        }
-    }
-
     class DbcWorkbook : IDisposable
     {
         private IWorkbook workbook;
@@ -125,8 +70,8 @@ namespace DbcLib.Excel
 
                 DbcSheet dbcSheet = new DbcSheet(sheet);
 
-                DbcExcelRow first = dbcSheet.Consume();
-                DbcExcelRow sec = dbcSheet.Consume();
+                Cell[] first = dbcSheet.Consume();
+                Cell[] sec = dbcSheet.Consume();
 
                 if (first != null && sec != null)
                     return dbcSheet;

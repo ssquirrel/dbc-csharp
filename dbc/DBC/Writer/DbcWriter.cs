@@ -10,7 +10,7 @@ using System.IO;
 using DbcLib.DBC.Model;
 using DbcLib.DBC.Lex;
 
-namespace DbcLib.DBC.Out
+namespace DbcLib.DBC.Writer
 {
     public class DbcWriter : IDisposable
     {
@@ -194,7 +194,7 @@ namespace DbcLib.DBC.Out
                 {
                     WriteList(ad.values);
                 }
-                else if(ad.valueType != "STRING")
+                else if (ad.valueType != "STRING")
                 {
                     writer.Write(ad.values[0] + " " + ad.values[1]);
                 }
