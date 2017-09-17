@@ -8,7 +8,7 @@ namespace DbcLib.DBC.Model
 {
     public class DBC
     {
-        public string version = "";
+        public string version = "\"\"";
         public List<string> newSymbols = new List<string>();
         //BIT_TIMING
         public List<string> nodes = new List<string>();

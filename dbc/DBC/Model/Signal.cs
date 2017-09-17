@@ -12,7 +12,7 @@ namespace DbcLib.DBC.Model
         //public string multiplexerIndicator;
         public string startBit;
         public string signalSize;
-        public string byteOrder;
+        public string byteOrder; //"0" Motorola, big endian; "1" Intel, little endian
         public string valueType;
         public string factor;
         public string offset;

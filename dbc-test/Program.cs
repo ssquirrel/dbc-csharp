@@ -5,12 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.IO;
+using System.Globalization;
 
 using DbcLib.DBC.Parser;
 using DbcLib.DBC.Model;
 using DbcLib.DBC.Lex;
 using DbcLib.DBC.Writer;
 using DbcLib.Excel.Reader;
+using DbcLib.Excel;
+
+
 
 namespace dbc_test
 {
@@ -29,9 +33,18 @@ namespace dbc_test
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.SIGNED));
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.UNSIGNED));
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.DOUBLE | TokenType.STRING));
-            */
+            
 
-            DbcWorkbook book = new DbcWorkbook("sample.xlsx");
+             */
+
+            ExcelParser book = new ExcelParser("sample.xlsx");
+            DBC dbc = book.Parse();
+
+            using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
+            {
+                writer.Write(dbc);
+            }
+
         }
 
         static bool Assert(TokenType t, TokenType e)
