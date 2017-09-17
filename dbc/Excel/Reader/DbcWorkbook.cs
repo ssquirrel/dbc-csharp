@@ -70,8 +70,8 @@ namespace DbcLib.Excel.Reader
 
                 DbcSheet dbcSheet = new DbcSheet(sheet);
 
-                Cell[] first = dbcSheet.Consume();
-                Cell[] sec = dbcSheet.Consume();
+                DbcExcelRow first = dbcSheet.Consume();
+                DbcExcelRow sec = dbcSheet.Consume();
 
                 if (first != null && sec != null)
                     return dbcSheet;

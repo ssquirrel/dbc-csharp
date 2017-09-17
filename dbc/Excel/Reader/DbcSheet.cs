@@ -24,67 +24,21 @@ namespace DbcLib.Excel.Reader
             Consume();
         }
 
-        public Cell[] Curr { get; private set; }
+        public DbcExcelRow Curr { get; private set; }
         public bool EndOfStream { get; private set; }
 
-        public Cell[] Consume()
+        public DbcExcelRow Consume()
         {
             if (EndOfStream)
                 return null;
 
             IRow row = (IRow)rowIter.Current;
 
-            Cell[] raw = DbcExcelRow.CreateRow();
-
-            for (int i = 0; i < raw.Length; ++i)
-            {
-                ICell cell = row.GetCell(i);
-
-                if (cell == null)
-                    continue;
-
-                switch (cell.CellType)
-                {
-                    case NPOI.SS.UserModel.CellType.Numeric:
-                        double num = cell.NumericCellValue;
-
-                        if ((int)num != num)
-                        {
-                            raw[i] = new Cell(cell.RowIndex,
-                                cell.ColumnIndex,
-                                num,
-                                CellType.DOUBLE);
-                        }
-                        else if ((int)num < 0)
-                        {
-                            raw[i] = new Cell(cell.RowIndex,
-                                cell.ColumnIndex,
-                                num,
-                                CellType.SIGNED);
-                        }
-                        else
-                        {
-                            raw[i] = new Cell(cell.RowIndex,
-                                cell.ColumnIndex,
-                                num,
-                                CellType.UNSIGNED);
-                        }
-
-                        break;
-                    case NPOI.SS.UserModel.CellType.String:
-
-                        raw[i] = new Cell(cell.RowIndex,
-                                cell.ColumnIndex, 
-                                cell.StringCellValue,
-                                CellType.STRING);
-
-                        break;
-                }
-            }
+            DbcExcelRow raw = new DbcExcelRow(row);
 
             EndOfStream = !rowIter.MoveNext();
 
-            Cell[] old = Curr;
+            DbcExcelRow old = Curr;
 
             Curr = raw;
 

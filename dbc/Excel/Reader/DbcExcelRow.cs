@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using NPOI.XSSF.UserModel;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+
 namespace DbcLib.Excel.Reader
 {
     [Flags]
@@ -22,21 +26,28 @@ namespace DbcLib.Excel.Reader
         {
         }
 
-        public Cell(int r, int c, string value, CellType type)
+        public Cell(string value, int r, int c)
         {
             Row = r;
             Col = c;
             Value = value;
-            Type = type;
+            Type = CellType.STRING;
         }
 
-        public Cell(int r, int c, double num, CellType type)
+        public Cell(double num, int r, int c)
         {
             Row = r;
             Col = c;
             Value = num.ToString();
             Num = num;
-            Type = type;
+
+            if ((int)num != num)
+                Type = CellType.DOUBLE;
+            else if ((int)num < 0)
+                Type = CellType.SIGNED;
+            else
+                Type = CellType.UNSIGNED;
+
         }
 
         public bool Assert(CellType t)
@@ -51,7 +62,7 @@ namespace DbcLib.Excel.Reader
         public CellType Type { get; private set; } = CellType.None;
     }
 
-    static class DbcExcelRow
+    class DbcExcelRow
     {
         /*
         Transmitter,
@@ -80,40 +91,208 @@ namespace DbcLib.Excel.Reader
         MsgComment
         */
 
-        public const int Transmitter = 0;
-        public const int MsgID = 1;
-        public const int MsgName = 2;
-        public const int FixedPeriodic = 3;
-        public const int Event = 4;
-        public const int PeriodicEvent = 5;
-        public const int MsgSize = 6;
-        public const int SignalName = 7;
-        public const int SignalSize = 8;
-        public const int BitPos = 9;
-        public const int SignalComment = 10;
-        public const int SignalValDef = 11;
-        public const int Unit = 12;
-        public const int Factor = 13;
-        public const int Offset = 14;
-        public const int LogicalMin = 15;
-        public const int PhysicalMin = 16;
-        public const int LogicalMax = 17;
-        public const int PhysicalMax = 18;
-        public const int DefaultVal = 19;
-        public const int DefaultTimeout = 20;
-        public const int Storage = 21;
-        public const int Receiver = 22;
-        public const int MsgComment = 23;
-
         public static Cell EmptyCell = new Cell();
 
-        public static Cell[] CreateRow()
-        {
-            Cell[] row = new Cell[24];
-            for (int i = 0; i < row.Length; ++i)
-                row[i] = EmptyCell;
+        private static Cell[] raw = new Cell[24];
 
-            return row;
+        public DbcExcelRow(IRow row)
+        {
+            for (int i = 0; i < raw.Length; ++i)
+                raw[i] = EmptyCell;
+
+
+            foreach (ICell cell in row)
+            {
+                if (cell.ColumnIndex >= raw.Length)
+                    break;
+
+                switch (cell.CellType)
+                {
+                    case NPOI.SS.UserModel.CellType.Numeric:
+
+                        raw[cell.ColumnIndex] = new Cell(cell.NumericCellValue,
+                                cell.RowIndex,
+                                cell.ColumnIndex);
+                        break;
+                    case NPOI.SS.UserModel.CellType.String:
+                        raw[cell.ColumnIndex] = new Cell(cell.StringCellValue,
+                                cell.RowIndex,
+                                cell.ColumnIndex);
+
+                        break;
+                }
+            }
+        }
+
+        public Cell Transmitter
+        {
+            get
+            {
+                return raw[0];
+            }
+        }
+        public Cell MsgID
+        {
+            get
+            {
+                return raw[1];
+            }
+        }
+        public Cell MsgName
+        {
+            get
+            {
+                return raw[2];
+            }
+        }
+        public Cell FixedPeriodic
+        {
+            get
+            {
+                return raw[3];
+            }
+        }
+        public Cell Event
+        {
+            get
+            {
+                return raw[4];
+            }
+        }
+        public Cell PeriodicEvent
+        {
+            get
+            {
+                return raw[5];
+            }
+        }
+        public Cell MsgSize
+        {
+            get
+            {
+                return raw[6];
+            }
+        }
+        public Cell SignalName
+        {
+            get
+            {
+                return raw[7];
+            }
+        }
+        public Cell SignalSize
+        {
+            get
+            {
+                return raw[8];
+            }
+        }
+        public Cell BitPos
+        {
+            get
+            {
+                return raw[9];
+            }
+        }
+        public Cell SignalComment
+        {
+            get
+            {
+                return raw[10];
+            }
+        }
+        public Cell SignalValDef
+        {
+            get
+            {
+                return raw[11];
+            }
+        }
+        public Cell Unit
+        {
+            get
+            {
+                return raw[12];
+            }
+        }
+        public Cell Factor
+        {
+            get
+            {
+                return raw[13];
+            }
+        }
+        public Cell Offset
+        {
+            get
+            {
+                return raw[14];
+            }
+        }
+        public Cell LogicalMin
+        {
+            get
+            {
+                return raw[15];
+            }
+        }
+        public Cell PhysicalMin
+        {
+            get
+            {
+                return raw[16];
+            }
+        }
+        public Cell LogicalMax
+        {
+            get
+            {
+                return raw[17];
+            }
+        }
+        public Cell PhysicalMax
+        {
+            get
+            {
+                return raw[18];
+            }
+        }
+        public Cell DefaultVal
+        {
+            get
+            {
+                return raw[19];
+            }
+        }
+        public Cell DefaultTimeout
+        {
+            get
+            {
+                return raw[20];
+            }
+        }
+        public Cell Storage
+        {
+            get
+            {
+                return raw[21];
+            }
+        }
+        public Cell Receiver
+        {
+            get
+            {
+                return raw[22];
+            }
+        }
+        public Cell MsgComment
+        {
+            get
+            {
+                return raw[23];
+            }
         }
     }
+
+
 }
