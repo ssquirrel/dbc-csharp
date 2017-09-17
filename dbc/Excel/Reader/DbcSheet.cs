@@ -32,15 +32,13 @@ namespace DbcLib.Excel.Reader
             if (EndOfStream)
                 return null;
 
-            IRow row = (IRow)rowIter.Current;
-
-            DbcExcelRow raw = new DbcExcelRow(row);
-
-            EndOfStream = !rowIter.MoveNext();
+            DbcExcelRow row = new DbcExcelRow((IRow)rowIter.Current);
 
             DbcExcelRow old = Curr;
 
-            Curr = raw;
+            Curr = row;
+
+            EndOfStream = !rowIter.MoveNext();
 
             return old;
         }

@@ -93,7 +93,7 @@ namespace DbcLib.Excel.Reader
 
         public static Cell EmptyCell = new Cell();
 
-        private static Cell[] raw = new Cell[24];
+        private Cell[] raw = new Cell[24];
 
         public DbcExcelRow(IRow row)
         {
