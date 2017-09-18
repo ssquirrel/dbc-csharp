@@ -61,7 +61,19 @@ namespace DbcLib.DBC.Parser
             return old;
         }
 
-        public Token Consume(string[] args)
+        public Token Consume(TokenType expected)
+        {
+            Token old = Curr;
+
+            if (!old.Is(expected))
+                throw new Exception();
+
+            ++pointer;
+
+            return old;
+        }
+
+        public Token Consume(params string[] args)
         {
             Token old = Curr;
 
@@ -79,18 +91,6 @@ namespace DbcLib.DBC.Parser
             }
 
             throw new Exception();
-        }
-
-        public Token Consume(TokenType expected)
-        {
-            Token old = Curr;
-
-            if ((old.Type & expected) != old.Type)
-                throw new Exception();
-
-            ++pointer;
-
-            return old;
         }
 
         public bool ConsumeIf(bool pred)

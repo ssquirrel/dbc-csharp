@@ -24,6 +24,8 @@ namespace DbcLib.DBC.Lex
         public string Val { get; private set; } = "";
         public TokenType Type { get; private set; } = TokenType.None;
 
+        public double DOUBLE { get { return Double.Parse(Val); } }
+
         //creates a sentinel token
         public Token()
         {
@@ -36,53 +38,15 @@ namespace DbcLib.DBC.Lex
             Type = TokenType.TOKEN;
         }
 
-        public Token(TokenType t)
-        {
-            Type = t;
-        }
-
         public Token(string v, TokenType t)
         {
             Val = v;
             Type = t;
         }
 
-        public bool IsUnsigned()
+        public bool Is(TokenType e)
         {
-            return Type == TokenType.UNSIGNED;
-        }
-
-        public bool IsSigned()
-        {
-            return Type == TokenType.UNSIGNED || Type == TokenType.SIGNED;
-        }
-
-        public bool IsDouble()
-        {
-            switch (Type)
-            {
-                case TokenType.UNSIGNED:
-                case TokenType.SIGNED:
-                case TokenType.DOUBLE:
-                    return true;
-            }
-
-            return false;
-        }
-
-        public bool IsString()
-        {
-            return Type == TokenType.STRING;
-        }
-
-        public bool IsIdentifier()
-        {
-            return Type == TokenType.IDENTIFIER;
-        }
-
-        public bool IsKeyword()
-        {
-            return Type == TokenType.KEYWORD;
+            return (Type & e) == Type;
         }
     }
 }

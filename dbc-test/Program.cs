@@ -18,6 +18,7 @@ using DbcLib.Excel;
 
 namespace dbc_test
 {
+
     class Program
     {
 
@@ -33,17 +34,19 @@ namespace dbc_test
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.SIGNED));
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.UNSIGNED));
             Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.DOUBLE | TokenType.STRING));
-            
+            */
 
-             */
 
-            ExcelParser book = new ExcelParser("sample.xlsx");
-            DBC dbc = book.Parse();
+
+            //ExcelParser book = new ExcelParser("sample.xlsx");
+            DbcParser parser = new DbcParser("sample.dbc");
+            DBC dbc = parser.Parse();
 
             using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
             {
                 writer.Write(dbc);
             }
+
 
         }
 

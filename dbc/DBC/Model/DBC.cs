@@ -8,22 +8,32 @@ namespace DbcLib.DBC.Model
 {
     public class DBC
     {
-        public string version = "\"\"";
-        public List<string> newSymbols = new List<string>();
+        public string Version { get; set; } = "";
+        public List<string> NewSymbols { get; } = new List<string>();
         //BIT_TIMING
-        public List<string> nodes = new List<string>();
-        public List<ValueTable> valueTables = new List<ValueTable>();
-        public List<Message> messages = new List<Message>();
+        public List<string> Nodes { get; } = new List<string>();
+        public List<Message> Messages { get; } = new List<Message>();
         //MESSAGE_TRANSMITTERS
         //ENVIRONMENT_VARIABLES
         //ENVIRONMENT_VARIABLES_DATA
         //SIGNAL_TYPES
-        public List<Comment> comments = new List<Comment>();
-        public List<AttributeDefinition> attributeDefinitions = new List<AttributeDefinition>();
+        public List<Comment> Comments { get; } = new List<Comment>();
+
+        public List<AttributeDefinition> AttributeDefinitions { get; } =
+            new List<AttributeDefinition>();
+
         //SIGTYPE_ATTR_LIST
-        public List<AttributeDefault> attributeDefaults = new List<AttributeDefault>();
-        public List<AttributeValue> attributeValues = new List<AttributeValue>();
-        public List<SignalValueDescription> valueDescriptions = new List<SignalValueDescription>();
+
+        public List<AttributeDefault> AttributeDefaults { get; } =
+            new List<AttributeDefault>();
+
+        public List<ObjAttributeValue> AttributeValues { get; } =
+            new List<ObjAttributeValue>();
+
+        public List<SignalValueDescription> ValueDescriptions { get; } =
+            new List<SignalValueDescription>();
+
+
         //CATEGORY_DEFINITIONS
         //CATEGORIES
         //FILTER

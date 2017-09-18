@@ -8,17 +8,17 @@ namespace DbcLib.DBC.Model
 {
     public class Signal
     {
-        public string name;
-        //public string multiplexerIndicator;
-        public string startBit;
-        public string signalSize;
-        public string byteOrder; //"0" Motorola, big endian; "1" Intel, little endian
-        public string valueType;
-        public string factor;
-        public string offset;
-        public string min;
-        public string max;
-        public string unit;
-        public List<string> receivers = new List<string>();
+        public string Name { get; set; }
+        //multiplexerIndicator
+        public string StartBit { get; set; }
+        public string SignalSize { get; set; }
+        public string ByteOrder { get; set; } //"0" Motorola, big endian{get;set;} "1" Intel, little endian
+        public string ValueType { get; set; }
+        public string Factor { get; set; }
+        public string Offset { get; set; }
+        public string Min { get; set; }
+        public string Max { get; set; }
+        public string Unit { get; set; }
+        public IList<string> Receivers { get; set; }
     }
 }

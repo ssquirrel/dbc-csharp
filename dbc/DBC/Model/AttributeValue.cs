@@ -8,10 +8,55 @@ namespace DbcLib.DBC.Model
 {
     public class AttributeValue
     {
-        public string attributeName;
-        public string attributeValue;
-        public string type;
-        public string name;
-        public string messageId;
+        public enum ActiveField
+        {
+            None,
+            Numerical,
+            String
+        }
+
+        private string val = "";
+        private double num;
+
+        public ActiveField Active { get; private set; } = ActiveField.None;
+
+        public String Val
+        {
+            get
+            {
+                return val;
+            }
+
+            set
+            {
+                val = value;
+                Active = ActiveField.String;
+            }
+        }
+
+        public double Num
+        {
+            get
+            {
+                return num;
+            }
+
+            set
+            {
+                num = value;
+                Active = ActiveField.Numerical;
+            }
+        }
+
+        public override string ToString()
+        {
+            if (Active == ActiveField.Numerical)
+                return num.ToString();
+
+            if (Active == ActiveField.String)
+                return "\"" + val + "\"";
+
+            return "";
+        }
     }
 }

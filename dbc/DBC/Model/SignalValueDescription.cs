@@ -8,8 +8,8 @@ namespace DbcLib.DBC.Model
 {
     public class SignalValueDescription
     {
-        public string messageId;
-        public string name;
-        public List<ValueDescription> descriptions = new List<ValueDescription>();
+        public string MsgID { get; set; }
+        public string Name { get; set; }
+        public IList<ValueDesc> Descs { get; set; }
     }
 }

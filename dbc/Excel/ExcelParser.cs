@@ -30,18 +30,6 @@ namespace DbcLib.Excel
         public static readonly string MsgSendType = "\"GenMsgSendType\"";
         public static readonly string MsgCycleTime = "\"GenMsgCycleTime\"";
         public static readonly string SigStartValue = "\"GenSigStartValue\"";
-
-        public static
-        AttributeValue NewMsgCycleTime(string id, string val)
-        {
-            return new AttributeValue
-            {
-                attributeName = MsgCycleTime,
-                type = Keyword.MESSAGES,
-                messageId = id,
-                attributeValue = val
-            }; ;
-        }
     }
 
     class ExcelParser : IDisposable
@@ -81,7 +69,7 @@ namespace DbcLib.Excel
                     continue;
 
                 Message msg = ParseMessage(row);
-                dbc.messages.Add(msg);
+                dbc.Messages.Add(msg);
 
                 while (!sheet.EndOfStream)
                 {
@@ -90,7 +78,7 @@ namespace DbcLib.Excel
                     if (row.SignalName == DbcExcelRow.EmptyCell)
                         break;
 
-                    msg.signals.Add(ParseSignal(sheet.Consume()));
+                    msg.Signals.Add(ParseSignal(sheet.Consume()));
                 }
             }
 
@@ -101,19 +89,19 @@ namespace DbcLib.Excel
         {
             Message msg = new Message
             {
-                id = ExpectHex(row.MsgID),
-                name = ExpectId(row.MsgName),
-                size = ExpectDecimal(row.MsgSize, CellType.UNSIGNED),
-                transmitter = ExpectTransmitter(row.Transmitter)
+                MsgID = ExpectHex(row.MsgID),
+                Name = ExpectId(row.MsgName),
+                Size = ExpectDecimal(row.MsgSize, CellType.UNSIGNED),
+                Transmitter = ExpectTransmitter(row.Transmitter)
             };
 
             if (row.MsgComment != DbcExcelRow.EmptyCell)
             {
-                dbc.comments.Add(new Comment
+                dbc.Comments.Add(new Comment
                 {
-                    type = Keyword.MESSAGES,
-                    id = msg.id,
-                    msg = "\"" + row.MsgComment.Value + "\""
+                    Type = Keyword.MESSAGES,
+                    MsgID = msg.MsgID,
+                    Str = "\"" + row.MsgComment.Value + "\""
                 });
             }
 
@@ -124,17 +112,17 @@ namespace DbcLib.Excel
         {
             Signal signal = new Signal
             {
-                name = ExpectId(row.SignalName),
-                startBit = ExpectStartBit(row.BitPos),
-                signalSize = ExpectDecimal(row.SignalSize, CellType.UNSIGNED),
-                byteOrder = "0", //Motorola, big endian 
-                valueType = "+",
-                factor = ExpectDecimal(row.Factor, CellType.DOUBLE),
-                offset = ExpectDecimal(row.Factor, CellType.DOUBLE),
-                min = ExpectDecimal(row.PhysicalMin, CellType.DOUBLE),
-                max = ExpectDecimal(row.PhysicalMax, CellType.DOUBLE),
-                unit = ExpectString(row.Unit),
-                receivers = ExpectReceivers(row.Receiver)
+                Name = ExpectId(row.SignalName),
+                StartBit = ExpectStartBit(row.BitPos),
+                SignalSize = ExpectDecimal(row.SignalSize, CellType.UNSIGNED),
+                ByteOrder = "0", //Motorola, big endian 
+                ValueType = "+",
+                Factor = ExpectDecimal(row.Factor, CellType.DOUBLE),
+                Offset = ExpectDecimal(row.Factor, CellType.DOUBLE),
+                Min = ExpectDecimal(row.PhysicalMin, CellType.DOUBLE),
+                Max = ExpectDecimal(row.PhysicalMax, CellType.DOUBLE),
+                Unit = ExpectString(row.Unit),
+                Receivers = ExpectReceivers(row.Receiver)
             };
 
             return signal;

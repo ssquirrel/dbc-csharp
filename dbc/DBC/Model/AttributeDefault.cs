@@ -8,7 +8,7 @@ namespace DbcLib.DBC.Model
 {
     public class AttributeDefault
     {
-        public string attributeName;
-        public string attributeValue;
+        public string AttributeName { get; set; }
+        public AttributeValue AttributeValue { get; set; }
     }
 }

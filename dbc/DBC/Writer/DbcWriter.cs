@@ -28,22 +28,22 @@ namespace DbcLib.DBC.Writer
 
         public void Write(Model.DBC dbc)
         {
-            Version(dbc.version);
-            NewSymbols(dbc.newSymbols);
+            Version(dbc.Version);
+            NewSymbols(dbc.NewSymbols);
             BitTiming();
-            Nodes(dbc.nodes);
-            ValueTables(dbc.valueTables);
-            Messages(dbc.messages);
+            Nodes(dbc.Nodes);
+            //ValueTables;
+            Messages(dbc.Messages);
             //MessageTransmitter;
             //ENVIRONMENT_VARIABLES
             //ENVIRONMENT_VARIABLES_DATA
             //SIGNAL_TYPES
-            Comments(dbc.comments);
-            AttributeDefinitions(dbc.attributeDefinitions);
+            Comments(dbc.Comments);
+            AttributeDefinitions(dbc.AttributeDefinitions);
             //SIGTYPE_ATTR_LIST
-            AttributeDefaults(dbc.attributeDefaults);
-            AttributeValues(dbc.attributeValues);
-            SignalValueDescriptions(dbc.valueDescriptions);
+            AttributeDefaults(dbc.AttributeDefaults);
+            AttributeValues(dbc.AttributeValues);
+            SignalValueDescriptions(dbc.ValueDescriptions);
             //CATEGORY_DEFINITIONS
             //CATEGORIES
             //FILTER
@@ -67,7 +67,10 @@ namespace DbcLib.DBC.Writer
 
         private void Version(string version)
         {
-            writer.WriteLine(Keyword.VERSION + " " + version);
+            writer.WriteLine("{0} \"{1}\"",
+                Keyword.VERSION,
+                version);
+
             writer.WriteLine();
             writer.WriteLine();
         }
@@ -98,20 +101,18 @@ namespace DbcLib.DBC.Writer
             writer.WriteLine();
         }
 
-        private void ValueTables(List<ValueTable> valueTables)
-        {
-
-        }
-
         private void Messages(List<Message> messages)
         {
             foreach (Message msg in messages)
             {
-                writer.WriteLine(Keyword.MESSAGES + " " + msg.id + " " +
-                    msg.name + ": " + msg.size + " " +
-                    msg.transmitter);
+                writer.WriteLine("{0} {1} {2}: {3} {4}",
+                    Keyword.MESSAGES,
+                    msg.MsgID,
+                    msg.Name,
+                    msg.Size,
+                    msg.Transmitter);
 
-                foreach (Signal signal in msg.signals)
+                foreach (Signal signal in msg.Signals)
                     Signal(signal);
 
                 writer.WriteLine();
@@ -121,30 +122,26 @@ namespace DbcLib.DBC.Writer
         private void
         Signal(Signal signal)
         {
-            writer.Write(" " + Keyword.SIGNAL + " " + signal.name);
+            writer.Write(" {0} {1} : {2}|{3}@{4}{5} ({6},{7}) [{8}|{9}] \"{10}\" ",
+                 Keyword.SIGNAL,
+                 signal.Name,
+                 signal.StartBit,
+                 signal.SignalSize,
+                 signal.ByteOrder,
+                 signal.ValueType,
+                 signal.Factor,
+                 signal.Offset,
+                 signal.Min,
+                 signal.Max,
+                 signal.Unit);
 
-            /*
-            if (signal.multiplexerIndicator == null)
-                writer.Write(" ");
-            else if (signal.multiplexerIndicator == "M")
-                writer.Write(" M");
-            else
-                writer.Write(" m" + signal.multiplexerIndicator);
-            */
-
-            writer.Write(": " + signal.startBit + "|" + signal.signalSize +
-                "@" + signal.byteOrder + signal.valueType + " " +
-                "(" + signal.factor + "," + signal.offset + ") [" +
-                signal.min + "|" + signal.max + "]" + " " +
-                signal.unit + " ");
-
-            if (signal.receivers[0] == "Vector__XXX")
+            if (signal.Receivers[0] == "Vector__XXX")
             {
                 writer.Write("Vector__XXX");
             }
             else
             {
-                WriteList(signal.receivers);
+                WriteList(signal.Receivers);
             }
 
             writer.WriteLine();
@@ -155,29 +152,24 @@ namespace DbcLib.DBC.Writer
         {
             foreach (Comment cm in comments)
             {
-                writer.Write(Keyword.COMMENTS + " ");
+                writer.Write(Keyword.COMMENTS + " " + cm.Type + " ");
 
-                if (cm.type != null)
+                if (cm.Type == Keyword.MESSAGES ||
+                    cm.Type == Keyword.SIGNAL)
                 {
-                    writer.Write(cm.type + " ");
 
-                    if (cm.type == Keyword.MESSAGES ||
-                        cm.type == Keyword.SIGNAL)
-                    {
-
-                        writer.Write(cm.id + " ");
-                    }
-
-                    if (cm.type == Keyword.SIGNAL ||
-                        cm.type == Keyword.NODES ||
-                        cm.type == Keyword.ENVIRONMENT_VARIABLES)
-                    {
-
-                        writer.Write(cm.name + " ");
-                    }
+                    writer.Write(cm.MsgID + " ");
                 }
 
-                writer.WriteLine(cm.msg + ";");
+                if (cm.Type == Keyword.SIGNAL ||
+                    cm.Type == Keyword.NODES)
+                {
+
+                    writer.Write(cm.Name + " ");
+                }
+
+
+                writer.WriteLine("\"{0}\";", cm.Str);
             }
         }
 
@@ -186,17 +178,23 @@ namespace DbcLib.DBC.Writer
         {
             foreach (AttributeDefinition ad in ads)
             {
-                writer.Write(Keyword.ATTRIBUTE_DEFINITIONS + " " +
-                    (ad.objectType != null ? ad.objectType + "  " : " ") +
-                    ad.attributeName + " " + ad.valueType + " ");
+                writer.Write("{0} {1} {2} {3} ",
+                    Keyword.ATTRIBUTE_DEFINITIONS,
+                    ad.ObjectType,
+                    ad.AttributeName,
+                    ad.ValueType);
 
-                if (ad.valueType == "ENUM")
+                if (ad.ValueType == "ENUM")
                 {
-                    WriteList(ad.values);
+                    //assert ad.Values.Count > 0
+                    writer.Write("\"" + ad.Values[0] + "\"");
+
+                    for (int i = 1; i < ad.Values.Count; ++i)
+                        writer.Write(",\"" + ad.Values[0] + "\"");
                 }
-                else if (ad.valueType != "STRING")
+                else if (ad.ValueType != "STRING")
                 {
-                    writer.Write(ad.values[0] + " " + ad.values[1]);
+                    writer.Write(ad.Values[0] + " " + ad.Values[1]);
                 }
 
                 writer.WriteLine(";");
@@ -209,40 +207,40 @@ namespace DbcLib.DBC.Writer
             foreach (AttributeDefault ad in ads)
             {
                 writer.WriteLine(Keyword.ATTRIBUTE_DEFAULTS + "  " +
-                    ad.attributeName + " " + ad.attributeValue + ";");
+                    ad.AttributeName + " " + ad.AttributeValue + ";");
             }
         }
 
         private void
-        AttributeValues(List<AttributeValue> avs)
+        AttributeValues(List<ObjAttributeValue> avs)
         {
-            foreach (AttributeValue av in avs)
+            foreach (ObjAttributeValue av in avs)
             {
                 writer.Write(Keyword.ATTRIBUTE_VALUES + " " +
-                    av.attributeName + " ");
+                    av.AttributeName + " ");
 
-                if (av.type != null)
+                if (av.Type != null)
                 {
-                    writer.Write(av.type + " ");
+                    writer.Write(av.Type + " ");
 
-                    if (av.type == Keyword.MESSAGES ||
-                            av.type == Keyword.SIGNAL)
+                    if (av.Type == Keyword.MESSAGES ||
+                            av.Type == Keyword.SIGNAL)
                     {
 
-                        writer.Write(av.messageId + " ");
+                        writer.Write(av.MsgID + " ");
                     }
 
-                    if (av.type == Keyword.SIGNAL ||
-                        av.type == Keyword.NODES ||
-                        av.type == Keyword.ENVIRONMENT_VARIABLES)
+                    if (av.Type == Keyword.SIGNAL ||
+                        av.Type == Keyword.NODES ||
+                        av.Type == Keyword.ENVIRONMENT_VARIABLES)
                     {
 
-                        writer.Write(av.name + " ");
+                        writer.Write(av.Name + " ");
                     }
 
                 }
 
-                writer.WriteLine(av.attributeValue + ";");
+                writer.WriteLine(av.AttributeValue + ";");
             }
         }
 
@@ -253,12 +251,11 @@ namespace DbcLib.DBC.Writer
             foreach (SignalValueDescription ad in ads)
             {
                 writer.Write(Keyword.VALUE_DESCRIPTIONS + " " +
-                    (ad.messageId != null ? ad.messageId + " " : "") +
-                    ad.name);
+                    ad.MsgID + " " + ad.Name);
 
-                foreach (ValueDescription vd in ad.descriptions)
+                foreach (ValueDesc vd in ad.Descs)
                 {
-                    writer.Write(" " + vd.num + " " + vd.str);
+                    writer.Write(" {0} \"{1}\"", vd.Num, vd.Str);
                 }
 
                 writer.WriteLine(" ;");

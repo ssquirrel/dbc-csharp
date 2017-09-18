@@ -110,7 +110,7 @@ namespace GUI
 
             DBC dbc = await Task.Run(() => parser.Parse());
 
-            StatusText = dbc.messages[0].name;
+            StatusText = dbc.Messages[0].Name;
         }
     }
 }

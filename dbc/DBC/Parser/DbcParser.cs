@@ -40,7 +40,7 @@ namespace DbcLib.DBC.Parser
             NewSymbols();
             BitTiming();
             Nodes();
-            ValueTables();
+            //ValueTables();
             Messages();
 
             //MessageTransmitters();
@@ -53,7 +53,7 @@ namespace DbcLib.DBC.Parser
             AttributeDefinitions();
             //SIGTYPE_ATTR_LIST
             AttributeDefaults();
-            AttributeValues();
+            ObjAttributeValues();
             SignalValueDescriptions();
             //CATEGORY_DEFINITIONS
             //CATEGORIES
@@ -64,23 +64,12 @@ namespace DbcLib.DBC.Parser
             return dbc;
         }
 
-        private ValueDescription ValueDescriptions()
-        {
-            ValueDescription vd = new ValueDescription
-            {
-                num = stream.Consume(TokenType.DOUBLE).Val,
-                str = stream.Consume(TokenType.STRING).Val
-            };
-
-            return vd;
-        }
-
         private void Version()
         {
             if (!stream.ConsumeIf(stream.Curr.Val == Keyword.VERSION))
                 return;
 
-            dbc.version = stream.Consume(TokenType.STRING).Val;
+            dbc.Version = stream.Consume(TokenType.STRING).Val;
         }
 
         private void NewSymbols()
@@ -92,7 +81,7 @@ namespace DbcLib.DBC.Parser
 
             while (stream.Curr.Val != Keyword.BIT_TIMING)
             {
-                dbc.newSymbols.Add(stream.Consume().Val);
+                dbc.NewSymbols.Add(stream.Consume().Val);
             }
         }
 
@@ -118,28 +107,9 @@ namespace DbcLib.DBC.Parser
 
             stream.Consume(":");
 
-            while (stream.Curr.IsIdentifier())
+            while (stream.Curr.Type == TokenType.IDENTIFIER)
             {
-                dbc.nodes.Add(stream.Consume().Val);
-            }
-        }
-
-        //value_tables = {value_table} ;
-        //value_table = 'VAL_TABLE_' C_identifier {value_description} ';'
-        //value_description = double char_string ;
-        private void ValueTables()
-        {
-            while (stream.ConsumeIf(stream.Curr.Val == Keyword.VALUE_TABLES))
-            {
-                ValueTable vt = new ValueTable();
-                dbc.valueTables.Add(vt);
-
-                vt.name = stream.Consume(TokenType.IDENTIFIER).Val;
-
-                while (!stream.ConsumeIf(stream.Curr.Val == ";"))
-                {
-                    vt.descriptions.Add(ValueDescriptions());
-                }
+                dbc.Nodes.Add(stream.Consume().Val);
             }
         }
 
@@ -153,24 +123,27 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Curr.Val == Keyword.MESSAGES))
             {
-                Message msg = new Message();
-                dbc.messages.Add(msg);
+                Message msg = new Message
+                {
+                    Signals = new List<Signal>()
+                };
+                dbc.Messages.Add(msg);
 
-                msg.id = stream.Consume(TokenType.UNSIGNED).Val;
-                msg.name = stream.Consume(TokenType.IDENTIFIER).Val;
+                msg.MsgID = stream.Consume(TokenType.UNSIGNED).Val;
+                msg.Name = stream.Consume(TokenType.IDENTIFIER).Val;
 
                 stream.Consume(":");
 
-                msg.size = stream.Consume(TokenType.UNSIGNED).Val;
-                msg.transmitter = stream.Consume(TokenType.IDENTIFIER).Val;
+                msg.Size = stream.Consume(TokenType.UNSIGNED).Val;
+                msg.Transmitter = stream.Consume(TokenType.IDENTIFIER).Val;
 
                 while (stream.ConsumeIf(stream.Curr.Val == Keyword.SIGNAL))
                 {
-                    msg.signals.Add(Signal());
+                    msg.Signals.Add(Signal());
                 }
             }
 
-            if (dbc.messages.Count == 0)
+            if (dbc.Messages.Count == 0)
                 throw new Exception();
         }
 
@@ -192,35 +165,37 @@ namespace DbcLib.DBC.Parser
         //receiver = node_name | 'Vector__XXX' ;
         private Signal Signal()
         {
-            Signal signal = new Signal();
-
-            signal.name = stream.Consume(TokenType.IDENTIFIER).Val;
+            Signal signal = new Signal
+            {
+                Name = stream.Consume(TokenType.IDENTIFIER).Val,
+                Receivers = new List<string>()
+            };
 
             stream.Consume(":");
-            signal.startBit = stream.Consume(TokenType.UNSIGNED).Val;
+            signal.StartBit = stream.Consume(TokenType.UNSIGNED).Val;
             stream.Consume("|");
-            signal.signalSize = stream.Consume(TokenType.UNSIGNED).Val;
+            signal.SignalSize = stream.Consume(TokenType.UNSIGNED).Val;
             stream.Consume("@");
-            signal.byteOrder = stream.Consume(new string[] { "0", "1" }).Val;
-            signal.valueType = stream.Consume(new string[] { "+", "-" }).Val;
+            signal.ByteOrder = stream.Consume("0", "1").Val;
+            signal.ValueType = stream.Consume("+", "-").Val;
 
             stream.Consume("(");
-            signal.factor = stream.Consume(TokenType.DOUBLE).Val;
+            signal.Factor = stream.Consume(TokenType.DOUBLE).Val;
             stream.Consume(",");
-            signal.offset = stream.Consume(TokenType.DOUBLE).Val;
+            signal.Offset = stream.Consume(TokenType.DOUBLE).Val;
             stream.Consume(")");
 
             stream.Consume("[");
-            signal.min = stream.Consume(TokenType.DOUBLE).Val;
+            signal.Min = stream.Consume(TokenType.DOUBLE).Val;
             stream.Consume("|");
-            signal.max = stream.Consume(TokenType.DOUBLE).Val;
+            signal.Max = stream.Consume(TokenType.DOUBLE).Val;
             stream.Consume("]");
 
-            signal.unit = stream.Consume(TokenType.STRING).Val;
+            signal.Unit = stream.Consume(TokenType.STRING).Val;
 
             do
             {
-                signal.receivers.Add(stream.Consume(TokenType.IDENTIFIER).Val);
+                signal.Receivers.Add(stream.Consume(TokenType.IDENTIFIER).Val);
 
             } while (stream.ConsumeIf(stream.Curr.Val == ","));
 
@@ -239,38 +214,38 @@ namespace DbcLib.DBC.Parser
             {
                 if (stream.Curr.Type == TokenType.STRING)
                 {
-                    dbc.comments.Add(new Comment
+                    dbc.Comments.Add(new Comment
                     {
-                        msg = stream.Consume().Val
+                        Str = stream.Consume().Val
                     });
                 }
                 else if (stream.Curr.Val == Keyword.NODES ||
                     stream.Curr.Val == Keyword.ENVIRONMENT_VARIABLES)
                 {
-                    dbc.comments.Add(new Comment
+                    dbc.Comments.Add(new Comment
                     {
-                        type = stream.Consume().Val,
-                        name = stream.Consume(TokenType.IDENTIFIER).Val,
-                        msg = stream.Consume(TokenType.STRING).Val
+                        Type = stream.Consume().Val,
+                        Name = stream.Consume(TokenType.IDENTIFIER).Val,
+                        Str = stream.Consume(TokenType.STRING).Val
                     });
                 }
                 else if (stream.Curr.Val == Keyword.MESSAGES)
                 {
-                    dbc.comments.Add(new Comment
+                    dbc.Comments.Add(new Comment
                     {
-                        type = stream.Consume().Val,
-                        id = stream.Consume(TokenType.UNSIGNED).Val,
-                        msg = stream.Consume(TokenType.STRING).Val
+                        Type = stream.Consume().Val,
+                        MsgID = stream.Consume(TokenType.UNSIGNED).Val,
+                        Str = stream.Consume(TokenType.STRING).Val
                     });
                 }
                 else if (stream.Curr.Val == Keyword.SIGNAL)
                 {
-                    dbc.comments.Add(new Comment
+                    dbc.Comments.Add(new Comment
                     {
-                        type = stream.Consume().Val,
-                        id = stream.Consume(TokenType.UNSIGNED).Val,
-                        name = stream.Consume(TokenType.IDENTIFIER).Val,
-                        msg = stream.Consume(TokenType.STRING).Val
+                        Type = stream.Consume().Val,
+                        MsgID = stream.Consume(TokenType.UNSIGNED).Val,
+                        Name = stream.Consume(TokenType.IDENTIFIER).Val,
+                        Str = stream.Consume(TokenType.STRING).Val
                     });
                 }
                 else
@@ -286,8 +261,12 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Curr.Val == Keyword.ATTRIBUTE_DEFINITIONS))
             {
-                AttributeDefinition ad = new AttributeDefinition();
-                dbc.attributeDefinitions.Add(ad);
+                AttributeDefinition ad = new AttributeDefinition
+                {
+                    Values = new List<string>()
+                };
+
+                dbc.AttributeDefinitions.Add(ad);
 
                 switch (stream.Curr.Val)
                 {
@@ -295,36 +274,36 @@ namespace DbcLib.DBC.Parser
                     case Keyword.MESSAGES:
                     case Keyword.SIGNAL:
                     case Keyword.ENVIRONMENT_VARIABLES:
-                        ad.objectType = stream.Consume().Val;
+                        ad.ObjectType = stream.Consume().Val;
                         break;
                 }
 
-                ad.attributeName = stream.Consume(TokenType.STRING).Val;
+                ad.AttributeName = stream.Consume(TokenType.STRING).Val;
 
                 if (stream.Curr.Val == "INT" ||
                     stream.Curr.Val == "HEX")
                 {
-                    ad.valueType = stream.Consume().Val;
-                    ad.values.Add(stream.Consume(TokenType.SIGNED).Val);
-                    ad.values.Add(stream.Consume(TokenType.SIGNED).Val);
+                    ad.ValueType = stream.Consume().Val;
+                    ad.Values.Add(stream.Consume(TokenType.SIGNED).Val);
+                    ad.Values.Add(stream.Consume(TokenType.SIGNED).Val);
                 }
                 else if (stream.Curr.Val == "FLOAT")
                 {
-                    ad.valueType = stream.Consume().Val;
-                    ad.values.Add(stream.Consume(TokenType.DOUBLE).Val);
-                    ad.values.Add(stream.Consume(TokenType.DOUBLE).Val);
+                    ad.ValueType = stream.Consume().Val;
+                    ad.Values.Add(stream.Consume(TokenType.DOUBLE).Val);
+                    ad.Values.Add(stream.Consume(TokenType.DOUBLE).Val);
                 }
                 else if (stream.Curr.Val == "STRING")
                 {
-                    ad.valueType = stream.Consume().Val;
+                    ad.ValueType = stream.Consume().Val;
                 }
                 else if (stream.Curr.Val == "ENUM")
                 {
-                    ad.valueType = stream.Consume().Val;
+                    ad.ValueType = stream.Consume().Val;
 
                     while (stream.Curr.Type == TokenType.STRING)
                     {
-                        ad.values.Add(stream.Consume().Val);
+                        ad.Values.Add(stream.Consume().Val);
 
                         if (!stream.ConsumeIf(stream.Curr.Val == ","))
                             break;
@@ -345,50 +324,65 @@ namespace DbcLib.DBC.Parser
             {
                 AttributeDefault ad = new AttributeDefault
                 {
-                    attributeName = stream.Consume(TokenType.STRING).Val,
-                    attributeValue = stream.Consume(TokenType.DOUBLE | TokenType.STRING).Val
+                    AttributeName = stream.Consume(TokenType.STRING).Val,
+                    AttributeValue = AttributeValues()
                 };
 
-                if (!Lexer.IsIdentifier(ad.attributeName.Trim('"')))
+                if (!Lexer.IsIdentifier(ad.AttributeName))
                     throw new Exception();
 
-                dbc.attributeDefaults.Add(ad);
+                dbc.AttributeDefaults.Add(ad);
 
                 stream.Consume(";");
             }
         }
 
-        private void AttributeValues()
+        private AttributeValue AttributeValues()
+        {
+            if (stream.Curr.Is(TokenType.DOUBLE))
+            {
+                return new AttributeValue { Num = stream.Consume().DOUBLE };
+            }
+
+            if (stream.Curr.Is(TokenType.STRING))
+            {
+                return new AttributeValue { Val = stream.Consume().Val };
+            }
+
+            throw new Exception();
+        }
+
+        private void ObjAttributeValues()
         {
             while (stream.ConsumeIf(stream.Curr.Val == Keyword.ATTRIBUTE_VALUES))
             {
-                AttributeValue av = new AttributeValue();
-                dbc.attributeValues.Add(av);
+                ObjAttributeValue av = new ObjAttributeValue();
+                dbc.AttributeValues.Add(av);
 
-                av.attributeName = stream.Consume(TokenType.STRING).Val;
+                av.AttributeName = stream.Consume(TokenType.STRING).Val;
 
-                if (!Lexer.IsIdentifier(av.attributeName.Trim('"')))
+                if (!Lexer.IsIdentifier(av.AttributeName))
                     throw new Exception();
 
                 if (stream.Curr.Val == Keyword.NODES ||
                     stream.Curr.Val == Keyword.ENVIRONMENT_VARIABLES)
                 {
-                    av.type = stream.Consume().Val;
-                    av.name = stream.Consume(TokenType.IDENTIFIER).Val;
+                    av.Type = stream.Consume().Val;
+                    av.Name = stream.Consume(TokenType.IDENTIFIER).Val;
                 }
                 else if (stream.Curr.Val == Keyword.MESSAGES)
                 {
-                    av.type = stream.Consume().Val;
-                    av.messageId = stream.Consume(TokenType.UNSIGNED).Val;
+                    av.Type = stream.Consume().Val;
+                    av.MsgID = stream.Consume(TokenType.UNSIGNED).Val;
                 }
                 else if (stream.Curr.Val == Keyword.SIGNAL)
                 {
-                    av.type = stream.Consume().Val;
-                    av.messageId = stream.Consume(TokenType.UNSIGNED).Val;
-                    av.name = stream.Consume(TokenType.IDENTIFIER).Val;
+                    av.Type = stream.Consume().Val;
+                    av.MsgID = stream.Consume(TokenType.UNSIGNED).Val;
+                    av.Name = stream.Consume(TokenType.IDENTIFIER).Val;
                 }
 
-                av.attributeValue = stream.Consume(TokenType.DOUBLE | TokenType.STRING).Val;
+                av.AttributeValue = AttributeValues();
 
                 stream.Consume(";");
             }
@@ -405,20 +399,30 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Curr.Val == Keyword.VALUE_DESCRIPTIONS))
             {
-                SignalValueDescription vd = new SignalValueDescription();
-                dbc.valueDescriptions.Add(vd);
-
-                if (stream.Curr.IsUnsigned())
-                    vd.messageId = stream.Consume().Val;
-
-                vd.name = stream.Consume(TokenType.IDENTIFIER).Val;
+                SignalValueDescription vd = new SignalValueDescription
+                {
+                    MsgID = stream.Consume(TokenType.UNSIGNED).Val,
+                    Name = stream.Consume(TokenType.IDENTIFIER).Val,
+                    Descs = new List<ValueDesc>()
+                };
+                dbc.ValueDescriptions.Add(vd);
 
                 while (!stream.ConsumeIf(stream.Curr.Val == ";"))
                 {
-                    vd.descriptions.Add(ValueDescriptions());
+                    vd.Descs.Add(ValueDescriptions());
                 }
             }
         }
 
+        private ValueDesc ValueDescriptions()
+        {
+            ValueDesc vd = new ValueDesc
+            {
+                Num = stream.Consume(TokenType.DOUBLE).Val,
+                Str = stream.Consume(TokenType.STRING).Val
+            };
+
+            return vd;
+        }
     }
 }

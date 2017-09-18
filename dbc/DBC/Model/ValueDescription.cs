@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DbcLib.DBC.Model
 {
-    public class ValueDescription
+    public class ValueDesc
     {
-        public string num;
-        public string str;
+        public string Num { get; set; }
+        public string Str { get; set; }
     }
 }

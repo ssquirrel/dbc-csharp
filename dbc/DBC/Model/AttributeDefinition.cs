@@ -8,9 +8,9 @@ namespace DbcLib.DBC.Model
 {
     public class AttributeDefinition
     {
-        public string objectType;
-        public string attributeName;
-        public string valueType;
-        public List<String> values = new List<string>();
+        public string ObjectType { get; set; } = "";
+        public string AttributeName { get; set; }
+        public string ValueType { get; set; }
+        public IList<String> Values { get; set; }
     }
 }

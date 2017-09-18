@@ -138,19 +138,21 @@ namespace DbcLib.DBC.Lex
             return new Token("-");
         }
 
+        //no longer collects '\"'
         private Token LexCharString()
         {
             StringBuilder builder = new StringBuilder();
 
-            builder.Append((char)reader.Read());
+            reader.Read();
 
             while (!reader.EndOfStream)
             {
                 char ch = (char)reader.Read();
-                builder.Append(ch);
 
                 if (ch == '"')
                     break;
+
+                builder.Append(ch);
             }
 
             return new Token(builder.ToString(), TokenType.STRING);

@@ -8,10 +8,10 @@ namespace DbcLib.DBC.Model
 {
     public class Message
     {
-        public string id;
-        public string name;
-        public string size;
-        public string transmitter;
-        public List<Signal> signals = new List<Signal>();
+        public string MsgID { get; set; }
+        public string Name { get; set; }
+        public string Size { get; set; }
+        public string Transmitter { get; set; }
+        public IList<Signal> Signals { get; set; }
     }
 }
