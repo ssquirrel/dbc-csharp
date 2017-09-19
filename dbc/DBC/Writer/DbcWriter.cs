@@ -178,19 +178,19 @@ namespace DbcLib.DBC.Writer
         {
             foreach (AttributeDefinition ad in ads)
             {
-                writer.Write("{0} {1} {2} {3} ",
+                writer.Write("{0} {1} \"{2}\" {3} ",
                     Keyword.ATTRIBUTE_DEFINITIONS,
-                    ad.ObjectType,
+                    ad.ObjectType.Length == 0 ? "" : ad.ObjectType + " ",
                     ad.AttributeName,
                     ad.ValueType);
 
                 if (ad.ValueType == "ENUM")
                 {
                     //assert ad.Values.Count > 0
-                    writer.Write("\"" + ad.Values[0] + "\"");
+                    writer.Write(" \"" + ad.Values[0] + "\"");
 
                     for (int i = 1; i < ad.Values.Count; ++i)
-                        writer.Write(",\"" + ad.Values[0] + "\"");
+                        writer.Write(",\"" + ad.Values[i] + "\"");
                 }
                 else if (ad.ValueType != "STRING")
                 {
@@ -206,8 +206,10 @@ namespace DbcLib.DBC.Writer
         {
             foreach (AttributeDefault ad in ads)
             {
-                writer.WriteLine(Keyword.ATTRIBUTE_DEFAULTS + "  " +
-                    ad.AttributeName + " " + ad.AttributeValue + ";");
+                writer.WriteLine("{0}  \"{1}\" {2};",
+                    Keyword.ATTRIBUTE_DEFAULTS,
+                    ad.AttributeName,
+                    ad.AttributeValue);
             }
         }
 
@@ -216,31 +218,29 @@ namespace DbcLib.DBC.Writer
         {
             foreach (ObjAttributeValue av in avs)
             {
-                writer.Write(Keyword.ATTRIBUTE_VALUES + " " +
-                    av.AttributeName + " ");
+                writer.Write("{0} \"{1}\"",
+                    Keyword.ATTRIBUTE_VALUES,
+                    av.AttributeName);
 
-                if (av.Type != null)
+                if (av.Type.Length > 0)
+                    writer.Write(" " + av.Type);
+
+                if (av.Type == Keyword.MESSAGES ||
+                    av.Type == Keyword.SIGNAL)
                 {
-                    writer.Write(av.Type + " ");
 
-                    if (av.Type == Keyword.MESSAGES ||
-                            av.Type == Keyword.SIGNAL)
-                    {
-
-                        writer.Write(av.MsgID + " ");
-                    }
-
-                    if (av.Type == Keyword.SIGNAL ||
-                        av.Type == Keyword.NODES ||
-                        av.Type == Keyword.ENVIRONMENT_VARIABLES)
-                    {
-
-                        writer.Write(av.Name + " ");
-                    }
-
+                    writer.Write(" " + av.MsgID);
                 }
 
-                writer.WriteLine(av.AttributeValue + ";");
+                if (av.Type == Keyword.SIGNAL ||
+                    av.Type == Keyword.NODES ||
+                    av.Type == Keyword.ENVIRONMENT_VARIABLES)
+                {
+
+                    writer.Write(" " + av.Name);
+                }
+
+                writer.WriteLine(" " + av.AttributeValue + ";");
             }
         }
 

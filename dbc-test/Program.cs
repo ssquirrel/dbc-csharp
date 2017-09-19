@@ -24,20 +24,6 @@ namespace dbc_test
 
         static void Main(string[] args)
         {
-            /*
-            Console.WriteLine(Assert(TokenType.UNSIGNED, TokenType.DOUBLE));
-            Console.WriteLine(Assert(TokenType.SIGNED, TokenType.DOUBLE));
-            Console.WriteLine(Assert(TokenType.UNSIGNED, TokenType.SIGNED));
-            Console.WriteLine(Assert(TokenType.UNSIGNED, TokenType.UNSIGNED));
-            Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.DOUBLE));
-
-            Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.SIGNED));
-            Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.UNSIGNED));
-            Console.WriteLine(Assert(TokenType.DOUBLE, TokenType.DOUBLE | TokenType.STRING));
-            */
-
-
-
             //ExcelParser book = new ExcelParser("sample.xlsx");
             DbcParser parser = new DbcParser("sample.dbc");
             DBC dbc = parser.Parse();
