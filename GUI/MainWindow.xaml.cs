@@ -80,7 +80,7 @@ namespace GUI
             {
                 FileName = "",
                 Filter = "Target Files (*.dbc, *.xlsx, *xls)|*.dbc;*.xlsx;*.xls|" +
-                "CANdb Network (*.dbc)|*.dbc|"+
+                "CANdb Network (*.dbc)|*.dbc|" +
                 "Excel Worksheets (*.xlsx)|*.xlsx;*.xls"
             };
 
@@ -99,18 +99,25 @@ namespace GUI
 
             if (FromPath.EndsWith(".dbc"))
                 ToPath = FromPath.Substring(0, FromPath.Length - 4) + ".xlsx";
-            else if(FromPath.EndsWith(".xlsx") || FromPath.EndsWith(".xls"))
+            else if (FromPath.EndsWith(".xlsx") || FromPath.EndsWith(".xls"))
                 ToPath = FromPath.Substring(0, FromPath.Length - 5) + ".dbc";
+
+            //throw new Exception();
         }
 
         async void Convert(object sender, RoutedEventArgs e)
         {
-
             DbcParser parser = new DbcParser(from);
+            try
+            {
+                DBC dbc = await Task.Run(() => parser.Parse());
 
-            DBC dbc = await Task.Run(() => parser.Parse());
-
-            StatusText = dbc.Messages[0].Name;
+                StatusText = dbc.Messages[0].Name;
+            }
+            catch (ParseException ex)
+            {
+                StatusText = ex.Message;
+            }
         }
     }
 }

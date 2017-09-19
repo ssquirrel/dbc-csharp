@@ -11,38 +11,25 @@ using NPOI.SS.UserModel;
 
 namespace DbcLib.Excel.Reader
 {
-    class DbcSheet
+    class DbcSheet : IEnumerable<DbcExcelRow>
     {
-        private IEnumerator rowIter;
+        private ISheet sheet;
 
         public DbcSheet(ISheet sheet)
         {
-            rowIter = sheet.GetEnumerator();
-
-            EndOfStream = !rowIter.MoveNext();
-
-            Consume();
+            this.sheet = sheet;
         }
 
-        public DbcExcelRow Curr { get; private set; }
-        public bool EndOfStream { get; private set; }
-
-        public DbcExcelRow Consume()
+        public IEnumerator<DbcExcelRow> GetEnumerator()
         {
-            if (EndOfStream)
-                return null;
-
-            DbcExcelRow row = new DbcExcelRow((IRow)rowIter.Current);
-
-            DbcExcelRow old = Curr;
-
-            Curr = row;
-
-            EndOfStream = !rowIter.MoveNext();
-
-            return old;
+            foreach (IRow row in sheet)
+                yield return new DbcExcelRow(row);
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
 

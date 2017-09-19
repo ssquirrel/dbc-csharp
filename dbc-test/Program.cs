@@ -25,6 +25,8 @@ namespace dbc_test
         static void Main(string[] args)
         {
             //ExcelParser book = new ExcelParser("sample.xlsx");
+
+
             DbcParser parser = new DbcParser("sample.dbc");
             DBC dbc = parser.Parse();
 
@@ -32,8 +34,6 @@ namespace dbc_test
             {
                 writer.Write(dbc);
             }
-
-
         }
 
         static bool Assert(TokenType t, TokenType e)
@@ -55,20 +55,18 @@ namespace dbc_test
                           
                 */
 
-                DbcParser parser = new DbcParser("sample.dbc");
-                DBC dbc = parser.Parse();
+                Lexer lex = new Lexer("");
 
-                using (DbcWriter writer =
-                    new DbcWriter(new StreamWriter(File.Open("out.dbc", FileMode.Create), Encoding.Default)))
+                foreach (Token t in lex.Lex())
                 {
-
-                    writer.Write(dbc);
+                    Console.WriteLine(t.Val + " " + t.Type.ToString());
                 }
+
+
 
             }
             catch (Exception e)
             {
-                Console.WriteLine("The file could not be read:");
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }

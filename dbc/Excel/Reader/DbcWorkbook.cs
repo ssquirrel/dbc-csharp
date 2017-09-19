@@ -12,10 +12,9 @@ using NPOI.SS.UserModel;
 
 namespace DbcLib.Excel.Reader
 {
-    class DbcWorkbook : IDisposable
+    class DbcWorkbook : IDisposable, IEnumerable<DbcSheet>
     {
         private IWorkbook workbook;
-        private IEnumerator sheetIter;
 
         public DbcWorkbook(string filename)
         {
@@ -32,12 +31,6 @@ namespace DbcLib.Excel.Reader
                 workbook = new XSSFWorkbook(stream);
             else
                 workbook = new HSSFWorkbook(stream);
-
-            sheetIter = workbook.GetEnumerator();
-
-            Curr = FindNext();
-
-            EndOfStream = Curr == null;
         }
 
         public void Dispose()
@@ -45,40 +38,24 @@ namespace DbcLib.Excel.Reader
             workbook.Close();
         }
 
-
-        public bool EndOfStream { get; private set; }
-        public DbcSheet Curr { get; private set; }
-
-        public DbcSheet Consume()
+        public IEnumerator<DbcSheet> GetEnumerator()
         {
-            DbcSheet old = Curr;
-            Curr = FindNext();
-
-            EndOfStream = Curr == null;
-
-            return old;
-        }
-
-        private DbcSheet FindNext()
-        {
-            while (sheetIter.MoveNext())
+            foreach (ISheet sheet in workbook)
             {
-                ISheet sheet = (ISheet)sheetIter.Current;
-
                 if (!sheet.SheetName.StartsWith("Message_Detail"))
                     continue;
 
                 DbcSheet dbcSheet = new DbcSheet(sheet);
 
-                DbcExcelRow first = dbcSheet.Consume();
-                DbcExcelRow sec = dbcSheet.Consume();
 
-                if (first != null && sec != null)
-                    return dbcSheet;
+                //if (first != null && sec != null)
+                yield return dbcSheet;
             }
-
-            return null;
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

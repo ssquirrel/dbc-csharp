@@ -27,9 +27,9 @@ namespace DbcLib.Excel
 
     static class DbcTemplate
     {
-        public static readonly string MsgSendType = "\"GenMsgSendType\"";
-        public static readonly string MsgCycleTime = "\"GenMsgCycleTime\"";
-        public static readonly string SigStartValue = "\"GenSigStartValue\"";
+        public static readonly string MsgSendType = "GenMsgSendType";
+        public static readonly string MsgCycleTime = "GenMsgCycleTime";
+        public static readonly string SigStartValue = "GenSigStartValue";
     }
 
     class ExcelParser : IDisposable
@@ -59,33 +59,34 @@ namespace DbcLib.Excel
 
             dbc = new DBC.Model.DBC();
 
-            DbcSheet sheet = workbook.Curr;
-
-            while (!sheet.EndOfStream)
+            foreach (DbcSheet sheet in workbook)
             {
-                DbcExcelRow row = sheet.Consume();
+                //process first sheet only
 
-                if (row.MsgName == DbcExcelRow.EmptyCell)
-                    continue;
-
-                Message msg = ParseMessage(row);
-                dbc.Messages.Add(msg);
-
-                while (!sheet.EndOfStream)
+                foreach (DbcExcelRow row in sheet)
                 {
-                    row = sheet.Curr;
+                    if (row.MsgName == DbcExcelRow.EmptyCell)
+                    {
+                        ParseMessage(row);
+                    }
 
-                    if (row.SignalName == DbcExcelRow.EmptyCell)
-                        break;
+                    if (row.SignalName == DbcExcelRow.EmptyCell &&
+                        dbc.Messages.Count > 0)
+                    {
+                        ParseSignal(row, dbc.Messages[dbc.Messages.Count - 1]);
+                    }
 
-                    msg.Signals.Add(ParseSignal(sheet.Consume()));
+
                 }
+
+                break;
             }
+
 
             return dbc;
         }
 
-        private Message ParseMessage(DbcExcelRow row)
+        private void ParseMessage(DbcExcelRow row)
         {
             Message msg = new Message
             {
@@ -101,14 +102,14 @@ namespace DbcLib.Excel
                 {
                     Type = Keyword.MESSAGES,
                     MsgID = msg.MsgID,
-                    Str = "\"" + row.MsgComment.Value + "\""
+                    Str = row.MsgComment.Value
                 });
             }
 
-            return msg;
+            dbc.Messages.Add(msg);
         }
 
-        private Signal ParseSignal(DbcExcelRow row)
+        private void ParseSignal(DbcExcelRow row, Message parent)
         {
             Signal signal = new Signal
             {
@@ -125,7 +126,7 @@ namespace DbcLib.Excel
                 Receivers = ExpectReceivers(row.Receiver)
             };
 
-            return signal;
+            parent.Signals.Add(signal);
         }
 
         private string ExpectHex(Cell cell)
