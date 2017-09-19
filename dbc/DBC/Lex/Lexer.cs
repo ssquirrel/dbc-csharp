@@ -138,7 +138,7 @@ namespace DbcLib.DBC.Lex
             return new Token("-");
         }
 
-        //no longer collects '\"'
+        //no longer collects '"'
         private Token LexCharString()
         {
             StringBuilder builder = new StringBuilder();

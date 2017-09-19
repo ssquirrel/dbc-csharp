@@ -10,6 +10,14 @@ namespace DbcLib.DBC.Parser
     using DBC.Lex;
     using DBC.Model;
 
+    public class ParseException : Exception
+    {
+        public ParseException() : base("Bad dbc file.")
+        {
+
+        }
+    }
+
     public class DbcParser
     {
         private String filename;
@@ -40,7 +48,7 @@ namespace DbcLib.DBC.Parser
             NewSymbols();
             BitTiming();
             Nodes();
-            //ValueTables();
+            SkipValueTables();
             Messages();
 
             //MessageTransmitters();
@@ -63,6 +71,7 @@ namespace DbcLib.DBC.Parser
             //SIGNAL_EXTENDED_VALUE_TYPE_LIST
             return dbc;
         }
+
 
         private void Version()
         {
@@ -90,9 +99,7 @@ namespace DbcLib.DBC.Parser
         //This section is obsolete. skip to the next mandatory section
         private void BitTiming()
         {
-            if (!stream.ConsumeIf(stream.Curr.Val == Keyword.BIT_TIMING))
-                throw new Exception();
-
+            stream.Consume(Keyword.BIT_TIMING);
             stream.Consume(":");
 
             while (stream.ConsumeIf(stream.Curr.Val != Keyword.NODES)) { }
@@ -102,14 +109,22 @@ namespace DbcLib.DBC.Parser
         //node_name = C_identifier
         private void Nodes()
         {
-            if (!stream.ConsumeIf(stream.Curr.Val == Keyword.NODES))
-                throw new Exception();
-
+            stream.Consume(Keyword.NODES);
             stream.Consume(":");
 
             while (stream.Curr.Type == TokenType.IDENTIFIER)
             {
                 dbc.Nodes.Add(stream.Consume().Val);
+            }
+        }
+
+        private void SkipValueTables()
+        {
+            while (stream.ConsumeIf(stream.Curr.Val == Keyword.VALUE_TABLES))
+            {
+                while (stream.ConsumeIf(stream.Curr.Val != ";")) { }
+
+                stream.Consume();
             }
         }
 
@@ -144,7 +159,7 @@ namespace DbcLib.DBC.Parser
             }
 
             if (dbc.Messages.Count == 0)
-                throw new Exception();
+                throw new ParseException();
         }
 
         //signal = 'SG_' signal_name multiplexer_indicator ':' start_bit '|'
@@ -250,7 +265,7 @@ namespace DbcLib.DBC.Parser
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new ParseException();
                 }
 
                 stream.Consume(";");
@@ -311,7 +326,7 @@ namespace DbcLib.DBC.Parser
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new ParseException();
                 }
 
                 stream.Consume(";");
@@ -329,7 +344,7 @@ namespace DbcLib.DBC.Parser
                 };
 
                 if (!Lexer.IsIdentifier(ad.AttributeName))
-                    throw new Exception();
+                    throw new ParseException();
 
                 dbc.AttributeDefaults.Add(ad);
 
@@ -349,7 +364,7 @@ namespace DbcLib.DBC.Parser
                 return new AttributeValue { Val = stream.Consume().Val };
             }
 
-            throw new Exception();
+            throw new ParseException();
         }
 
         private void ObjAttributeValues()
@@ -362,7 +377,7 @@ namespace DbcLib.DBC.Parser
                 av.AttributeName = stream.Consume(TokenType.STRING).Val;
 
                 if (!Lexer.IsIdentifier(av.AttributeName))
-                    throw new Exception();
+                    throw new ParseException();
 
                 if (stream.Curr.Val == Keyword.NODES ||
                     stream.Curr.Val == Keyword.ENVIRONMENT_VARIABLES)
