@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbcLib.DBC.Model
+namespace DbcLib.Model
 {
     public class AttributeDefault
     {
         public string AttributeName { get; set; }
-        public AttributeValue AttributeValue { get; set; }
+
+        public AttributeValue Value { get; set; }
     }
 }

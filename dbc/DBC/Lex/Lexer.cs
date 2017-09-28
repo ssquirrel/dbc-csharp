@@ -7,22 +7,99 @@ using System;
 
 namespace DbcLib.DBC.Lex
 {
-    public class Lexer : IDisposable
+    using static Common;
+
+    class TokenStream : Peekable
+    {
+        public TokenStream(string filename) : base(filename) { }
+
+        public Token Consume(string s)
+        {
+            if (Peek().Val == s)
+                return Read();
+
+            return Sentinel;
+        }
+
+        public Token Consume(TokenType t)
+        {
+            Token curr = Peek();
+
+            if (curr.Assert(t))
+                return Read();
+
+            if (t.HasFlag(TokenType.STRING) && curr.Assert(TokenType.STRING))
+            {
+                switch (t & ~TokenType.STRING)
+                {
+                    case TokenType.IDENTIFIER:
+                        if (IsIdentifier(curr.Val))
+                            return Read();
+
+                        break;
+                }
+            }
+
+
+            return Sentinel;
+        }
+
+        public bool ConsumeIf(bool pred)
+        {
+            if (pred)
+                Read();
+
+            return pred;
+        }
+    }
+
+    class Peekable : Lexer
+    {
+        private Token buffer;
+
+        public Peekable(string filename) : base(filename) { }
+
+        public Token Peek()
+        {
+            if (buffer == null)
+                buffer = base.Read();
+
+            return buffer;
+        }
+
+        public new Token Read()
+        {
+            if (buffer != null)
+            {
+                Token temp = buffer;
+                buffer = null;
+
+                return temp;
+            }
+
+            return base.Read();
+        }
+    }
+
+    class Lexer : IDisposable
     {
         private StreamReader reader;
-        private List<Token> list = new List<Token>();
 
         public Lexer(string filename)
         {
             reader = new StreamReader(filename, Encoding.Default);
         }
 
+        public bool EndOfStream => reader.EndOfStream;
+
+        public static Token Sentinel = new Token();
+
         public void Dispose()
         {
             reader.Dispose();
         }
 
-        public List<Token> Lex()
+        public Token Read()
         {
             while (!reader.EndOfStream)
             {
@@ -34,69 +111,30 @@ namespace DbcLib.DBC.Lex
                     continue;
                 }
 
-
                 if (IsDigit(ch))
                 {
-                    list.Add(LexNumber(new StringBuilder()));
+                    return LexNumber(new StringBuilder());
                 }
                 else if (ch == '-')
                 {
-                    list.Add(LexMinusSign());
+                    return LexMinusSign();
                 }
                 else if (ch == '"')
                 {
-                    list.Add(LexCharString());
+                    return LexCharString();
                 }
                 else if (IsIdentifierStart(ch))
                 {
-                    list.Add(LexIdentifier());
+                    return LexIdentifier();
                 }
                 else
                 {
-                    list.Add(new Token(ch.ToString()));
                     reader.Read();
+                    return new Token(ch.ToString());
                 }
             }
 
-            return list;
-        }
-
-        public static bool IsIdentifierStart(char ch)
-        {
-            if (IsLetter(ch) || ch == '_')
-                return true;
-
-            return false;
-        }
-
-        public static bool IsIdentifierEnd(char ch)
-        {
-            if (IsIdentifierStart(ch) || IsDigit(ch))
-                return true;
-
-            return false;
-        }
-
-        public static bool IsIdentifier(string str)
-        {
-            if (!IsIdentifierStart(str[0]))
-                return false;
-
-            for (int i = 1; i < str.Length; ++i)
-                if (!IsIdentifierEnd(str[i]))
-                    return false;
-
-            return true;
-        }
-
-        private static bool IsLetter(char ch)
-        {
-            return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
-        }
-
-        private static bool IsDigit(char ch)
-        {
-            return ch >= '0' && ch <= '9';
+            return Sentinel;
         }
 
         private Token LexNumber(StringBuilder builder)
@@ -155,7 +193,9 @@ namespace DbcLib.DBC.Lex
                 builder.Append(ch);
             }
 
-            return new Token(builder.ToString(), TokenType.STRING);
+            string str = builder.ToString();
+
+            return new Token(str, TokenType.STRING);
         }
 
         private Token LexIdentifier()
@@ -177,11 +217,7 @@ namespace DbcLib.DBC.Lex
                 reader.Read();
             }
 
-
-            if (Keyword.IsKeyword(builder.ToString()))
-                return new Token(builder.ToString(), TokenType.KEYWORD);
-            else
-                return new Token(builder.ToString(), TokenType.IDENTIFIER);
+            return new Token(builder.ToString(), TokenType.IDENTIFIER);
         }
     }
 }

@@ -12,7 +12,7 @@ using NPOI.SS.UserModel;
 
 namespace DbcLib.Excel.Reader
 {
-    class DbcWorkbook : IDisposable, IEnumerable<DbcSheet>
+    public class DbcWorkbook : IDisposable, IEnumerable<DbcSheet>
     {
         private IWorkbook workbook;
 
@@ -20,17 +20,14 @@ namespace DbcLib.Excel.Reader
         {
             if (!filename.EndsWith(".xlsx") &&
                 !filename.EndsWith(".xls"))
-                throw new ArgumentException("The file ext must be either .xlsx or xls");
+                throw new ArgumentException("The file ext must be either .xlsx or .xls");
 
             FileStream stream = File.Open(filename,
                 FileMode.Open,
                 FileAccess.Read,
                 FileShare.ReadWrite);
 
-            if (filename.EndsWith(".xlsx"))
-                workbook = new XSSFWorkbook(stream);
-            else
-                workbook = new HSSFWorkbook(stream);
+            workbook = WorkbookFactory.Create(stream);
         }
 
         public void Dispose()
@@ -40,16 +37,12 @@ namespace DbcLib.Excel.Reader
 
         public IEnumerator<DbcSheet> GetEnumerator()
         {
-            foreach (ISheet sheet in workbook)
+            foreach (ISheet raw in workbook)
             {
-                if (!sheet.SheetName.StartsWith("Message_Detail"))
+                if (!raw.SheetName.StartsWith("Message_Detail"))
                     continue;
 
-                DbcSheet dbcSheet = new DbcSheet(sheet);
-
-
-                //if (first != null && sec != null)
-                yield return dbcSheet;
+                yield return new DbcSheet(raw);
             }
         }
 

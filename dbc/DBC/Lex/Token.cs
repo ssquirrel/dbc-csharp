@@ -7,24 +7,24 @@ using System.Threading.Tasks;
 namespace DbcLib.DBC.Lex
 {
     [Flags]
-    public enum TokenType
+    enum TokenType
     {
         None = 0x0,
         TOKEN = 0x1,
-        UNSIGNED = 0x2,
-        SIGNED = 0x4 | UNSIGNED,
-        DOUBLE = 0X8 | SIGNED,
+        DOUBLE = 0x2,
+        SIGNED = 0x4 | DOUBLE,
+        UNSIGNED = 0X8 | SIGNED,
         STRING = 0x10,
-        IDENTIFIER = 0x20,
-        KEYWORD = 0x40,
+        IDENTIFIER = 0x20
     }
 
-    public class Token
+    class Token
     {
-        public string Val { get; private set; } = "";
-        public TokenType Type { get; private set; } = TokenType.None;
+        public string Val { get; private set; }
+        private TokenType Type { get; set; } = TokenType.None;
 
         public double DOUBLE { get { return Double.Parse(Val); } }
+        public int INT { get { return int.Parse(Val); } }
 
         //creates a sentinel token
         public Token()
@@ -44,9 +44,12 @@ namespace DbcLib.DBC.Lex
             Type = t;
         }
 
-        public bool Is(TokenType e)
+        public bool Assert(TokenType t)
         {
-            return (Type & e) == Type;
+            if (t == TokenType.None)
+                return t == Type;
+
+            return Type.HasFlag(t);
         }
     }
 }

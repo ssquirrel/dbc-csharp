@@ -8,27 +8,55 @@ using System.IO;
 using System.Globalization;
 
 using DbcLib.DBC.Parser;
-using DbcLib.DBC.Model;
+using DbcLib.Model;
 using DbcLib.DBC.Lex;
 using DbcLib.DBC.Writer;
 using DbcLib.Excel.Reader;
-using DbcLib.Excel;
+using DbcLib.Excel.Parser;
 
 
 
 namespace dbc_test
 {
-
     class Program
     {
 
+
+
         static void Main(string[] args)
         {
-            //ExcelParser book = new ExcelParser("sample.xlsx");
+
+            DbcWorkbook workbook = new DbcWorkbook("sample.xlsx");
+
+            DbcSheet sheet = workbook.Take(1).Single();
+
+            ExcelParser parser = new ExcelParser();
+            DBC dbc = parser.Parse(sheet);
+
+            
+            using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
+            {
+                //DBC dbc = DbcParser.Parse("sample.dbc");
+
+                writer.Write(dbc);
+
+            }
 
 
-            DbcParser parser = new DbcParser("sample.dbc");
-            DBC dbc = parser.Parse();
+            dbc = DbcParser.Parse("out.dbc");
+
+            using (DbcWriter writer = new DbcWriter(new StreamWriter("out1.dbc", false, Encoding.Default)))
+            {
+                writer.Write(dbc);
+            }
+        }
+
+
+
+
+        static void ExcelReader()
+        {
+            DBC dbc = DbcParser.Parse("sample.dbc");
 
             using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
             {
@@ -36,31 +64,16 @@ namespace dbc_test
             }
         }
 
-        static bool Assert(TokenType t, TokenType e)
-        {
-            return (t & e) == t;
-        }
-
-        static void ExcelReader()
-        {
-
-        }
-
-        static void DbcParser()
+        static void DbcParser1()
         {
             try
             {
 
-                /*
-                          
-                */
 
-                Lexer lex = new Lexer("");
 
-                foreach (Token t in lex.Lex())
-                {
-                    Console.WriteLine(t.Val + " " + t.Type.ToString());
-                }
+
+
+
 
 
 
@@ -72,8 +85,9 @@ namespace dbc_test
             }
 
 
-            System.Console.ReadKey();
+            Console.ReadKey();
         }
+
 
     }
 }

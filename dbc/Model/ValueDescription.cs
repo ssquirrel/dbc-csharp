@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbcLib.DBC.Model
+namespace DbcLib.Model
 {
     public class ValueDesc
     {
-        public string Num { get; set; }
-        public string Str { get; set; }
+        public double Num { get; set; }
+        public string Val { get; set; }
     }
 }

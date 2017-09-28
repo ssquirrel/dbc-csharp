@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 
 
-using DbcLib.DBC.Model;
+using DbcLib.Model;
 using DbcLib.DBC.Lex;
 
 namespace DbcLib.DBC.Writer
@@ -75,7 +75,7 @@ namespace DbcLib.DBC.Writer
             writer.WriteLine();
         }
 
-        private void NewSymbols(List<string> newSymbols)
+        private void NewSymbols(IEnumerable<string> newSymbols)
         {
             writer.WriteLine(Keyword.NEW_SYMBOLS + " : ");
             foreach (String symbol in newSymbols)
@@ -89,7 +89,7 @@ namespace DbcLib.DBC.Writer
             writer.WriteLine();
         }
 
-        private void Nodes(List<string> nodes)
+        private void Nodes(IEnumerable<string> nodes)
         {
             writer.Write(Keyword.NODES + ":");
             foreach (String node in nodes)
@@ -101,7 +101,7 @@ namespace DbcLib.DBC.Writer
             writer.WriteLine();
         }
 
-        private void Messages(List<Message> messages)
+        private void Messages(IEnumerable<Message> messages)
         {
             foreach (Message msg in messages)
             {
@@ -148,33 +148,35 @@ namespace DbcLib.DBC.Writer
         }
 
         private void
-        Comments(List<Comment> comments)
+        Comments(IEnumerable<Comment> comments)
         {
             foreach (Comment cm in comments)
             {
                 writer.Write(Keyword.COMMENTS + " " + cm.Type + " ");
 
-                if (cm.Type == Keyword.MESSAGES ||
-                    cm.Type == Keyword.SIGNAL)
+                if (cm.Type == Keyword.NODES)
                 {
+                    writer.Write(cm.NodeName + " ");
 
+                }
+                else if (cm.Type == Keyword.MESSAGES)
+                {
                     writer.Write(cm.MsgID + " ");
-                }
 
-                if (cm.Type == Keyword.SIGNAL ||
-                    cm.Type == Keyword.NODES)
+                }
+                else if (cm.Type == Keyword.SIGNAL)
                 {
+                    writer.Write(cm.MsgID + " " + cm.SignalName + " ");
 
-                    writer.Write(cm.Name + " ");
                 }
 
 
-                writer.WriteLine("\"{0}\";", cm.Str);
+                writer.WriteLine("\"{0}\";", cm.Val);
             }
         }
 
         private void
-        AttributeDefinitions(List<AttributeDefinition> ads)
+        AttributeDefinitions(IEnumerable<AttributeDefinition> ads)
         {
             foreach (AttributeDefinition ad in ads)
             {
@@ -194,7 +196,7 @@ namespace DbcLib.DBC.Writer
                 }
                 else if (ad.ValueType != "STRING")
                 {
-                    writer.Write(ad.Values[0] + " " + ad.Values[1]);
+                    writer.Write(ad.Num1 + " " + ad.Num2);
                 }
 
                 writer.WriteLine(";");
@@ -202,19 +204,30 @@ namespace DbcLib.DBC.Writer
         }
 
         private void
-        AttributeDefaults(List<AttributeDefault> ads)
+        AttributeDefaults(IEnumerable<AttributeDefault> ads)
         {
             foreach (AttributeDefault ad in ads)
             {
-                writer.WriteLine("{0}  \"{1}\" {2};",
-                    Keyword.ATTRIBUTE_DEFAULTS,
-                    ad.AttributeName,
-                    ad.AttributeValue);
+                if (ad.Value.Type == AttrValType.String)
+                {
+                    writer.WriteLine("{0}  \"{1}\" \"{2}\";",
+                        Keyword.ATTRIBUTE_DEFAULTS,
+                        ad.AttributeName,
+                        ad.Value.Val);
+                }
+                else
+                {
+                    writer.WriteLine("{0}  \"{1}\" {2};",
+                       Keyword.ATTRIBUTE_DEFAULTS,
+                       ad.AttributeName,
+                       ad.Value.Num);
+                }
+
             }
         }
 
         private void
-        AttributeValues(List<ObjAttributeValue> avs)
+        AttributeValues(IEnumerable<ObjAttributeValue> avs)
         {
             foreach (ObjAttributeValue av in avs)
             {
@@ -225,28 +238,40 @@ namespace DbcLib.DBC.Writer
                 if (av.Type.Length > 0)
                     writer.Write(" " + av.Type);
 
-                if (av.Type == Keyword.MESSAGES ||
-                    av.Type == Keyword.SIGNAL)
+                if (av.Type == Keyword.NODES)
                 {
+                    writer.Write(" " + av.NodeName);
 
+                }
+                else if (av.Type == Keyword.MESSAGES)
+                {
                     writer.Write(" " + av.MsgID);
-                }
 
-                if (av.Type == Keyword.SIGNAL ||
-                    av.Type == Keyword.NODES ||
-                    av.Type == Keyword.ENVIRONMENT_VARIABLES)
+                }
+                else if (av.Type == Keyword.SIGNAL)
                 {
+                    writer.Write(" " + av.MsgID + " " + av.SignalName);
 
-                    writer.Write(" " + av.Name);
                 }
 
-                writer.WriteLine(" " + av.AttributeValue + ";");
+                if (av.Value.Type == AttrValType.String)
+                {
+                    writer.WriteLine(" \"{0}\";", av.Value.Val);
+
+                }
+                else
+                {
+                    writer.WriteLine(" {0};", av.Value.Num);
+
+                }
+
+
             }
         }
 
 
         private void
-        SignalValueDescriptions(List<SignalValueDescription> ads)
+        SignalValueDescriptions(IEnumerable<SignalValueDescription> ads)
         {
             foreach (SignalValueDescription ad in ads)
             {
@@ -255,7 +280,7 @@ namespace DbcLib.DBC.Writer
 
                 foreach (ValueDesc vd in ad.Descs)
                 {
-                    writer.Write(" {0} \"{1}\"", vd.Num, vd.Str);
+                    writer.Write(" {0} \"{1}\"", vd.Num, vd.Val);
                 }
 
                 writer.WriteLine(" ;");

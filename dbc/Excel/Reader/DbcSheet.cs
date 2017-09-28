@@ -11,19 +11,34 @@ using NPOI.SS.UserModel;
 
 namespace DbcLib.Excel.Reader
 {
-    class DbcSheet : IEnumerable<DbcExcelRow>
+    public class DbcSheet : IEnumerable<DbcRow>
     {
         private ISheet sheet;
 
-        public DbcSheet(ISheet sheet)
+        public DbcSheet(ISheet s)
         {
-            this.sheet = sheet;
+            sheet = s;
         }
 
-        public IEnumerator<DbcExcelRow> GetEnumerator()
+        public IEnumerator<DbcRow> GetEnumerator()
         {
-            foreach (IRow row in sheet)
-                yield return new DbcExcelRow(row);
+            int i = 0;
+
+            foreach (IRow raw in sheet)
+            {
+                if (i < 2)
+                {
+                    ++i;
+                    continue;
+                }
+
+                DbcRow row = new DbcRow(raw);
+
+                if (row.RowType == RowType.Unknown)
+                    continue;
+
+                yield return row;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

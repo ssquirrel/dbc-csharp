@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbcLib.DBC.Lex
+namespace DbcLib.Model
 {
     public static class Keyword
     {

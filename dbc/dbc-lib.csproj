@@ -55,26 +55,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBC\Model\AttributeValue.cs" />
+    <Compile Include="DBC\Lex\Common.cs" />
     <Compile Include="DBC\Writer\DbcWriter.cs" />
-    <Compile Include="Excel\Reader\DbcExcelRow.cs" />
+    <Compile Include="Excel\DbcTemplate.cs" />
+    <Compile Include="Excel\Parser\RowParser.cs" />
+    <Compile Include="Excel\Reader\DbcRow.cs" />
     <Compile Include="Excel\Reader\DbcSheet.cs" />
     <Compile Include="Excel\Reader\DbcWorkbook.cs" />
-    <Compile Include="Excel\ExcelParser.cs" />
-    <Compile Include="DBC\Lex\Keyword.cs" />
+    <Compile Include="Excel\Parser\ExcelParser.cs" />
+    <Compile Include="Model\Keyword.cs" />
     <Compile Include="DBC\Lex\Lexer.cs" />
     <Compile Include="DBC\Lex\Token.cs" />
-    <Compile Include="DBC\Model\AttributeDefault.cs" />
-    <Compile Include="DBC\Model\AttributeDefinition.cs" />
-    <Compile Include="DBC\Model\ObjAttributeValue.cs" />
-    <Compile Include="DBC\Model\Comment.cs" />
-    <Compile Include="DBC\Model\DBC.cs" />
-    <Compile Include="DBC\Model\Message.cs" />
-    <Compile Include="DBC\Model\Signal.cs" />
-    <Compile Include="DBC\Model\SignalValueDescription.cs" />
-    <Compile Include="DBC\Model\ValueDescription.cs" />
     <Compile Include="DBC\Parser\DbcParser.cs" />
-    <Compile Include="DBC\Parser\TokenStream.cs" />
+    <Compile Include="Model\AttributeDefault.cs" />
+    <Compile Include="Model\AttributeDefinition.cs" />
+    <Compile Include="Model\AttributeValue.cs" />
+    <Compile Include="Model\Comment.cs" />
+    <Compile Include="Model\DBC.cs" />
+    <Compile Include="Model\Message.cs" />
+    <Compile Include="Model\ObjAttributeValue.cs" />
+    <Compile Include="Model\Signal.cs" />
+    <Compile Include="Model\SignalValueDescription.cs" />
+    <Compile Include="Model\ValueDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

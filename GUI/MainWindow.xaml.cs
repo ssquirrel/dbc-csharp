@@ -15,8 +15,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using DbcLib.DBC.Model;
+using DbcLib.Model;
+using DbcLib.Excel.Reader;
+using DbcLib.Excel.Parser;
 using DbcLib.DBC.Parser;
+using DbcLib.DBC.Writer;
 
 namespace GUI
 {
@@ -105,19 +108,48 @@ namespace GUI
             //throw new Exception();
         }
 
-        async void Convert(object sender, RoutedEventArgs e)
+        private void ExcelToDBC()
         {
-            DbcParser parser = new DbcParser(from);
-            try
+            using (DbcWorkbook workbook = new DbcWorkbook(from))
             {
-                DBC dbc = await Task.Run(() => parser.Parse());
+                DbcSheet sheet = workbook.FirstOrDefault();
 
-                StatusText = dbc.Messages[0].Name;
-            }
-            catch (ParseException ex)
-            {
-                StatusText = ex.Message;
+                if (sheet == null)
+                {
+                    StatusText = "No DBC Sheet Found!";
+
+                    return;
+                }
+
+                ExcelParser parser = new ExcelParser();
+
+                DBC dbc = parser.Parse(sheet);
+
+                if (parser.Errors.Count != 0)
+                {
+                    StatusText = "Error Parsing DBC Sheet!";
+
+                    return;
+                }
+
+                using (DbcWriter writer = new DbcWriter(new StreamWriter(ToPath, false, Encoding.Default)))
+                {
+                    writer.Write(dbc);
+                }
+
+                StatusText = "Success!";
             }
         }
+
+        async void Convert(object sender, RoutedEventArgs e)
+        {
+            if (FromPath.EndsWith(".xlsx") || FromPath.EndsWith(".xls"))
+            {
+                await Task.Run(() => ExcelToDBC());
+            }
+
+
+        }
+
     }
 }

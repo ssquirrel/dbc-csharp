@@ -5,45 +5,59 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Runtime.Serialization;
+using DbcLib.DBC.Lex;
+using DbcLib.Model;
+
 namespace DbcLib.DBC.Parser
 {
-    using DBC.Lex;
-    using DBC.Model;
-
-    public class ParseException : Exception
+    [Serializable]
+    public class DbcParseException : Exception
     {
-        public ParseException() : base("Bad dbc file.")
+        public DbcParseException() : base("bad dbc file.")
         {
+        }
 
+        public DbcParseException(string message) : base(message)
+        {
+        }
+
+        public DbcParseException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        protected DbcParseException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
     }
 
-    public class DbcParser
+    public class DbcParser : IDisposable
     {
-        private String filename;
-
-        private DBC dbc;
+        private Model.DBC dbc = new Model.DBC();
         private TokenStream stream;
 
-        public DbcParser(String fn)
+        public static Model.DBC Parse(String fn)
         {
-            filename = fn;
+            using (DbcParser parser = new DbcParser(fn))
+            {
+                return parser.ParseImpl();
+            }
         }
 
-        public DBC Parse()
+        public void Dispose()
         {
-            if (dbc != null)
-                return dbc;
+            stream.Dispose();
+        }
 
-            dbc = new DBC();
+        private DbcParser(String fn)
+        {
+            stream = new TokenStream(fn);
+        }
 
-            using (Lexer lexer = new Lexer(filename))
-            {
-                List<Token> tokens = lexer.Lex();
-
-                stream = new TokenStream(tokens);
-            }
-
+        private Model.DBC ParseImpl()
+        {
             Version();
             NewSymbols();
             BitTiming();
@@ -72,25 +86,63 @@ namespace DbcLib.DBC.Parser
             return dbc;
         }
 
+        private Token EXPECT(string e)
+        {
+            Token t = stream.Consume(e);
+
+            if (t == TokenStream.Sentinel)
+                throw new DbcParseException();
+
+            return t;
+        }
+
+        private Token EXPECT(TokenType e)
+        {
+            Token t = stream.Consume(e);
+
+            if (t == TokenStream.Sentinel)
+                throw new DbcParseException();
+
+            return t;
+        }
+
+        private Token EXPECT(string e1, string e2)
+        {
+            {
+                Token t = stream.Consume(e1);
+
+                if (t != TokenStream.Sentinel)
+                    return t;
+            }
+
+            {
+                Token t = stream.Consume(e2);
+
+                if (t != TokenStream.Sentinel)
+                    return t;
+            }
+
+            throw new DbcParseException();
+        }
 
         private void Version()
         {
-            if (!stream.ConsumeIf(stream.Curr.Val == Keyword.VERSION))
+            if (!stream.ConsumeIf(stream.Peek().Val == Keyword.VERSION))
                 return;
 
-            dbc.Version = stream.Consume(TokenType.STRING).Val;
+            dbc.Version = EXPECT(TokenType.STRING).Val;
         }
 
         private void NewSymbols()
         {
-            if (!stream.ConsumeIf(stream.Curr.Val == Keyword.NEW_SYMBOLS))
+            if (!stream.ConsumeIf(stream.Peek().Val == Keyword.NEW_SYMBOLS))
                 return;
 
-            stream.Consume(":");
+            EXPECT(":");
 
-            while (stream.Curr.Val != Keyword.BIT_TIMING)
+            while (stream.Peek().Val != Keyword.BIT_TIMING)
             {
-                dbc.NewSymbols.Add(stream.Consume().Val);
+                dbc.NewSymbols.Add(stream.Read().Val);
             }
         }
 
@@ -99,32 +151,32 @@ namespace DbcLib.DBC.Parser
         //This section is obsolete. skip to the next mandatory section
         private void BitTiming()
         {
-            stream.Consume(Keyword.BIT_TIMING);
-            stream.Consume(":");
+            EXPECT(Keyword.BIT_TIMING);
+            EXPECT(":");
 
-            while (stream.ConsumeIf(stream.Curr.Val != Keyword.NODES)) { }
+            while (stream.ConsumeIf(stream.Peek().Val != Keyword.NODES)) { }
         }
 
         //'BU_' ':' {node_name} ;
         //node_name = C_identifier
         private void Nodes()
         {
-            stream.Consume(Keyword.NODES);
-            stream.Consume(":");
+            EXPECT(Keyword.NODES);
+            EXPECT(":");
 
-            while (stream.Curr.Type == TokenType.IDENTIFIER)
+            while (stream.Peek().Val != Keyword.MESSAGES)
             {
-                dbc.Nodes.Add(stream.Consume().Val);
+                dbc.Nodes.Add(stream.Read().Val);
             }
         }
 
         private void SkipValueTables()
         {
-            while (stream.ConsumeIf(stream.Curr.Val == Keyword.VALUE_TABLES))
+            while (stream.ConsumeIf(stream.Peek().Val == Keyword.VALUE_TABLES))
             {
-                while (stream.ConsumeIf(stream.Curr.Val != ";")) { }
+                while (stream.ConsumeIf(stream.Peek().Val != ";")) { }
 
-                stream.Consume();
+                stream.Read();
             }
         }
 
@@ -136,7 +188,7 @@ namespace DbcLib.DBC.Parser
         //transmitter = node_name | 'Vector__XXX' ;
         private void Messages()
         {
-            while (stream.ConsumeIf(stream.Curr.Val == Keyword.MESSAGES))
+            while (stream.ConsumeIf(stream.Peek().Val == Keyword.MESSAGES))
             {
                 Message msg = new Message
                 {
@@ -144,22 +196,22 @@ namespace DbcLib.DBC.Parser
                 };
                 dbc.Messages.Add(msg);
 
-                msg.MsgID = stream.Consume(TokenType.UNSIGNED).Val;
-                msg.Name = stream.Consume(TokenType.IDENTIFIER).Val;
+                msg.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+                msg.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
-                stream.Consume(":");
+                EXPECT(":");
 
-                msg.Size = stream.Consume(TokenType.UNSIGNED).Val;
-                msg.Transmitter = stream.Consume(TokenType.IDENTIFIER).Val;
+                msg.Size = EXPECT(TokenType.UNSIGNED).INT;
+                msg.Transmitter = EXPECT(TokenType.IDENTIFIER).Val;
 
-                while (stream.ConsumeIf(stream.Curr.Val == Keyword.SIGNAL))
+                while (stream.ConsumeIf(stream.Peek().Val == Keyword.SIGNAL))
                 {
                     msg.Signals.Add(Signal());
                 }
             }
 
             if (dbc.Messages.Count == 0)
-                throw new ParseException();
+                throw new DbcParseException();
         }
 
         //signal = 'SG_' signal_name multiplexer_indicator ':' start_bit '|'
@@ -182,37 +234,37 @@ namespace DbcLib.DBC.Parser
         {
             Signal signal = new Signal
             {
-                Name = stream.Consume(TokenType.IDENTIFIER).Val,
+                Name = EXPECT(TokenType.IDENTIFIER).Val,
                 Receivers = new List<string>()
             };
 
-            stream.Consume(":");
-            signal.StartBit = stream.Consume(TokenType.UNSIGNED).Val;
-            stream.Consume("|");
-            signal.SignalSize = stream.Consume(TokenType.UNSIGNED).Val;
-            stream.Consume("@");
-            signal.ByteOrder = stream.Consume("0", "1").Val;
-            signal.ValueType = stream.Consume("+", "-").Val;
+            EXPECT(":");
+            signal.StartBit = EXPECT(TokenType.UNSIGNED).INT;
+            EXPECT("|");
+            signal.SignalSize = EXPECT(TokenType.UNSIGNED).INT;
+            EXPECT("@");
+            signal.ByteOrder = EXPECT("0", "1").Val;
+            signal.ValueType = EXPECT("+", "-").Val;
 
-            stream.Consume("(");
-            signal.Factor = stream.Consume(TokenType.DOUBLE).Val;
-            stream.Consume(",");
-            signal.Offset = stream.Consume(TokenType.DOUBLE).Val;
-            stream.Consume(")");
+            EXPECT("(");
+            signal.Factor = EXPECT(TokenType.DOUBLE).DOUBLE;
+            EXPECT(",");
+            signal.Offset = EXPECT(TokenType.DOUBLE).DOUBLE;
+            EXPECT(")");
 
-            stream.Consume("[");
-            signal.Min = stream.Consume(TokenType.DOUBLE).Val;
-            stream.Consume("|");
-            signal.Max = stream.Consume(TokenType.DOUBLE).Val;
-            stream.Consume("]");
+            EXPECT("[");
+            signal.Min = EXPECT(TokenType.DOUBLE).DOUBLE;
+            EXPECT("|");
+            signal.Max = EXPECT(TokenType.DOUBLE).DOUBLE;
+            EXPECT("]");
 
-            signal.Unit = stream.Consume(TokenType.STRING).Val;
+            signal.Unit = EXPECT(TokenType.STRING).Val;
 
             do
             {
-                signal.Receivers.Add(stream.Consume(TokenType.IDENTIFIER).Val);
+                signal.Receivers.Add(EXPECT(TokenType.IDENTIFIER).Val);
 
-            } while (stream.ConsumeIf(stream.Curr.Val == ","));
+            } while (stream.ConsumeIf(stream.Peek().Val == ","));
 
 
             return signal;
@@ -220,187 +272,213 @@ namespace DbcLib.DBC.Parser
 
         private void JumpToComments()
         {
-            while (stream.ConsumeIf(stream.Curr.Val != Keyword.COMMENTS)) { }
+            while (stream.ConsumeIf(stream.Peek().Val != Keyword.COMMENTS)) { }
         }
 
         private void Comments()
         {
-            while (stream.ConsumeIf(stream.Curr.Val == Keyword.COMMENTS))
+            while (stream.ConsumeIf(stream.Peek().Val == Keyword.COMMENTS))
             {
-                if (stream.Curr.Type == TokenType.STRING)
+                if (stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
                 {
-                    dbc.Comments.Add(new Comment
-                    {
-                        Str = stream.Consume().Val
-                    });
+                    while (stream.ConsumeIf(stream.Peek().Val != ";")) { }
+                    stream.Read();
+
+                    continue;
                 }
-                else if (stream.Curr.Val == Keyword.NODES ||
-                    stream.Curr.Val == Keyword.ENVIRONMENT_VARIABLES)
+
+                Comment cm = new Comment { Type = "" };
+                dbc.Comments.Add(cm);
+
+                if (stream.Peek().Val == Keyword.NODES)
                 {
-                    dbc.Comments.Add(new Comment
-                    {
-                        Type = stream.Consume().Val,
-                        Name = stream.Consume(TokenType.IDENTIFIER).Val,
-                        Str = stream.Consume(TokenType.STRING).Val
-                    });
+                    cm.Type = stream.Read().Val;
+                    cm.NodeName = EXPECT(TokenType.IDENTIFIER).Val;
                 }
-                else if (stream.Curr.Val == Keyword.MESSAGES)
+                else if (stream.Peek().Val == Keyword.MESSAGES)
                 {
-                    dbc.Comments.Add(new Comment
-                    {
-                        Type = stream.Consume().Val,
-                        MsgID = stream.Consume(TokenType.UNSIGNED).Val,
-                        Str = stream.Consume(TokenType.STRING).Val
-                    });
+                    cm.Type = stream.Read().Val;
+                    cm.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+
                 }
-                else if (stream.Curr.Val == Keyword.SIGNAL)
+                else if (stream.Peek().Val == Keyword.SIGNAL)
                 {
-                    dbc.Comments.Add(new Comment
-                    {
-                        Type = stream.Consume().Val,
-                        MsgID = stream.Consume(TokenType.UNSIGNED).Val,
-                        Name = stream.Consume(TokenType.IDENTIFIER).Val,
-                        Str = stream.Consume(TokenType.STRING).Val
-                    });
+                    cm.Type = stream.Read().Val;
+                    cm.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+                    cm.SignalName = EXPECT(TokenType.IDENTIFIER).Val;
+
                 }
                 else
                 {
-                    throw new ParseException();
+                    throw new DbcParseException();
                 }
 
-                stream.Consume(";");
+                cm.Val = EXPECT(TokenType.STRING).Val;
+
+                EXPECT(";");
             }
         }
 
         private void AttributeDefinitions()
         {
-            while (stream.ConsumeIf(stream.Curr.Val == Keyword.ATTRIBUTE_DEFINITIONS))
+            while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_DEFINITIONS))
             {
+                if (stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
+                {
+                    while (stream.ConsumeIf(stream.Peek().Val != ";")) { }
+                    stream.Read();
+
+                    continue;
+                }
+
                 AttributeDefinition ad = new AttributeDefinition
                 {
-                    Values = new List<string>()
+                    ObjectType = ""
                 };
 
-                dbc.AttributeDefinitions.Add(ad);
 
-                switch (stream.Curr.Val)
+                if (stream.Peek().Val == Keyword.NODES ||
+                    stream.Peek().Val == Keyword.MESSAGES ||
+                    stream.Peek().Val == Keyword.SIGNAL)
                 {
-                    case Keyword.NODES:
-                    case Keyword.MESSAGES:
-                    case Keyword.SIGNAL:
-                    case Keyword.ENVIRONMENT_VARIABLES:
-                        ad.ObjectType = stream.Consume().Val;
-                        break;
+                    ad.ObjectType = stream.Read().Val;
                 }
 
-                ad.AttributeName = stream.Consume(TokenType.STRING).Val;
+                ad.AttributeName = EXPECT(TokenType.STRING | TokenType.IDENTIFIER).Val;
 
-                if (stream.Curr.Val == "INT" ||
-                    stream.Curr.Val == "HEX")
+                if (stream.Peek().Val == "INT" ||
+                    stream.Peek().Val == "HEX")
                 {
-                    ad.ValueType = stream.Consume().Val;
-                    ad.Values.Add(stream.Consume(TokenType.SIGNED).Val);
-                    ad.Values.Add(stream.Consume(TokenType.SIGNED).Val);
+                    ad.ValueType = stream.Read().Val;
+                    ad.Num1 = EXPECT(TokenType.SIGNED).INT;
+                    ad.Num2 = EXPECT(TokenType.SIGNED).INT;
                 }
-                else if (stream.Curr.Val == "FLOAT")
+                else if (stream.Peek().Val == "FLOAT")
                 {
-                    ad.ValueType = stream.Consume().Val;
-                    ad.Values.Add(stream.Consume(TokenType.DOUBLE).Val);
-                    ad.Values.Add(stream.Consume(TokenType.DOUBLE).Val);
+                    ad.ValueType = stream.Read().Val;
+                    ad.Num1 = EXPECT(TokenType.DOUBLE).DOUBLE;
+                    ad.Num2 = EXPECT(TokenType.DOUBLE).DOUBLE;
                 }
-                else if (stream.Curr.Val == "STRING")
+                else if (stream.Peek().Val == "STRING")
                 {
-                    ad.ValueType = stream.Consume().Val;
+                    ad.ValueType = stream.Read().Val;
                 }
-                else if (stream.Curr.Val == "ENUM")
+                else if (stream.Peek().Val == "ENUM")
                 {
-                    ad.ValueType = stream.Consume().Val;
+                    ad.ValueType = stream.Read().Val;
+                    ad.Values = new List<string>();
 
-                    while (stream.Curr.Type == TokenType.STRING)
+                    while (stream.Peek().Assert(TokenType.STRING))
                     {
-                        ad.Values.Add(stream.Consume().Val);
+                        ad.Values.Add(stream.Read().Val);
 
-                        if (!stream.ConsumeIf(stream.Curr.Val == ","))
+                        if (!stream.ConsumeIf(stream.Peek().Val == ","))
                             break;
                     }
                 }
                 else
                 {
-                    throw new ParseException();
+                    throw new DbcParseException();
                 }
 
-                stream.Consume(";");
+                dbc.AddAttrDefinition(ad);
+
+                EXPECT(";");
             }
+        }
+
+        private AttributeValue AttributeValues(string name)
+        {
+            AttributeDefinition attr = dbc.GetAttrDefinition(name);
+
+            if (attr == null)
+                throw new DbcParseException();
+
+            if (attr.ValueType == "ENUM" || attr.ValueType == "STRING")
+                return new AttributeValue
+                {
+                    Val = EXPECT(TokenType.STRING).Val
+                };
+
+            return new AttributeValue
+            {
+                Num = EXPECT(TokenType.DOUBLE).DOUBLE
+            };
+
         }
 
         private void AttributeDefaults()
         {
-            while (stream.ConsumeIf(stream.Curr.Val == Keyword.ATTRIBUTE_DEFAULTS))
+            while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_DEFAULTS))
             {
-                AttributeDefault ad = new AttributeDefault
+                string name = EXPECT(TokenType.STRING | TokenType.IDENTIFIER).Val;
+
+                dbc.AttributeDefaults.Add(new AttributeDefault
                 {
-                    AttributeName = stream.Consume(TokenType.STRING).Val,
-                    AttributeValue = AttributeValues()
-                };
+                    AttributeName = name,
+                    Value = AttributeValues(name)
+                });
 
-                if (!Lexer.IsIdentifier(ad.AttributeName))
-                    throw new ParseException();
 
-                dbc.AttributeDefaults.Add(ad);
-
-                stream.Consume(";");
+                EXPECT(";");
             }
-        }
-
-        private AttributeValue AttributeValues()
-        {
-            if (stream.Curr.Is(TokenType.DOUBLE))
-            {
-                return new AttributeValue { Num = stream.Consume().DOUBLE };
-            }
-
-            if (stream.Curr.Is(TokenType.STRING))
-            {
-                return new AttributeValue { Val = stream.Consume().Val };
-            }
-
-            throw new ParseException();
         }
 
         private void ObjAttributeValues()
         {
-            while (stream.ConsumeIf(stream.Curr.Val == Keyword.ATTRIBUTE_VALUES))
+            while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_VALUES))
             {
-                ObjAttributeValue av = new ObjAttributeValue();
-                dbc.AttributeValues.Add(av);
+                string name = EXPECT(TokenType.STRING | TokenType.IDENTIFIER).Val;
 
-                av.AttributeName = stream.Consume(TokenType.STRING).Val;
+                if (stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
+                {
+                    while (stream.ConsumeIf(stream.Peek().Val != ";")) { }
+                    stream.Read();
 
-                if (!Lexer.IsIdentifier(av.AttributeName))
-                    throw new ParseException();
-
-                if (stream.Curr.Val == Keyword.NODES ||
-                    stream.Curr.Val == Keyword.ENVIRONMENT_VARIABLES)
-                {
-                    av.Type = stream.Consume().Val;
-                    av.Name = stream.Consume(TokenType.IDENTIFIER).Val;
-                }
-                else if (stream.Curr.Val == Keyword.MESSAGES)
-                {
-                    av.Type = stream.Consume().Val;
-                    av.MsgID = stream.Consume(TokenType.UNSIGNED).Val;
-                }
-                else if (stream.Curr.Val == Keyword.SIGNAL)
-                {
-                    av.Type = stream.Consume().Val;
-                    av.MsgID = stream.Consume(TokenType.UNSIGNED).Val;
-                    av.Name = stream.Consume(TokenType.IDENTIFIER).Val;
+                    continue;
                 }
 
-                av.AttributeValue = AttributeValues();
+                ObjAttributeValue oav = new ObjAttributeValue();
+                dbc.AttributeValues.Add(oav);
 
-                stream.Consume(";");
+                oav.AttributeName = name;
+                oav.Type = "";
+
+                if (stream.Peek().Val == Keyword.NODES)
+                {
+                    oav.Type = stream.Read().Val;
+                    oav.NodeName = EXPECT(TokenType.IDENTIFIER).Val;
+
+                }
+                else if (stream.Peek().Val == Keyword.MESSAGES)
+                {
+                    oav.Type = stream.Read().Val;
+                    oav.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+
+                }
+                else if (stream.Peek().Val == Keyword.SIGNAL)
+                {
+                    oav.Type = stream.Read().Val;
+                    oav.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+                    oav.SignalName = EXPECT(TokenType.IDENTIFIER).Val;
+
+                }
+
+                oav.Value = AttributeValues(name);
+
+                EXPECT(";");
             }
+        }
+
+        private ValueDesc ValueDescriptions()
+        {
+            ValueDesc vd = new ValueDesc
+            {
+                Num = EXPECT(TokenType.DOUBLE).DOUBLE,
+                Val = EXPECT(TokenType.STRING).Val
+            };
+
+            return vd;
         }
 
         //value_descriptions = { value_descriptions_for_signal | value_descriptions_for_env_var } ;
@@ -412,32 +490,22 @@ namespace DbcLib.DBC.Parser
         //value_description = double char_string
         private void SignalValueDescriptions()
         {
-            while (stream.ConsumeIf(stream.Curr.Val == Keyword.VALUE_DESCRIPTIONS))
+            while (stream.ConsumeIf(stream.Peek().Val == Keyword.VALUE_DESCRIPTIONS))
             {
                 SignalValueDescription vd = new SignalValueDescription
                 {
-                    MsgID = stream.Consume(TokenType.UNSIGNED).Val,
-                    Name = stream.Consume(TokenType.IDENTIFIER).Val,
+                    MsgID = EXPECT(TokenType.UNSIGNED).INT,
+                    Name = EXPECT(TokenType.IDENTIFIER).Val,
                     Descs = new List<ValueDesc>()
                 };
                 dbc.ValueDescriptions.Add(vd);
 
-                while (!stream.ConsumeIf(stream.Curr.Val == ";"))
+                while (!stream.ConsumeIf(stream.Peek().Val == ";"))
                 {
                     vd.Descs.Add(ValueDescriptions());
                 }
             }
         }
 
-        private ValueDesc ValueDescriptions()
-        {
-            ValueDesc vd = new ValueDesc
-            {
-                Num = stream.Consume(TokenType.DOUBLE).Val,
-                Str = stream.Consume(TokenType.STRING).Val
-            };
-
-            return vd;
-        }
     }
 }
