@@ -12,6 +12,9 @@ namespace DbcLib.Model
         private IDictionary<string, AttributeDefinition> attributeDefinitions =
             new Dictionary<string, AttributeDefinition>();
 
+        private IDictionary<string, AttributeDefault> attributeDefaults =
+            new Dictionary<string, AttributeDefault>();
+
         public string Version { get; set; } = "";
         public IList<string> NewSymbols { get; } = new List<string>();
         //BIT_TIMING
@@ -28,8 +31,8 @@ namespace DbcLib.Model
 
         //SIGTYPE_ATTR_LIST
 
-        public IList<AttributeDefault> AttributeDefaults { get; } =
-            new List<AttributeDefault>();
+        public IEnumerable<AttributeDefault>
+        AttributeDefaults => attributeDefaults.Values;
 
         public IList<ObjAttributeValue> AttributeValues { get; } =
             new List<ObjAttributeValue>();
@@ -58,5 +61,21 @@ namespace DbcLib.Model
 
             return null;
         }
+
+        public void AddAttrDefault(AttributeDefault ad)
+        {
+            attributeDefaults.Add(ad.AttributeName, ad);
+
+        }
+
+        public AttributeDefault GetAttrDefault(string name)
+        {
+            if (attributeDefaults.TryGetValue(name,
+                out AttributeDefault ad))
+                return ad;
+
+            return null;
+        }
+
     }
 }

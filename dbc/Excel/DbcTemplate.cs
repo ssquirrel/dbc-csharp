@@ -4,133 +4,76 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DbcLib.DBC.Parser;
 using DbcLib.Model;
 
 namespace DbcLib.Excel
 {
-    static class DbcTemplate
+    class DbcTemplate
     {
-        public static readonly string
-        SendType_Cyclic = "Cyclic";
+        public static readonly string Attr_MsgSendType = "GenMsgSendType";
+        public static readonly string Attr_MsgCycleTime = "GenMsgCycleTime";
 
-        public static readonly string
-        SendType_IfActive = "IfActive";
+        public static readonly int MsgSendType_Cyclic = 0;
+        public static readonly int MsgSendType_IfActive = 7;
 
-        public static readonly AttributeDefinition
-        MsgSendType = new AttributeDefinition
+
+        private int msgSendTypeDefault = -1;
+        private int msgCycleTimeDefault = -1;
+
+        public DbcTemplate(string template)
         {
-            AttributeName = "GenMsgSendType",
-            ObjectType = Keyword.MESSAGES,
-            ValueType = "ENUM",
-            Values = new List<string> {
-                    SendType_Cyclic,
-                    SendType_IfActive,
-                    "NoMsgSendType"
-                }
-        };
+            DBC = DbcParser.Parse(template);
 
-        public static readonly AttributeDefinition
-        MsgCycleTime = new AttributeDefinition
-        {
-            AttributeName = "GenMsgCycleTime",
-            ObjectType = Keyword.MESSAGES,
-            ValueType = "INT",
-            Num1 = 0,
-            Num2 = 10000
-        };
-
-        public static readonly AttributeDefinition
-        SigStartValue = new AttributeDefinition
-        {
-            AttributeName = "GenSigStartValue",
-            ObjectType = Keyword.SIGNAL,
-            ValueType = "INT",
-            Num1 = 0,
-            Num2 = 7
-        };
-
-        public static readonly AttributeDefault
-        MsgSendTypeDefault = new AttributeDefault
-        {
-            AttributeName = MsgSendType.AttributeName,
-            Value = new AttributeValue
+            AttributeDefault st = DBC.GetAttrDefault(Attr_MsgSendType);
+            if (st != null)
             {
-                Val = "Cyclic"
+                msgSendTypeDefault = (int)st.Value.Num;
             }
-        };
 
-        public static readonly AttributeDefault
-        MsgCycleTimeDefault = new AttributeDefault
-        {
-            AttributeName = MsgCycleTime.AttributeName,
-            Value = new AttributeValue
+
+            AttributeDefault ct = DBC.GetAttrDefault(Attr_MsgCycleTime);
+            if (ct != null)
             {
-                Num = 100
+                msgCycleTimeDefault = (int)ct.Value.Num;
             }
-        };
 
-        public static readonly AttributeDefault
-        SigStartValueDefault = new AttributeDefault
-        {
-            AttributeName = SigStartValue.AttributeName,
-            Value = new AttributeValue
-            {
-                Num = 0
-            }
-        };
-
-        public static Model.DBC NewDbcObject()
-        {
-            Model.DBC dbc = new Model.DBC();
-
-            dbc.Version = "";
-
-            dbc.AddAttrDefinition(MsgSendType);
-            dbc.AddAttrDefinition(MsgCycleTime);
-            dbc.AddAttrDefinition(SigStartValue);
-
-            dbc.AttributeDefaults.Add(MsgSendTypeDefault);
-            dbc.AttributeDefaults.Add(MsgCycleTimeDefault);
-            dbc.AttributeDefaults.Add(SigStartValueDefault);
-
-            return dbc;
         }
 
-        public static ObjAttributeValue
-        NewMsgCycleTime(int id, int time)
+        public void SetMsgSendType(int id, int type)
         {
-            if (time == MsgCycleTimeDefault.Value.Num)
-                return null;
+            if (type == msgSendTypeDefault)
+                return;
 
-            return new ObjAttributeValue
+            DBC.AttributeValues.Add(new ObjAttributeValue
             {
-                AttributeName = SendType_Cyclic,
+                AttributeName = Attr_MsgSendType,
+                Type = Keyword.MESSAGES,
+                MsgID = id,
+                Value = new AttributeValue
+                {
+                    Num = type
+                }
+            });
+        }
+
+        public void SetMsgCycleTime(int id, int time)
+        {
+            if (time < 0 || time == msgCycleTimeDefault)
+                return;
+
+            DBC.AttributeValues.Add(new ObjAttributeValue
+            {
+                AttributeName = Attr_MsgCycleTime,
                 Type = Keyword.MESSAGES,
                 MsgID = id,
                 Value = new AttributeValue
                 {
                     Num = time
                 }
-            };
+            });
         }
 
-        public static ObjAttributeValue
-        NewMsgSendType(int id, string type)
-        {
-            if (type == MsgCycleTimeDefault.Value.Val)
-                return null;
-
-            return new ObjAttributeValue
-            {
-                AttributeName = MsgCycleTime.AttributeName,
-                Type = Keyword.MESSAGES,
-                MsgID = id,
-                Value = new AttributeValue
-                {
-                    Val = type
-                }
-            };
-        }
-
+        public Model.DBC DBC { get; }
     }
 }

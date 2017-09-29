@@ -20,12 +20,8 @@ namespace dbc_test
 {
     class Program
     {
-
-
-
         static void Main(string[] args)
         {
-
             DbcWorkbook workbook = new DbcWorkbook("sample.xlsx");
 
             DbcSheet sheet = workbook.Take(1).Single();
@@ -33,7 +29,7 @@ namespace dbc_test
             ExcelParser parser = new ExcelParser();
             DBC dbc = parser.Parse(sheet);
 
-            
+
             using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
             {
                 //DBC dbc = DbcParser.Parse("sample.dbc");
@@ -49,6 +45,8 @@ namespace dbc_test
             {
                 writer.Write(dbc);
             }
+
+
         }
 
 
@@ -68,7 +66,6 @@ namespace dbc_test
         {
             try
             {
-
 
 
 

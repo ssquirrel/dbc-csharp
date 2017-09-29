@@ -27,7 +27,7 @@ namespace DbcLib.Excel.Parser
 
         public Model.DBC Parse(DbcSheet sheet)
         {
-            Model.DBC dbc = DbcTemplate.NewDbcObject();
+            DbcTemplate template = new DbcTemplate("Template.dbc");
 
             Message parent = null;
             foreach (var row in sheet)
@@ -40,19 +40,21 @@ namespace DbcLib.Excel.Parser
                 switch (row.RowType)
                 {
                     case RowType.Msg:
-                        parent = NewMessage(parsed, dbc);
+                        parent = NewMessage(parsed, template);
                         break;
                     case RowType.Signal:
-                        NewSignal(parsed, parent, dbc);
+                        NewSignal(parsed, parent, template);
                         break;
                 }
             }
 
-            return dbc;
+            return template.DBC;
         }
 
-        private Message NewMessage(ParsedRow row, Model.DBC dbc)
+        private Message NewMessage(ParsedRow row, DbcTemplate template)
         {
+            var dbc = template.DBC;
+
             Message msg = new Message
             {
                 MsgID = row.MsgID,
@@ -63,20 +65,8 @@ namespace DbcLib.Excel.Parser
             };
             dbc.Messages.Add(msg);
 
-            var st = DbcTemplate.NewMsgSendType(msg.MsgID, row.MsgSendType);
-
-            if (st != null)
-            {
-                dbc.AttributeValues.Add(st);
-            }
-            else
-            {
-                var ct = DbcTemplate.NewMsgCycleTime(msg.MsgID, row.MsgCycleTime);
-
-                if (ct != null)
-                    dbc.AttributeValues.Add(ct);
-            }
-
+            template.SetMsgSendType(msg.MsgID, row.MsgSendType);
+            template.SetMsgCycleTime(msg.MsgID, row.MsgCycleTime);
 
             if (row.MsgComment.Length > 0)
                 dbc.Comments.Add(new Comment
@@ -90,8 +80,10 @@ namespace DbcLib.Excel.Parser
         }
 
         private static void
-        NewSignal(ParsedRow row, Message msg, Model.DBC dbc)
+        NewSignal(ParsedRow row, Message msg, DbcTemplate template)
         {
+            var dbc = template.DBC;
+
             msg.Signals.Add(new Signal
             {
                 Name = row.SignalName,

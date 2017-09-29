@@ -106,24 +106,24 @@ namespace DbcLib.Excel.Parser
             return 0;
         }
 
-        public string MsgSendType(DbcRow row)
+        public int MsgSendType(DbcRow row)
         {
             bool cyclic = row.FixedPeriodic != DbcRow.EmptyCell;
             bool ifActive = row.Event != DbcRow.EmptyCell;
             bool TBD = row.PeriodicEvent != DbcRow.EmptyCell;
 
             if (cyclic && !ifActive && !TBD)
-                return DbcTemplate.SendType_Cyclic;
+                return DbcTemplate.MsgSendType_Cyclic;
 
             if (ifActive && !cyclic && !TBD)
-                return DbcTemplate.SendType_IfActive;
+                return DbcTemplate.MsgSendType_IfActive;
 
             if (TBD && !cyclic && !ifActive)
-                return "TBD"; //?????
+                return 2; //?????
 
             errors.Add(new ParseError("", row.FixedPeriodic));
 
-            return "";
+            return 0;
         }
 
         public int StartBit(DbcCell cell)
@@ -247,7 +247,7 @@ namespace DbcLib.Excel.Parser
         public abstract string Transmitter { get; }
         public abstract int MsgID { get; }
         public abstract string MsgName { get; }
-        public abstract string MsgSendType { get; }
+        public abstract int MsgSendType { get; }
         public abstract int MsgCycleTime { get; }
         public abstract int MsgSize { get; }
         public abstract string SignalName { get; }
@@ -279,14 +279,16 @@ namespace DbcLib.Excel.Parser
             MsgSize = ct.Unsigned(row.MsgSize);
             MsgComment = ct.String(row.MsgComment);
 
-            if (MsgSendType == DbcTemplate.SendType_Cyclic)
+            if (MsgSendType == DbcTemplate.MsgSendType_Cyclic)
                 MsgCycleTime = ct.Unsigned(row.FixedPeriodic);
+            else
+                MsgCycleTime = -1;
         }
 
         public override string Transmitter { get; }
         public override int MsgID { get; }
         public override string MsgName { get; }
-        public override string MsgSendType { get; }
+        public override int MsgSendType { get; }
         public override int MsgCycleTime { get; }
         public override int MsgSize { get; }
         public override string MsgComment { get; }
@@ -344,7 +346,7 @@ namespace DbcLib.Excel.Parser
         public override string Transmitter => throw new NotImplementedException();
         public override int MsgID => throw new NotImplementedException();
         public override string MsgName => throw new NotImplementedException();
-        public override string MsgSendType => throw new NotImplementedException();
+        public override int MsgSendType => throw new NotImplementedException();
         public override int MsgCycleTime => throw new NotImplementedException();
         public override int MsgSize => throw new NotImplementedException();
         public override string MsgComment => throw new NotImplementedException();

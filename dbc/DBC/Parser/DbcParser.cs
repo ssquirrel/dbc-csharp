@@ -69,14 +69,24 @@ namespace DbcLib.DBC.Parser
             //ENVIRONMENT_VARIABLES
             //ENVIRONMENT_VARIABLES_DATA
             //SIGNAL_TYPES
-            JumpToComments();
 
-            Comments();
-            AttributeDefinitions();
-            //SIGTYPE_ATTR_LIST
-            AttributeDefaults();
-            ObjAttributeValues();
-            SignalValueDescriptions();
+            while (!stream.EndOfStream)
+            {
+                Token curr = stream.Peek();
+
+                Comments();
+                AttributeDefinitions();
+                //SIGTYPE_ATTR_LIST
+                AttributeDefaults();
+                ObjAttributeValues();
+                SignalValueDescriptions();
+
+                if (curr != stream.Peek())
+                    break;
+
+                stream.Read();
+            }
+
             //CATEGORY_DEFINITIONS
             //CATEGORIES
             //FILTER
@@ -164,7 +174,7 @@ namespace DbcLib.DBC.Parser
             EXPECT(Keyword.NODES);
             EXPECT(":");
 
-            while (stream.Peek().Val != Keyword.MESSAGES)
+            while (!Keyword.IsKeyword(stream.Peek().Val))
             {
                 dbc.Nodes.Add(stream.Read().Val);
             }
@@ -209,9 +219,6 @@ namespace DbcLib.DBC.Parser
                     msg.Signals.Add(Signal());
                 }
             }
-
-            if (dbc.Messages.Count == 0)
-                throw new DbcParseException();
         }
 
         //signal = 'SG_' signal_name multiplexer_indicator ':' start_bit '|'
@@ -268,11 +275,6 @@ namespace DbcLib.DBC.Parser
 
 
             return signal;
-        }
-
-        private void JumpToComments()
-        {
-            while (stream.ConsumeIf(stream.Peek().Val != Keyword.COMMENTS)) { }
         }
 
         private void Comments()
@@ -387,38 +389,26 @@ namespace DbcLib.DBC.Parser
             }
         }
 
-        private AttributeValue AttributeValues(string name)
-        {
-            AttributeDefinition attr = dbc.GetAttrDefinition(name);
-
-            if (attr == null)
-                throw new DbcParseException();
-
-            if (attr.ValueType == "ENUM" || attr.ValueType == "STRING")
-                return new AttributeValue
-                {
-                    Val = EXPECT(TokenType.STRING).Val
-                };
-
-            return new AttributeValue
-            {
-                Num = EXPECT(TokenType.DOUBLE).DOUBLE
-            };
-
-        }
-
         private void AttributeDefaults()
         {
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_DEFAULTS))
             {
                 string name = EXPECT(TokenType.STRING | TokenType.IDENTIFIER).Val;
 
-                dbc.AttributeDefaults.Add(new AttributeDefault
-                {
-                    AttributeName = name,
-                    Value = AttributeValues(name)
-                });
+                AttributeDefinition attr = dbc.GetAttrDefinition(name);
 
+                if (attr == null)
+                    throw new DbcParseException();
+
+                AttributeDefault ad = new AttributeDefault();
+                ad.AttributeName = name;
+
+                if (attr.ValueType == "ENUM" || attr.ValueType == "STRING")
+                    ad.Value.Val = EXPECT(TokenType.STRING).Val;
+                else
+                    ad.Value.Num = EXPECT(TokenType.DOUBLE).DOUBLE;
+
+                dbc.AddAttrDefault(ad);
 
                 EXPECT(";");
             }
@@ -437,6 +427,11 @@ namespace DbcLib.DBC.Parser
 
                     continue;
                 }
+
+                AttributeDefinition attr = dbc.GetAttrDefinition(name);
+
+                if (attr == null)
+                    throw new DbcParseException();
 
                 ObjAttributeValue oav = new ObjAttributeValue();
                 dbc.AttributeValues.Add(oav);
@@ -464,7 +459,10 @@ namespace DbcLib.DBC.Parser
 
                 }
 
-                oav.Value = AttributeValues(name);
+                if (attr.ValueType == "STRING")
+                    oav.Value.Val = EXPECT(TokenType.STRING).Val;
+                else
+                    oav.Value.Num = EXPECT(TokenType.DOUBLE).DOUBLE;
 
                 EXPECT(";");
             }
@@ -506,6 +504,7 @@ namespace DbcLib.DBC.Parser
                 }
             }
         }
+
 
     }
 }
