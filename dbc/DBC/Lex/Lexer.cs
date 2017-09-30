@@ -28,19 +28,6 @@ namespace DbcLib.DBC.Lex
             if (curr.Assert(t))
                 return Read();
 
-            if (t.HasFlag(TokenType.STRING) && curr.Assert(TokenType.STRING))
-            {
-                switch (t & ~TokenType.STRING)
-                {
-                    case TokenType.IDENTIFIER:
-                        if (IsIdentifier(curr.Val))
-                            return Read();
-
-                        break;
-                }
-            }
-
-
             return Sentinel;
         }
 

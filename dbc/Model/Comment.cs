@@ -11,9 +11,8 @@ namespace DbcLib.Model
     public class Comment
     {
         public string Type { get; set; }
-        public string NodeName { get; set; }
+        public string Name { get; set; }
         public int MsgID { get; set; }
-        public string SignalName { get; set; }
         public string Val { get; set; }
     }
 }

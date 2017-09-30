@@ -10,9 +10,8 @@ namespace DbcLib.Model
     {
         public string AttributeName { get; set; }
         public string Type { get; set; }
-        public string NodeName { get; set; }
+        public string Name { get; set; }
         public int MsgID { get; set; }
-        public string SignalName { get; set; }
 
         public AttributeValue Value { get; set; }
     }

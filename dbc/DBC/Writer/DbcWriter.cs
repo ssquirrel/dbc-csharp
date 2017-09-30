@@ -152,24 +152,32 @@ namespace DbcLib.DBC.Writer
         {
             foreach (Comment cm in comments)
             {
-                writer.Write(Keyword.COMMENTS + " " + cm.Type + " ");
 
-                if (cm.Type == Keyword.NODES)
+                writer.Write("{0} {1} ",
+                    Keyword.COMMENTS,
+                    cm.Type ?? "");
+
+                switch (cm.Type)
                 {
-                    writer.Write(cm.NodeName + " ");
+                    case Keyword.NODES:
+                    case Keyword.ENVIRONMENT_VARIABLES:
 
+                        writer.Write(cm.Name + " ");
+
+                        break;
+
+                    case Keyword.MESSAGES:
+
+                        writer.Write(cm.MsgID + " ");
+
+                        break;
+
+                    case Keyword.SIGNAL:
+
+                        writer.Write(cm.MsgID + " " + cm.Name + " ");
+
+                        break;
                 }
-                else if (cm.Type == Keyword.MESSAGES)
-                {
-                    writer.Write(cm.MsgID + " ");
-
-                }
-                else if (cm.Type == Keyword.SIGNAL)
-                {
-                    writer.Write(cm.MsgID + " " + cm.SignalName + " ");
-
-                }
-
 
                 writer.WriteLine("\"{0}\";", cm.Val);
             }
@@ -182,7 +190,7 @@ namespace DbcLib.DBC.Writer
             {
                 writer.Write("{0} {1} \"{2}\" {3} ",
                     Keyword.ATTRIBUTE_DEFINITIONS,
-                    ad.ObjectType.Length == 0 ? "" : ad.ObjectType + " ",
+                    ad.ObjectType == null ? "" : ad.ObjectType + " ",
                     ad.AttributeName,
                     ad.ValueType);
 
@@ -235,23 +243,29 @@ namespace DbcLib.DBC.Writer
                     Keyword.ATTRIBUTE_VALUES,
                     av.AttributeName);
 
-                if (av.Type.Length > 0)
+                if (av.Type != null)
                     writer.Write(" " + av.Type);
 
-                if (av.Type == Keyword.NODES)
+                switch (av.Type)
                 {
-                    writer.Write(" " + av.NodeName);
+                    case Keyword.NODES:
+                    case Keyword.ENVIRONMENT_VARIABLES:
 
-                }
-                else if (av.Type == Keyword.MESSAGES)
-                {
-                    writer.Write(" " + av.MsgID);
+                        writer.Write(" " + av.Name);
 
-                }
-                else if (av.Type == Keyword.SIGNAL)
-                {
-                    writer.Write(" " + av.MsgID + " " + av.SignalName);
+                        break;
 
+                    case Keyword.MESSAGES:
+
+                        writer.Write(" " + av.MsgID);
+
+                        break;
+
+                    case Keyword.SIGNAL:
+
+                        writer.Write(" " + av.MsgID + " " + av.Name);
+
+                        break;
                 }
 
                 if (av.Value.Type == AttrValType.String)

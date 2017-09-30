@@ -8,6 +8,7 @@ namespace DbcLib.Model
 {
     public enum AttrValType
     {
+        None,
         Number,
         String
     }

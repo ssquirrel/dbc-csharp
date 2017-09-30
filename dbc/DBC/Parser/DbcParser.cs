@@ -281,21 +281,14 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.COMMENTS))
             {
-                if (stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
-                {
-                    while (stream.ConsumeIf(stream.Peek().Val != ";")) { }
-                    stream.Read();
-
-                    continue;
-                }
-
-                Comment cm = new Comment { Type = "" };
+                Comment cm = new Comment();
                 dbc.Comments.Add(cm);
 
-                if (stream.Peek().Val == Keyword.NODES)
+                if (stream.Peek().Val == Keyword.NODES ||
+                    stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
                 {
                     cm.Type = stream.Read().Val;
-                    cm.NodeName = EXPECT(TokenType.IDENTIFIER).Val;
+                    cm.Name = EXPECT(TokenType.IDENTIFIER).Val;
                 }
                 else if (stream.Peek().Val == Keyword.MESSAGES)
                 {
@@ -307,7 +300,7 @@ namespace DbcLib.DBC.Parser
                 {
                     cm.Type = stream.Read().Val;
                     cm.MsgID = EXPECT(TokenType.UNSIGNED).INT;
-                    cm.SignalName = EXPECT(TokenType.IDENTIFIER).Val;
+                    cm.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
                 }
                 else
@@ -325,28 +318,18 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_DEFINITIONS))
             {
-                if (stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
-                {
-                    while (stream.ConsumeIf(stream.Peek().Val != ";")) { }
-                    stream.Read();
-
-                    continue;
-                }
-
-                AttributeDefinition ad = new AttributeDefinition
-                {
-                    ObjectType = ""
-                };
-
-
+                AttributeDefinition ad = new AttributeDefinition();
+                
                 if (stream.Peek().Val == Keyword.NODES ||
                     stream.Peek().Val == Keyword.MESSAGES ||
-                    stream.Peek().Val == Keyword.SIGNAL)
+                    stream.Peek().Val == Keyword.SIGNAL ||
+                    //To pass all tests include EV_
+                    stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
                 {
                     ad.ObjectType = stream.Read().Val;
                 }
 
-                ad.AttributeName = EXPECT(TokenType.STRING | TokenType.IDENTIFIER).Val;
+                ad.AttributeName = EXPECT(TokenType.STRING).Val;
 
                 if (stream.Peek().Val == "INT" ||
                     stream.Peek().Val == "HEX")
@@ -368,14 +351,14 @@ namespace DbcLib.DBC.Parser
                 else if (stream.Peek().Val == "ENUM")
                 {
                     ad.ValueType = stream.Read().Val;
-                    ad.Values = new List<string>();
+                    ad.Values = new List<string> {
+                        //expects at least one enum
+                        EXPECT(TokenType.STRING).Val
+                    };
 
-                    while (stream.Peek().Assert(TokenType.STRING))
+                    while (stream.ConsumeIf(stream.Peek().Val == ","))
                     {
-                        ad.Values.Add(stream.Read().Val);
-
-                        if (!stream.ConsumeIf(stream.Peek().Val == ","))
-                            break;
+                        ad.Values.Add(EXPECT(TokenType.STRING).Val);
                     }
                 }
                 else
@@ -393,15 +376,18 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_DEFAULTS))
             {
-                string name = EXPECT(TokenType.STRING | TokenType.IDENTIFIER).Val;
+                string name = EXPECT(TokenType.STRING).Val;
 
                 AttributeDefinition attr = dbc.GetAttrDefinition(name);
 
                 if (attr == null)
                     throw new DbcParseException();
 
-                AttributeDefault ad = new AttributeDefault();
-                ad.AttributeName = name;
+                AttributeDefault ad = new AttributeDefault
+                {
+                    AttributeName = name,
+                    Value = new AttributeValue()
+                };
 
                 if (attr.ValueType == "ENUM" || attr.ValueType == "STRING")
                     ad.Value.Val = EXPECT(TokenType.STRING).Val;
@@ -418,31 +404,26 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_VALUES))
             {
-                string name = EXPECT(TokenType.STRING | TokenType.IDENTIFIER).Val;
-
-                if (stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
-                {
-                    while (stream.ConsumeIf(stream.Peek().Val != ";")) { }
-                    stream.Read();
-
-                    continue;
-                }
+                string name = EXPECT(TokenType.STRING).Val;
 
                 AttributeDefinition attr = dbc.GetAttrDefinition(name);
 
                 if (attr == null)
                     throw new DbcParseException();
 
-                ObjAttributeValue oav = new ObjAttributeValue();
+                ObjAttributeValue oav = new ObjAttributeValue
+                {
+                    AttributeName = name,
+                    Value = new AttributeValue()
+                };
+
                 dbc.AttributeValues.Add(oav);
 
-                oav.AttributeName = name;
-                oav.Type = "";
-
-                if (stream.Peek().Val == Keyword.NODES)
+                if (stream.Peek().Val == Keyword.NODES ||
+                    stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
                 {
                     oav.Type = stream.Read().Val;
-                    oav.NodeName = EXPECT(TokenType.IDENTIFIER).Val;
+                    oav.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
                 }
                 else if (stream.Peek().Val == Keyword.MESSAGES)
@@ -455,7 +436,7 @@ namespace DbcLib.DBC.Parser
                 {
                     oav.Type = stream.Read().Val;
                     oav.MsgID = EXPECT(TokenType.UNSIGNED).INT;
-                    oav.SignalName = EXPECT(TokenType.IDENTIFIER).Val;
+                    oav.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
                 }
 
