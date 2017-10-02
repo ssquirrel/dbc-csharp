@@ -168,10 +168,8 @@ namespace DbcLib.Excel.Reader
             {
                 string trimed = cell.StringCellValue.Trim();
 
-                if (trimed.Length == 0)
-                    return EmptyCell;
-
-                return new DbcCell(trimed);
+                if (trimed.Length != 0)
+                    return new DbcCell(trimed);
             }
 
             return EmptyCell;

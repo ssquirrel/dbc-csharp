@@ -50,6 +50,8 @@ namespace DbcLib.DBC.Writer
             //SIGNAL_TYPE_REFS
             //SIGNAL_GROUPS
             //SIGNAL_EXTENDED_VALUE_TYPE_LIST
+
+            writer.Flush();
         }
 
         private void WriteList(IEnumerable<string> enumerable)

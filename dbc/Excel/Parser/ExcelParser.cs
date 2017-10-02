@@ -8,7 +8,7 @@ using System.Globalization;
 
 using DbcLib.Excel.Reader;
 using DbcLib.Model;
-using DbcLib.DBC.Lex;
+using DbcLib.DBC.Parser;
 using System.Collections;
 using NPOI.SS.UserModel;
 
@@ -27,94 +27,121 @@ namespace DbcLib.Excel.Parser
 
         public Model.DBC Parse(DbcSheet sheet)
         {
-            DbcTemplate template = new DbcTemplate("Template.dbc");
+            Model.DBC dbc = DbcTemplate.LoadTemplate("Template.dbc");
 
             Message parent = null;
             foreach (var row in sheet)
             {
-                var parsed = parser.Parse(row);
-
-                if (Errors.Count > 0)
-                    continue;
-
-                switch (row.RowType)
+                if (row.RowType == RowType.Msg)
                 {
-                    case RowType.Msg:
-                        parent = NewMessage(parsed, template);
-                        break;
-                    case RowType.Signal:
-                        NewSignal(parsed, parent, template);
-                        break;
+                    parent = NewMessage(row, dbc);
                 }
+                else if (row.RowType == RowType.Signal)
+                {
+                    NewSignal(row, parent, dbc);
+                }
+
             }
 
-            return template.DBC;
+            return dbc;
         }
 
-        private Message NewMessage(ParsedRow row, DbcTemplate template)
+        private Message NewMessage(DbcRow row, Model.DBC dbc)
         {
-            var dbc = template.DBC;
+            Message msg = new Message();
+            msg.MsgID = parser.Hex(row.MsgID);
+            msg.Name = parser.Identifier(row.MsgName);
+            msg.Size = parser.Unsigned(row.MsgSize);
+            msg.Transmitter = parser.Identifier(row.Transmitter);
+            msg.Signals = new List<Signal>();
 
-            Message msg = new Message
-            {
-                MsgID = row.MsgID,
-                Name = row.MsgName,
-                Size = row.MsgSize,
-                Transmitter = row.Transmitter,
-                Signals = new List<Signal>()
-            };
+            string comment = parser.String(row.MsgComment);
+            int sendType = parser.MsgSendType(row);
+            int cycleTime = sendType == DbcTemplate.MsgSendType_Cyclic ?
+                cycleTime = parser.Unsigned(row.FixedPeriodic) : 0;
+
+            if (parser.Errors.Any())
+                return null;
+
             dbc.Messages.Add(msg);
 
-            template.SetMsgSendType(msg.MsgID, row.MsgSendType);
-            template.SetMsgCycleTime(msg.MsgID, row.MsgCycleTime);
+            if (sendType == DbcTemplate.MsgSendTypeDefault)
+                dbc.AttributeValues.Add(new ObjAttributeValue
+                {
+                    AttributeName = DbcTemplate.Attr_MsgSendType,
+                    Type = Keyword.MESSAGES,
+                    MsgID = msg.MsgID,
+                    Value = new AttributeValue
+                    {
+                        Num = sendType
+                    }
+                });
+            else if (cycleTime != DbcTemplate.MsgCycleTimeDefault)
+                dbc.AttributeValues.Add(new ObjAttributeValue
+                {
+                    AttributeName = DbcTemplate.Attr_MsgSendType,
+                    Type = Keyword.MESSAGES,
+                    MsgID = msg.MsgID,
+                    Value = new AttributeValue
+                    {
+                        Num = cycleTime
+                    }
+                });
 
-            if (row.MsgComment.Length > 0)
+            if (comment.Length > 0)
                 dbc.Comments.Add(new Comment
                 {
                     Type = Keyword.MESSAGES,
                     MsgID = msg.MsgID,
-                    Val = row.MsgComment
+                    Val = comment
                 });
+
 
             return msg;
         }
 
-        private static void
-        NewSignal(ParsedRow row, Message msg, DbcTemplate template)
+        private void NewSignal(DbcRow row, Message msg, Model.DBC dbc)
         {
-            var dbc = template.DBC;
+            var sig = new Signal();
+            sig.Name = parser.Identifier(row.SignalName);
+            sig.SignalSize = parser.Unsigned(row.SignalSize);
+            sig.StartBit = parser.StartBit(row.BitPos);
 
-            msg.Signals.Add(new Signal
-            {
-                Name = row.SignalName,
-                StartBit = row.StartBit,
-                SignalSize = row.SignalSize,
-                ByteOrder = row.ByteOrder,
-                ValueType = row.ValueType,
-                Factor = row.Factor,
-                Offset = row.Offset,
-                Min = row.Min,
-                Max = row.Max,
-                Unit = row.Unit,
-                Receivers = row.Receiver
-            });
+            sig.Unit = parser.String(row.Unit);
+            sig.Factor = parser.Double(row.Factor);
+            sig.Offset = parser.Double(row.Offset);
+            sig.Min = parser.Double(row.PhysicalMin);
+            sig.Max = parser.Double(row.PhysicalMax);
+            sig.Receivers = parser.Receiver(row.Receiver);
 
-            if (row.SignalComment.Length > 0)
+            sig.ByteOrder = "0";
+            sig.ValueType = "+";
+
+            var comment = parser.String(row.SignalComment);
+            var descs = parser.SignalValDescs(row.State);
+
+            if (parser.Errors.Any())
+                return;
+
+            msg.Signals.Add(sig);
+
+            if (comment.Length > 0)
                 dbc.Comments.Add(new Comment
                 {
                     Type = Keyword.SIGNAL,
                     MsgID = msg.MsgID,
-                    SignalName = row.SignalName,
-                    Val = row.SignalComment
+                    Name = sig.Name,
+                    Val = comment
                 });
 
-            if (row.SignalValDescs.Count > 0)
+            if (descs.Count > 0)
                 dbc.ValueDescriptions.Add(new SignalValueDescription
                 {
                     MsgID = msg.MsgID,
-                    Name = row.SignalName,
-                    Descs = row.SignalValDescs
+                    Name = sig.Name,
+                    Descs = descs
                 });
         }
     }
+
 }
