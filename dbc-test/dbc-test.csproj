@@ -42,11 +42,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbcParserTests.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ParserTestFiles\CANoeTemplate.dbc" />
+    <None Include="ParserTestFiles\CANTemplate.dbc" />
+    <None Include="ParserTestFiles\EmptyTemplate.dbc" />
+    <None Include="ParserTestFiles\FlexRayTemplate.dbc" />
+    <None Include="ParserTestFiles\GenAddOnTemplate.dbc" />
+    <None Include="ParserTestFiles\GenNWMTemplate.dbc" />
+    <None Include="ParserTestFiles\ISO11783Template.dbc" />
+    <None Include="ParserTestFiles\J1939Template.dbc" />
+    <None Include="ParserTestFiles\J1939Template_old.dbc" />
+    <None Include="ParserTestFiles\LINdb-Template.dbc" />
+    <None Include="ParserTestFiles\MOSTTemplate.dbc" />
+    <None Include="ParserTestFiles\NMEATemplate.dbc" />
+    <None Include="ParserTestFiles\sample.dbc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dbc\dbc-lib.csproj">
@@ -54,5 +68,6 @@
       <Name>dbc-lib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

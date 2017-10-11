@@ -1,0 +1,787 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ABS_ESC PEPS EPS VCU EPB ICU AVAS BCM TEM ACU ACM AC IHU COMP
+
+
+BO_ 130 VCU_TradEngStatus: 8 VCU
+ SG_ VCU_EngStatus : 58|3@0+ (1,0) [0|7] "bit"  ABS_ESC,PEPS,EPS
+
+BO_ 139 VCU_PowerRelateSts: 8 VCU
+ SG_ VCU_ActualEngineTorque : 7|13@0+ (1,-3000) [-3000|3000] "Nm"  ABS_ESC,EPB
+ SG_ VCU_DriverDemandTorque : 23|13@0+ (1,-3000) [-3000|3000] "Nm"  ABS_ESC,EPB
+ SG_ VCU_ActualEngTorqueInvalid : 10|1@0+ (1,0) [0|1] "bit"  ABS_ESC,EPB
+ SG_ VCU_DriverDemandTorqueInvalid : 26|1@0+ (1,0) [0|1] "bit"  ABS_ESC,EPB
+ SG_ VCU_IPUMOT_ActRotSpd : 39|16@0+ (1,-14000) [-14000|14000] "rpm"  ICU,EPB,AVAS,ABS_ESC
+ SG_ VCU_IPUMOT_ActRotSpdInd : 25|1@0+ (1,0) [0|1] "bit"  EPB,AVAS,ABS_ESC
+ SG_ VCU_EPBClosedReq : 8|1@0+ (1,0) [0|1] "bit"  EPB
+ SG_ VCU_PowerRelateSts_AliveCounter : 51|4@0+ (1,0) [0|15] "bit"  ABS_ESC,EPB,ICU,AVAS
+ SG_ VCU_PowerRelateSts_CheckSum : 63|8@0+ (1,0) [0|255] "bit"  ABS_ESC,EPB,ICU,AVAS
+
+BO_ 148 VCU_TradEngRPM: 8 VCU
+ SG_ VCU_EngReleased : 10|1@0+ (1,0) [0|1] "bit"  PEPS
+ SG_ VCU_EngineSpeedRPMInvalid : 8|1@0+ (1,0) [0|1] "bit"  PEPS,BCM,EPS,ABS_ESC
+ SG_ VCU_EngineSpeedRPM : 23|16@0+ (0.25,0) [0|16383.5] "RPM"  PEPS,BCM,EPS,ABS_ESC
+ SG_ VCU_AccelPedalPosition : 55|8@0+ (0.4,0) [0|100] "% "  ABS_ESC,EPB,TEM,ACU
+ SG_ VCU_AccelPedalPositionInvalid : 9|1@0+ (1,0) [0|1] "bit"  ABS_ESC,EPB,TEM,ACU
+ SG_ EMS_MessageCounter_01 : 63|4@0+ (1,0) [0|15] "bit"  ABS_ESC,PEPS,EPB,TEM
+ SG_ EMS_Checksum_01 : 39|8@0+ (1,0) [0|255] "bit"  ABS_ESC,PEPS,EPB,TEM
+
+BO_ 650 VCU_TradEnginePatsBatteryStat: 8 VCU
+ SG_ VCU_BatteryVoltage : 7|8@0+ (0.073675,0) [0|18.71] "Volts"  BCM
+ SG_ VCU_BatteryVoltageInvalid : 16|1@0+ (1,0) [0|1] "bit"  BCM
+ SG_ VCU_EngineReleaseSig : 17|1@0+ (1,0) [0|1] "bit"  BCM
+ SG_ VCU_Engine_AliveCounter : 51|4@0+ (1,0) [0|15] "bit"  ABS_ESC
+ SG_ VCU_Engine_CheckSum : 63|8@0+ (1,0) [0|255] "bit"  ABS_ESC
+
+BO_ 136 VCU_TradVehicleSpeed: 1 VCU
+ SG_ VCU_MasterVehicleSpeed : 7|8@0+ (1,0) [0|254] "KPH"  ACU,BCM
+
+BO_ 80 VCU_TradPEPSAuth: 8 VCU
+
+BO_ 277 VCU_TradTCUControl: 8 VCU
+ SG_ VCU_TCU_TransGearPos : 31|8@0+ (1,0) [0|254] "bit"  PEPS,ICU,TEM,EPB,ABS_ESC,AVAS
+ SG_ VCU_READY_Lamp : 0|1@0+ (1,0) [0|1] ""  ICU,TEM
+ SG_ VCU_ECO_Lamp : 1|1@0+ (1,0) [0|1] ""  ICU
+ SG_ VCU_CruiseAsldControlSts : 4|3@0+ (1,0) [0|1] "bit" Vector__XXX
+ SG_ VCU_CruiseSwitchSts : 5|1@0+ (1,0) [0|1] "bit" Vector__XXX
+ SG_ VCU_CruiseSts : 6|1@0+ (1,0) [0|1] "bit"  ICU
+ SG_ VCU_TCUWarning : 7|1@0+ (1,0) [0|1] "bit"  ICU,EPB
+ SG_ VCU_StopChg : 15|1@0+ (1,0) [0|1] ""  ACM
+ SG_ VCU_HVSysFailed : 14|1@0+ (1,0) [0|1] ""  ACM
+ SG_ VCU_TCU_Checksum : 63|8@0+ (1,0) [0|255] "bit"  ICU,EPB,ABS_ESC,AVAS,TEM
+ SG_ VCU_TCU_Counter : 51|4@0+ (1,0) [0|15] "bit"  ICU,EPB,ABS_ESC,AVAS,TEM
+
+BO_ 498 VCU_Manage1: 8 VCU
+ SG_ VCU_MaxPermCompPowerLimt : 7|8@0+ (0.1,0) [0|25.4] " Kw"  AC
+ SG_ VCU_MaxPermPTCPowerLimt : 15|8@0+ (40,0) [0|7000] " w"  AC
+ SG_ VCU_BMS_stCPLine : 21|3@0+ (1,0) [0|7] ""  ACM
+ SG_ VCU_BMS_stCCLine : 18|1@0+ (1,0) [0|1] ""  ACM
+ SG_ VCU_Manage1_Checksum : 55|8@0+ (1,0) [0|255] "bit"  AC,ACM
+ SG_ VCU_Manage1_Counter : 59|4@0+ (1,0) [0|15] "bit"  AC,ACM
+
+BO_ 528 VCU_ICU_Evdisplay: 8 VCU
+ SG_ VCU_EmoterOverHight : 0|1@0+ (1,0) [0|1] "bit"  ICU
+ SG_ VCU_BatChargeIndicate : 1|1@0+ (1,0) [0|1] "bit"  ICU
+ SG_ VCU_EmoterSystermFault : 2|1@0+ (1,0) [0|1] "bit"  ICU,EPB
+ SG_ VCU_12VChargeDischargeInd : 3|1@0+ (1,0) [0|1] "bit"  ICU,TEM
+ SG_ VCU_ChargeWireConnect : 4|1@0+ (1,0) [0|1] "bit"  ICU
+ SG_ VCU_BatteryCutoff : 5|1@0+ (1,0) [0|1] "bit"  ICU
+ SG_ VCU_BatteryFault : 6|1@0+ (1,0) [0|1] "bit"  ICU
+ SG_ VCU_InsulationResistanceLow : 7|1@0+ (1,0) [0|1] "bit"  ICU
+ SG_ VCU_BMS_BattSOC : 31|10@0+ (0.1,0) [0|100] "Percent"  ICU,ACM
+ SG_ VCU_BMS_HVBusCur : 43|12@0+ (0.5,-500) [-500|500] "A"  ICU
+ SG_ VCU_BMS_BattVolt : 37|10@0+ (1,0) [0|600] "V"  ICU
+ SG_ VCU_HVILSt : 14|1@0+ (1,0) [0|1] "bit"  TEM
+ SG_ VCU_BMS_ChgTimeRemian : 12|11@0+ (1,0) [0|1800] "min"  IHU
+ SG_ VCU_IPUMOT_RuningStatus : 13|1@0+ (1,0) [0|1] "bit"  EPB
+ SG_ VCU_PowerLimitIndicate : 15|1@0+ (1,0) [0|1] "bit"  ICU
+
+BO_ 161 VCU_GeneratorRegenTorque: 8 VCU
+ SG_ VCU_RegenMax : 7|16@0+ (1,-32768) [-32768|32767] "Nm"  ABS_ESC
+ SG_ VCU_StatusRegenMax : 33|2@0+ (1,0) [0|3] "bit"  ABS_ESC
+ SG_ VCU_RegenCurrent : 23|16@0+ (1,-32768) [-32768|32767] "Nm"  ABS_ESC
+ SG_ VCU_StatusRegenCurrent : 35|2@0+ (1,0) [0|2] "bit"  ABS_ESC
+ SG_ VCU_RegenTorque_ctRoll : 51|4@0+ (1,0) [0|15] "bit"  ABS_ESC
+ SG_ VCU_RegenTorque_cktSt : 63|8@0+ (1,0) [0|255] "bit"  ABS_ESC
+
+BO_ 779 VCU_BMS_Event: 8 VCU
+ SG_ VCU_BMS_ChargingTimerSetStatus : 7|2@0+ (1,0) [0|1] ""  IHU
+ SG_ VCU_BMS_ChgLED_Ctrl : 5|3@0+ (1,0) [0|7] ""  ACM
+ SG_ VCU_BMS_BookChargeReponse : 2|3@0+ (1,0) [0|2] ""  IHU
+
+BO_ 616 ACU_ChimeTelltaleReq: 3 ACU
+ SG_ ACU_DrvSeatbeltBucklestatus : 0|1@0+ (1,0) [0|1] "bit"  VCU,ICU,ABS_ESC,EPB
+ SG_ ACU_PassSeatbeltBucklestatus : 1|1@0+ (1,0) [0|1] "bit"  VCU,ICU
+ SG_ ACU_PassSeatOccupantSensorStat : 2|1@0+ (1,0) [0|1] "bit"  VCU,ICU
+ SG_ ACU_PassengerAirbagStatus : 4|1@0+ (1,0) [0|1] "bit"  VCU
+ SG_ ACU_AirbagWarningChime : 3|1@0+ (1,0) [0|1] "bit"  VCU,ICU
+ SG_ ACU_FuelCutOffReq : 8|1@0+ (1,0) [0|1] "bit"  BCM,VCU,TEM
+ SG_ ACU_RollingCounter : 15|4@0+ (1,0) [0|15] "bit"  VCU,ICU,ABS_ESC,EPB
+ SG_ ACU_Checksum : 23|8@0+ (1,0) [0|255] "bit"  VCU,ICU,ABS_ESC,EPB
+
+BO_ 727 BCM_StateUpdate: 8 BCM
+ SG_ BCM_DefrosterStatus : 0|1@0+ (1,0) [0|1] "bit"  VCU
+
+BO_ 1236 BCM_LightChimeReq: 8 BCM
+ SG_ BCM_TurnIndicatorLeft : 0|1@0+ (1,0) [0|1] "bit"  ICU,VCU
+ SG_ BCM_TurnIndicatorRight : 1|1@0+ (1,0) [0|1] "bit"  ICU,VCU
+ SG_ BCM_HoodAjarStatus : 2|1@0+ (1,0) [0|1] "bit"  ICU,VCU
+ SG_ BCM_FrontLeftDoorAjarStatus : 4|1@0+ (1,0) [0|1] "bit"  ICU,VCU,PEPS,EPB,ACM
+ SG_ BCM_FrontRightDoorAjarStatus : 5|1@0+ (1,0) [0|1] "bit"  ICU,VCU,PEPS,ACM
+ SG_ BCM_RearLeftDoorAjarStatus : 6|1@0+ (1,0) [0|1] "bit"  ICU,VCU,PEPS,ACM
+ SG_ BCM_RearRightDoorAjarStatus : 7|1@0+ (1,0) [0|1] "bit"  ICU,VCU,PEPS,ACM
+
+BO_ 242 PEPS_Message_50: 8 PEPS
+ SG_ PEPS_Warning_IMMO_Fail : 32|1@0+ (1,0) [0|1] "bit"  ICU,VCU
+
+BO_ 226 PEPS_Message_20: 8 PEPS
+ SG_ PEPS_PowerMode : 4|3@0+ (1,0) [0|7] "bit"  EPB,AVAS,VCU,ACM,TEM
+ SG_ PEPS_ACCRelaySts : 10|1@0+ (1,0) [0|1] "bit"  VCU
+ SG_ PEPS_IGN1RelaySts : 11|1@0+ (1,0) [0|1] "bit"  VCU
+ SG_ PEPS_IGN2RelaySts : 12|1@0+ (1,0) [0|1] "bit"  VCU
+ SG_ PEPS_StarterRelaySts : 13|1@0+ (1,0) [0|1] "bit"  VCU
+ SG_ PEPS_Learning_Status : 22|2@0+ (1,0) [0|3] "bit"  VCU
+
+BO_ 228 PEPS_ImmoAuth: 8 PEPS
+
+BO_ 210 PEPS_ESCL_Message_50: 8 PEPS
+ SG_ PEPS_ESCL_Unlocked : 7|1@0+ (1,0) [0|1] "bit"  VCU
+
+BO_ 122 EPS_InformSts: 8 EPS
+ SG_ EPS_SteeringTorque : 7|8@0+ (0.1794,-22.78) [-22.78|22.78] "Nm"  VCU
+ SG_ EPS_ElectPowerConsumption : 15|8@0+ (0.5,0) [0|127] "Amp"  VCU
+ SG_ EPS_EpasFailed : 16|1@0+ (1,0) [0|1] "bit"  VCU,ICU
+
+BO_ 806 Comp_Status: 8 COMP
+ SG_ Comp_CompRPM : 7|16@0+ (1,0) [0|65534] "rpm"  AC,VCU
+ SG_ Comp_PowerConsumption : 23|8@0+ (0.1,0) [0|25.4] "Kw"  AC,VCU
+ SG_ Comp_Status : 31|8@0+ (1,0) [0|3] "bit"  AC,VCU
+ SG_ Comp_faultCode : 39|8@0+ (1,0) [0|254] "bit"  AC,VCU
+ SG_ Comp_Status_RollingCounter : 51|4@0+ (1,0) [0|15] "bit"  AC,VCU
+ SG_ Comp_Status_Checksum : 63|8@0+ (1,0) [0|255] "bit"  AC,VCU
+
+BO_ 804 AC_Control: 8 AC
+ SG_ AC_FanHighSpeedReq : 1|1@0+ (1,0) [0|1] "bit"  VCU
+ SG_ AC_CompEnable : 3|1@0+ (1,0) [0|1] "bit"  COMP,EPB,VCU
+ SG_ AC_ClearRime : 5|1@0+ (1,0) [0|1] "bit"  VCU
+ SG_ AC_PTCEnable : 4|1@0+ (1,0) [0|1] "bit"  VCU
+ SG_ AC_PTCActualPower : 15|8@0+ (0.1,0) [0|10] " Kw"  VCU
+ SG_ AC_PTCPowerReq : 23|8@0+ (40,0) [0|7000] "w"  VCU
+ SG_ AC_CompPowerLimit : 39|8@0+ (1,0) [0|254] " 0.1Kw"  COMP
+ SG_ AC_CompPowerReq : 47|4@0+ (0.5,0) [0|5] "kw"  VCU
+ SG_ AC_Control_Checksum : 63|8@0+ (1,0) [0|255] "bit"  VCU,TEM,COMP,EPB
+ SG_ AC_Control_Counter : 51|4@0+ (1,0) [0|15] "bit"  VCU,TEM,COMP,EPB
+
+BO_ 104 ABS_ESC_Status: 8 ABS_ESC
+ SG_ ABS_ESC_ABSActive : 0|1@0+ (1,0) [0|1] "bit"  VCU,EPB,TEM
+ SG_ ABS_ESC_BrakePedalSwitchSts : 1|1@0+ (1,0) [0|1] "bit"  VCU,BCM,ACU,EPB,AVAS,TEM
+ SG_ ABS_ESC_EBDFailed : 2|1@0+ (1,0) [0|1] "bit"  VCU,ICU,TEM
+ SG_ ABS_ESC_ABSFailed : 3|1@0+ (1,0) [0|1] "bit"  VCU,ICU,EPB,TEM
+ SG_ ESC_TCSActive : 4|1@0+ (1,0) [0|1] "bit"  VCU,EPB,TEM
+ SG_ ESC_ESCActive : 5|1@0+ (1,0) [0|1] "bit"  VCU,EPB,TEM
+ SG_ ESC_ESCTCSWarning : 6|1@0+ (1,0) [0|1] "bit"  VCU,ICU,TEM
+ SG_ ESC_ESCTCS_ActiveLamp : 7|1@0+ (1,0) [0|1] "bit"  VCU,ICU,TEM
+ SG_ ABS_ESC_VehicleSpeed : 15|13@0+ (0.05625,0) [0|460.69] "KPH"  VCU,EPS,ICU,PEPS,AC,AVAS,ACM,TEM
+ SG_ ABS_ESC_VehicleSpeedInvaild : 18|1@0+ (1,0) [0|1] "bit"  VCU,EPS,ICU,PEPS,AVAS,AC,ACM,TEM
+ SG_ ESC_PATAResponse : 16|1@0+ (1,0) [0|1] "bit"  VCU,ICU,TEM
+ SG_ ESC_BrakePedalSwitchStatusInvali : 17|1@0+ (1,0) [0|1] "bit"  VCU,EPB,AVAS,TEM
+ SG_ ESC_BrakeLightControl : 24|1@0+ (1,0) [0|1] "bit"  VCU,TEM
+ SG_ ESC_TCSFailed : 53|1@0+ (1,0) [0|1] "bit"  VCU,EPB,TEM
+ SG_ ESC_ESCFailed : 54|1@0+ (1,0) [0|1] "bit"  VCU,EPB,TEM
+ SG_ ESC_HBB_interv : 30|1@0+ (1,0) [0|1] "bit"  VCU,ICU,TEM
+ SG_ ESC_HBB_Sts : 29|2@0+ (1,0) [1|3] "bit"  VCU,ICU,TEM
+ SG_ ESC_GearShiftInhibit : 31|1@0+ (1,0) [0|1] "bit"  VCU,TEM
+ SG_ ABS_ESC_RollingCounter1 : 51|4@0+ (1,0) [0|15] "bit"  ICU,PEPS,VCU,AVAS,ACM,AC,TEM
+ SG_ ABS_ESC_Checksum1 : 63|8@0+ (1,0) [0|255] "bit"  PEPS,ICU,VCU,AVAS,ACM,AC,TEM
+
+BO_ 37 ESC_TorqueRequset: 8 ABS_ESC
+ SG_ ESC_EngTrqFastDecReq : 7|12@0+ (1,-2047) [-2047|2047] "
+;Nm"  VCU,TEM
+ SG_ ESC_EngTrqDecReqActive : 10|1@0+ (1,0) [0|1] "bit"  VCU,TEM
+ SG_ ESC_RollingCounter : 51|4@0+ (1,0) [0|15] "bit"  VCU,TEM
+ SG_ ESC_Checksum : 63|8@0+ (1,0) [0|255] "bit"  VCU,TEM
+
+BO_ 1204 ABS_ESC_FrontWheelSpeedsKPH: 8 ABS_ESC
+ SG_ ABS_ESC_FLWheelSpeedKPH : 7|13@0+ (0.05625,0) [0|460.69] "KPH"  PEPS,EPB,VCU
+ SG_ ABS_ESC_FLWheelSpeedInvalid : 8|1@0+ (1,0) [0|1] "bit"  PEPS,EPB,VCU
+ SG_ ABS_ESC_FRWheelSpeedKPH : 23|13@0+ (0.05625,0) [0|460.69] "KPH"  PEPS,EPB,VCU
+ SG_ ABS_ESC_FRWheelSpeedInvalid : 24|1@0+ (1,0) [0|1] "bit"  PEPS,EPB,VCU
+ SG_ ABS_ESC_FWheelSpeedCounter : 55|8@0+ (1,0) [0|255] "bit"  PEPS,EPB,VCU
+ SG_ ABS_ESC_FWheelSpeedChecksum : 63|8@0+ (1,0) [0|255] "bit"  PEPS,EPB,VCU
+
+BO_ 1205 ABS_ESC_RearWheelSpeedsKPH: 8 ABS_ESC
+ SG_ ABS_ESC_RLWheelSpeedKPH : 7|13@0+ (0.05625,0) [0|460.69] "KPH"  PEPS,EPB,VCU
+ SG_ ABS_ESC_RLWheelSpeedInvalid : 8|1@0+ (1,0) [0|1] "bit"  PEPS,EPB,VCU
+ SG_ ABS_ESC_RRWheelSpeedKPH : 23|13@0+ (0.05625,0) [0|460.69] "KPH"  PEPS,EPB,VCU
+ SG_ ABS_ESC_RRWheelSpeedInvalid : 24|1@0+ (1,0) [0|1] "bit"  PEPS,EPB,VCU
+ SG_ ABS_ESC_RWheelSpeedCounter : 55|8@0+ (1,0) [0|255] "bit"  PEPS,EPB,VCU
+ SG_ ABS_ESC_RWheelSpeedChecksum : 63|8@0+ (1,0) [0|255] "bit"  PEPS,EPB,VCU
+
+BO_ 183 ABS_ESC_RegenTorqueRequest: 8 ABS_ESC
+ SG_ ABS_ESC_RegenTarget : 7|16@0+ (1,-32768) [-32768|32767] "Nm"  VCU
+ SG_ ABS_ESC__RegenTargetStatus : 39|2@0+ (1,0) [0|3] "bit"  VCU
+ SG_ ABS_ESC__Alivecounter : 51|4@0+ (1,0) [0|15] "bit"  VCU
+ SG_ ABS_ESC__Checksum : 63|8@0+ (1,0) [0|255] "Bit"  VCU
+
+BO_ 269 EPB_StatusControl: 8 EPB
+ SG_ EPB_SwitchState : 3|2@0+ (1,0) [0|3] ""  ABS_ESC,VCU,AVAS
+ SG_ EPB_BrakeLightsReq : 1|1@0+ (1,0) [0|1] ""  VCU
+ SG_ EPB_CruiseCancelReq : 0|1@0+ (1,0) [0|1] ""  VCU
+ SG_ EPB_DynamicApplyStatus : 15|3@0+ (1,0) [0|7] ""  VCU
+ SG_ EPB_SystemStatus : 12|3@0+ (1,0) [0|7] ""  VCU
+ SG_ EPB_StatusControlCounter : 55|4@0+ (1,0) [0|15] "bit"  ABS_ESC,VCU,AVAS,ACM
+ SG_ EPB_StatusControlChecksum : 63|8@0+ (1,0) [0|255] "bit"  ABS_ESC,VCU,AVAS,ACM
+
+BO_ 783 IHU_ReservationCharge1: 8 IHU
+ SG_ IHU_PresentYear : 7|12@0+ (1,0) [0|4095] "bit"  VCU
+ SG_ IHU_PresentMonth : 11|4@0+ (1,0) [0|12] "bit"  VCU
+ SG_ IHU_PresentDay : 23|5@0+ (1,0) [0|31] "bit"  VCU
+ SG_ IHU_PresentHour : 18|5@0+ (1,0) [0|24] "bit"  VCU
+ SG_ IHU_PresentMinute : 29|6@0+ (1,0) [0|60] "bit"  VCU
+ SG_ IHU_StartYear : 39|12@0+ (1,0) [0|4095] "bit"  VCU
+ SG_ IHU_StartMonth : 43|4@0+ (1,0) [0|12] "bit"  VCU
+ SG_ IHU_StartDay : 55|5@0+ (1,0) [0|31] "bit"  VCU
+ SG_ IHU_StartHour : 50|5@0+ (1,0) [0|24] "bit"  VCU
+ SG_ IHU_StartMinute : 61|6@0+ (1,0) [0|60] "bit"  VCU
+
+BO_ 782 IHU_ReservationCharge2: 8 IHU
+ SG_ IHU_StopYear : 7|12@0+ (1,0) [0|4095] "bit"  VCU
+ SG_ IHU_StopMonth : 11|4@0+ (1,0) [0|12] "bit"  VCU
+ SG_ IHU_StopDay : 23|5@0+ (1,0) [0|31] "bit"  VCU
+ SG_ IHU_StopHour : 18|5@0+ (1,0) [0|24] "bit"  VCU
+ SG_ IHU_StopMinute : 29|6@0+ (1,0) [0|60] "bit"  VCU
+ SG_ IHU_ReservationChargeValid : 39|2@0+ (1,0) [0|3] "bit"  VCU
+ SG_ IHU_ChargingTimerSetCommand : 32|2@0+ (1,0) [0|1] "bit"  VCU
+
+BO_ 621 ICU_STS: 8 ICU
+ SG_ ICU_TotalOdometer : 23|20@0+ (1,0) [0|1048574] "km"  EPB,TEM
+
+BO_ 1012 ACM_Control: 8 ACM
+ SG_ ACM_VCU_IntelligentChargeReq : 7|2@0+ (1,0) [0|1] "bit"  VCU
+ SG_ ACM_ChargeLockstatus : 5|2@0+ (1,0) [0|1] "bit"  VCU
+ SG_ ACM_ChargeLidstatus : 3|2@0+ (1,0) [0|1] "bit"  VCU
+ SG_ ACM_stCPLine : 54|3@0+ (1,0) [0|7] ""  VCU
+ SG_ ACM_stCCLine : 55|1@0+ (1,0) [0|1] ""  VCU
+ SG_ ACM_CC_CP_current : 15|2@0+ (1,0) [0|1] ""  VCU
+ SG_ ACM_ControlCounter : 55|4@0+ (1,0) [0|15] "bit"  VCU
+ SG_ ACM_ControlChecksum : 63|8@0+ (1,0) [0|255] "bit"  VCU
+
+
+
+CM_ BO_ 130 "?VCU_BMS_EngineTorqueStatus?;";
+CM_ SG_ 130 VCU_EngStatus "Engine running status;???????????";
+CM_ SG_ 139 VCU_ActualEngineTorque "Current engine torque, reduced by engine drag torque and torque consumption of auxiliary devices, but without inertia correction;????????????????????;?????=???????????=?????-??????(?????????????????)";
+CM_ SG_ 139 VCU_DriverDemandTorque "engine torque requested by driver or cruise control, reduced by engine drag torque and torque consumption of auxiliary devices;?????=???????????=?????-??????(?????????????????)";
+CM_ SG_ 139 VCU_ActualEngTorqueInvalid "Invalid flag to EMS_ActualEngTorque";
+CM_ SG_ 139 VCU_DriverDemandTorqueInvalid "Invalid flag to EMS_DriverDemandTorque";
+CM_ SG_ 139 VCU_IPUMOT_ActRotSpd "actual rotation speed MOT";
+CM_ SG_ 139 VCU_IPUMOT_ActRotSpdInd " Electrical motor speed Valid  data ;????????§¹¦Ë";
+CM_ SG_ 139 VCU_EPBClosedReq "EPB Closed Request";
+CM_ SG_ 139 VCU_PowerRelateSts_AliveCounter "alive counter for some criticle signals, and rolling up";
+CM_ SG_ 139 VCU_PowerRelateSts_CheckSum "check sum of this message";
+CM_ SG_ 148 VCU_EngReleased "engine indicates authentication with PEPS successfully ";
+CM_ SG_ 148 VCU_EngineSpeedRPMInvalid "Invalid flag for EMS_EngineSpeedRPM;EMS????????????";
+CM_ SG_ 148 VCU_EngineSpeedRPM "Signal from EMS/PowerTrian to indicate Engine RPM ;EMS?????????????";
+CM_ SG_ 148 VCU_AccelPedalPosition "Signal from EMS to indicate accelerate pedal position;EMS???????????????¦Ë??";
+CM_ SG_ 148 VCU_AccelPedalPositionInvalid "EMS_AccelPedalPosition invalid flag";
+CM_ SG_ 148 EMS_MessageCounter_01 "Message counter for this frame";
+CM_ SG_ 148 EMS_Checksum_01 "Message CRC Check ";
+CM_ SG_ 650 VCU_BatteryVoltage "Signal from VCU to indicate the VCU supplied voltage level;VCU??????VCU???????????????";
+CM_ SG_ 650 VCU_BatteryVoltageInvalid "Signal to indicate if VCU_BatteryVoltage value is valid or not;VCU??????????????????????§¹";
+CM_ SG_ 650 VCU_EngineReleaseSig "BCM receives EngineLocked signal from VCU to alarm ATWS;VCU?????????????/?????";
+CM_ SG_ 650 VCU_Engine_AliveCounter "alive counter for some criticle signals, and rolling up";
+CM_ SG_ 650 VCU_Engine_CheckSum "check sum of this message";
+CM_ SG_ 136 VCU_MasterVehicleSpeed "Signal from VCU to indicate master vehicle speed calculated in kph;VCU??????????????kph??";
+CM_ BO_ 80 "Configuration : ";
+CM_ BO_ 277 "Configuration : ";
+CM_ SG_ 277 VCU_TCU_TransGearPos "Transmission actual gear position;???????????????????¦Ë???";
+CM_ SG_ 277 VCU_READY_Lamp "The vehicle READY Lamp Status;READY????";
+CM_ SG_ 277 VCU_ECO_Lamp "The vehicle ECO Lamp status;ECO????";
+CM_ SG_ 277 VCU_CruiseAsldControlSts "Cruise or ASLD control  status;?????ASLD??????";
+CM_ SG_ 277 VCU_CruiseSwitchSts "Cruise Switch status;?????????";
+CM_ SG_ 277 VCU_CruiseSts "Cruise  status;?????????";
+CM_ SG_ 277 VCU_TCUWarning "TCU Warning;??????????";
+CM_ SG_ 277 VCU_StopChg "?????";
+CM_ SG_ 277 VCU_HVSysFailed "?????????";
+CM_ SG_ 277 VCU_TCU_Checksum ";Checksum";
+CM_ SG_ 277 VCU_TCU_Counter ";rollingcounter";
+CM_ SG_ 498 VCU_MaxPermCompPowerLimt "Max permit COMP consume power;????????????????????";
+CM_ SG_ 498 VCU_MaxPermPTCPowerLimt "Max permit PTC consume power;???????PTC????????";
+CM_ SG_ 498 VCU_BMS_stCPLine "Status CP communication line chargestation";
+CM_ SG_ 498 VCU_BMS_stCCLine "Status CC communication line chargestation.";
+CM_ SG_ 498 VCU_Manage1_Checksum ";Checksum";
+CM_ SG_ 498 VCU_Manage1_Counter ";rollingcounter";
+CM_ SG_ 528 VCU_EmoterOverHight "EmoterOverHight;???????";
+CM_ SG_ 528 VCU_BatChargeIndicate "BatteryChargeIndicate;???????????";
+CM_ SG_ 528 VCU_EmoterSystermFault "EmoterSystermFault;?????????";
+CM_ SG_ 528 VCU_12VChargeDischargeInd "12V Charge_Discharge Indicate;??????";
+CM_ SG_ 528 VCU_ChargeWireConnect "ChargeWireFault;?????????";
+CM_ SG_ 528 VCU_BatteryCutoff "BatteryCutoff;????????§Ø?";
+CM_ SG_ 528 VCU_BatteryFault "BatteryFault;??????????";
+CM_ SG_ 528 VCU_InsulationResistanceLow "InsulationResistance;???????";
+CM_ SG_ 528 VCU_BMS_BattSOC "Average State of Charge";
+CM_ SG_ 528 VCU_BMS_HVBusCur "Actual HV Bus current";
+CM_ SG_ 528 VCU_BMS_BattVolt "Actual Battery voltage";
+CM_ SG_ 528 VCU_HVILSt "HVILSt;?????????";
+CM_ SG_ 528 VCU_BMS_ChgTimeRemian "residue ChangeTime??one time?????¦Ã????????";
+CM_ SG_ 528 VCU_IPUMOT_RuningStatus "Electrical motor running status;?????????";
+CM_ SG_ 528 VCU_PowerLimitIndicate "Power Limit Indicate;??????????";
+CM_ BO_ 161 "RBS;";
+CM_ SG_ 161 VCU_RegenMax "Maximum available Recuperation Potential at axle;???????????????????????????????";
+CM_ SG_ 161 VCU_StatusRegenMax "Indicated the error status of GeneratorRegenMax;?????????????????????????????????????";
+CM_ SG_ 161 VCU_RegenCurrent "Current recuperation totque of Generator at axle;???????????????????????????";
+CM_ SG_ 161 VCU_StatusRegenCurrent "Indicated the error status of GeneratorRegenCurrent;?????????????????????????????????";
+CM_ SG_ 161 VCU_RegenTorque_ctRoll "message alive counter";
+CM_ SG_ 161 VCU_RegenTorque_cktSt "message checksum";
+CM_ BO_ 779 "The message is sent N times with a period of T if at least one of its signals is changed and the last transmission occurred with at least the specified time delay Tmin. Otherwise transmission is delayed until the time specified as the minimum delay Tmin has elapsed.  ";
+CM_ SG_ 779 VCU_BMS_ChargingTimerSetStatus "ChargingTimerSetStatus";
+CM_ SG_ 779 VCU_BMS_ChgLED_Ctrl "?????";
+CM_ SG_ 779 VCU_BMS_BookChargeReponse "Precharge Reponse;????¾š??";
+CM_ BO_ 616 "FE-1/2 project";
+CM_ SG_ 616 ACU_DrvSeatbeltBucklestatus "Signal from ACU for Driver seat belt warning indicator display on ICU;ACU????????????????¦Ä?";
+CM_ SG_ 616 ACU_PassSeatbeltBucklestatus "Signal from ACU for Passenger seat belt warning indicator display on ICU;ACU????????????????¦Ä?";
+CM_ SG_ 616 ACU_PassSeatOccupantSensorStat "Signal from ACU for Passenter seat belt warning indicator display on ICU;ACU??????????????????";
+CM_ SG_ 616 ACU_PassengerAirbagStatus "Signal from ACU for PAB on/off indicator display on ICU;ACU??????????????????????";
+CM_ SG_ 616 ACU_AirbagWarningChime "Signal from ACU for Airbag Controller  status warning indicator display on ICU;ACU???????????????";
+CM_ SG_ 616 ACU_FuelCutOffReq "Vehicle crash signal, signal status keeps for 3s in case of update;ACU???????????????????????????????";
+CM_ SG_ 616 ACU_RollingCounter "Message counter for each transmitted ACU_FuelCutOffReq  . 0->15 overflows will come back to 0";
+CM_ SG_ 616 ACU_Checksum "checksum;§µ???";
+CM_ SG_ 727 BCM_DefrosterStatus "Signal from BCM to indicate if Rear window defroster relay is activated ;BCM???????????????????????????";
+CM_ SG_ 1236 BCM_TurnIndicatorLeft "Signal from BCM to indicate the ON/OFF status of Left Turn bubble;BCM????????????????????";
+CM_ SG_ 1236 BCM_TurnIndicatorRight "Signal from BCM to indicate the ON/OFF status of Right Turn bubble;BCM????????????????????";
+CM_ SG_ 1236 BCM_HoodAjarStatus "Signal from BCM to indicate the ajar/close status of Hoodlid;BCM????????????????";
+CM_ SG_ 1236 BCM_FrontLeftDoorAjarStatus "Signal from BCM to indicate the ajar/close status of driver door;BCM????????????????????????????????";
+CM_ SG_ 1236 BCM_FrontRightDoorAjarStatus "Signal from BCM to indicate the ajar/close status of passenger door;BCM????????????????????";
+CM_ SG_ 1236 BCM_RearLeftDoorAjarStatus "Signal from BCM to indicate the ajar/close status of Rear Left Door;BCM??????????????????";
+CM_ SG_ 1236 BCM_RearRightDoorAjarStatus "Signal from BCM to indicate the ajar/close status of Rear Right Door;BCM??????????????????";
+CM_ BO_ 242 "The message is sent N times with a period of T if at least one of its signals is changed and the last transmission occurred with at least the specified time delay Tmin. Otherwise transmission is delayed until the time specified as the minimum delay Tmin has elapsed.  ";
+CM_ SG_ 242 PEPS_Warning_IMMO_Fail " ;immobilizer authentication failure;??EMS??????";
+CM_ SG_ 226 PEPS_PowerMode "PEPS Power Distribution Status";
+CM_ SG_ 226 PEPS_ACCRelaySts "ACC Relay status";
+CM_ SG_ 226 PEPS_IGN1RelaySts "IGN1 Relay status";
+CM_ SG_ 226 PEPS_IGN2RelaySts "IGN2 Relay status";
+CM_ SG_ 226 PEPS_StarterRelaySts "Starter Relay status";
+CM_ SG_ 226 PEPS_Learning_Status "PEPS System learning status;PEPS??????";
+CM_ SG_ 210 PEPS_ESCL_Unlocked "The ESCL sets this signal when it is unlocked;ESCL???????";
+CM_ SG_ 122 EPS_SteeringTorque "Steering Torque;?????????";
+CM_ SG_ 122 EPS_ElectPowerConsumption "ElectPowerConsumption;??????????????";
+CM_ SG_ 122 EPS_EpasFailed "EpasFailed;??????????¦Ë";
+CM_ SG_ 806 Comp_CompRPM "Comp actual rpm;??????????????";
+CM_ SG_ 806 Comp_PowerConsumption "Comp actual power;???????????????";
+CM_ SG_ 806 Comp_Status "Comp Status;?????????";
+CM_ SG_ 806 Comp_faultCode "comp fault code;???????????";
+CM_ SG_ 806 Comp_Status_RollingCounter "Message Rolling counter;?????????;rollingcounter ?????????????????????????????¦Ì?";
+CM_ SG_ 806 Comp_Status_Checksum "checksum  §µ???;checksum???????????????????????????????¦Ì?";
+CM_ SG_ 804 AC_FanHighSpeedReq "?????????????????";
+CM_ SG_ 804 AC_CompEnable "COMP switch;??????????????";
+CM_ SG_ 804 AC_ClearRime "?????";
+CM_ SG_ 804 AC_PTCEnable "PTC switch;??????????????";
+CM_ SG_ 804 AC_PTCActualPower "PTC consume power;PTC????????";
+CM_ SG_ 804 AC_PTCPowerReq "PTC power  request;PTC????????";
+CM_ SG_ 804 AC_CompPowerLimit "???????????";
+CM_ SG_ 804 AC_CompPowerReq "COMP power request;?????????????";
+CM_ SG_ 804 AC_Control_Checksum ";Checksum";
+CM_ SG_ 804 AC_Control_Counter ";rollingcounter";
+CM_ SG_ 104 ABS_ESC_ABSActive "Signal from ESC/ABS to indicate if ABS is activate or not;ABS_ESC????????????ABS???????";
+CM_ SG_ 104 ABS_ESC_BrakePedalSwitchSts "Signal from ESC/ABS to indicate if Breke Pedal is activated. ;ABS_ESC?????????????????Œã????";
+CM_ SG_ 104 ABS_ESC_EBDFailed "Signal from ESC/ABS to indicate EBD failure for driver;ABS_ESC????????????EBD???????????";
+CM_ SG_ 104 ABS_ESC_ABSFailed "Signal from ESC/ABS to indicate Failure/Normal state of current running ??ACU unit for EDR storage;ABS_ESC??????ABS????????????§µ???????????????EDR????";
+CM_ SG_ 104 ESC_TCSActive "Signal from ESC to indicate if TCS is activate or not;ESC????????????TCS???????";
+CM_ SG_ 104 ESC_ESCActive "Signal from ESC to indicate if ESC(AYC or VDC) is activate or not;ESC????????????ESC(AYC or VDC)???????";
+CM_ SG_ 104 ESC_ESCTCSWarning "Signal from ESC to indicate ESC/TCS warning for driver;ESC/TCS?Ó?????";
+CM_ SG_ 104 ESC_ESCTCS_ActiveLamp "It's indicate that ESC system is interposeing for driver.;???????ESC?????????";
+CM_ SG_ 104 ABS_ESC_VehicleSpeed "Vehicle Speed;ABS_ESC??????????";
+CM_ SG_ 104 ABS_ESC_VehicleSpeedInvaild "Signal from ABS_ESC to indicate if ABS_ESC_VehicleSpeed is valid;ABS_ESC??????VehicleSpeed?????§¹";
+CM_ SG_ 104 ESC_PATAResponse "Signal from ESC to indicate if PATA request has been treated.;ESC??????PATA???????";
+CM_ SG_ 104 ESC_BrakePedalSwitchStatusInvali "if the signal ABS_ESC_BrakePedalSwSts is valid or not;????????ESC????????????????????§¹??;????????????????????????????????????§¹¦Ë??????";
+CM_ SG_ 104 ESC_BrakeLightControl "ESC command BCM to activate the brake light";
+CM_ SG_ 104 ESC_TCSFailed "Signal from ESC to indicate TCS function failure.;???TCS?????§¹";
+CM_ SG_ 104 ESC_ESCFailed "Signal from ESC to indicate ESC( AYC-conti, VDC-bosch )  function failure .;???ESC?????§¹,?????AYC???????????VDC?????";
+CM_ SG_ 104 ESC_HBB_interv "HBB intervention;HBB?????????§¹";
+CM_ SG_ 104 ESC_HBB_Sts "HBB status;HBB??";
+CM_ SG_ 104 ESC_GearShiftInhibit "Suppress Shifting of Gears";
+CM_ SG_ 104 ABS_ESC_RollingCounter1 "Message Rolling counter;?????????;rollingcounter ?????????????????????????????¦Ì?";
+CM_ SG_ 104 ABS_ESC_Checksum1 "checksum  §µ???;checksum???????????????????????????????¦Ì?";
+CM_ BO_ 37 "Configuration : ";
+CM_ SG_ 37 ESC_EngTrqFastDecReq ";ESC request to ask for fast decreasing engine torque to requested value;ESC??????????EMS?????????????????;ESC_EngTrqFastDecReq --> Target reduced engine torque(fast);?????=???????????=?????-??????(?????????????????)";
+CM_ SG_ 37 ESC_EngTrqDecReqActive "ESC?????????????????????";
+CM_ SG_ 37 ESC_RollingCounter "Message Rolling counter;?????????;rollingcounter ?????????????????????????????¦Ì?";
+CM_ SG_ 37 ESC_Checksum "checksum  §µ???;checksum???????????????????????????????¦Ì?";
+CM_ BO_ 1204 "Configuration : ";
+CM_ SG_ 1204 ABS_ESC_FLWheelSpeedKPH "Signal from ABS_ESC to indicate the front left wheel speed in kph;ABS_ESC????????????????";
+CM_ SG_ 1204 ABS_ESC_FLWheelSpeedInvalid "signal to identify if the wheel speed value valid";
+CM_ SG_ 1204 ABS_ESC_FRWheelSpeedKPH "Signal from ABS_ESC to indicate the front right wheel speed in kph;ABS_ESC????????????????";
+CM_ SG_ 1204 ABS_ESC_FRWheelSpeedInvalid "signal to identify if the wheel speed value valid";
+CM_ SG_ 1204 ABS_ESC_FWheelSpeedCounter "signal couting the times of this message";
+CM_ SG_ 1204 ABS_ESC_FWheelSpeedChecksum "CRC code to check the data integrity";
+CM_ BO_ 1205 "Configuration : ";
+CM_ SG_ 1205 ABS_ESC_RLWheelSpeedKPH "Signal from ABS_ESC to indicate the rear left wheel speed in kph;ABS_ESC????????????????";
+CM_ SG_ 1205 ABS_ESC_RLWheelSpeedInvalid "signal to identify if the wheel speed value valid";
+CM_ SG_ 1205 ABS_ESC_RRWheelSpeedKPH "Signal from ABS_ESC to indicate the rear right wheel speed in kph;ABS_ESC????????????????";
+CM_ SG_ 1205 ABS_ESC_RRWheelSpeedInvalid "signal to identify if the wheel speed value valid";
+CM_ SG_ 1205 ABS_ESC_RWheelSpeedCounter "signal couting the times of this message";
+CM_ SG_ 1205 ABS_ESC_RWheelSpeedChecksum "CRC code to check the data integrity";
+CM_ SG_ 183 ABS_ESC_RegenTarget "Target Recuperation Torque Request by HASHev to Generator";
+CM_ SG_ 183 ABS_ESC__RegenTargetStatus "Status of Target Recuperation torque of Generator";
+CM_ SG_ 183 ABS_ESC__Alivecounter "message alive counter";
+CM_ SG_ 183 ABS_ESC__Checksum "message checksum";
+CM_ SG_ 269 EPB_SwitchState "EPB Switch State;EPB??????";
+CM_ SG_ 269 EPB_BrakeLightsReq "Brake Lights Request;?????????????";
+CM_ SG_ 269 EPB_CruiseCancelReq "Cruise Cancel  Request;??????????";
+CM_ SG_ 269 EPB_DynamicApplyStatus "Dynamic Apply Status;????????";
+CM_ SG_ 269 EPB_SystemStatus "EPB System Status;EPB ????";
+CM_ SG_ 269 EPB_StatusControlCounter "Message Counter;??????";
+CM_ SG_ 269 EPB_StatusControlChecksum "Message check sum;????§µ????";
+CM_ BO_ 783 "The message will be sent N times as long as IHU detected the event signal is triggered,If triggered again by other reason,IHU should repeat this action.";
+CM_ SG_ 783 IHU_PresentYear "PresentYear";
+CM_ SG_ 783 IHU_PresentMonth "PresentMonth";
+CM_ SG_ 783 IHU_PresentDay "PresentDay";
+CM_ SG_ 783 IHU_PresentHour "PresentHour";
+CM_ SG_ 783 IHU_PresentMinute "PresentMinute";
+CM_ SG_ 783 IHU_StartYear "StartYear";
+CM_ SG_ 783 IHU_StartMonth "StartMonth";
+CM_ SG_ 783 IHU_StartDay "StartDay";
+CM_ SG_ 783 IHU_StartHour "StartHour";
+CM_ SG_ 783 IHU_StartMinute "StartMinute";
+CM_ BO_ 782 "The message will be sent N times as long as IHU detected the event signal is triggered,If triggered again by other reason,IHU should repeat this action.";
+CM_ SG_ 782 IHU_StopYear "PresentYear";
+CM_ SG_ 782 IHU_StopMonth "PresentMonth";
+CM_ SG_ 782 IHU_StopDay "PresentDay";
+CM_ SG_ 782 IHU_StopHour "PresentHour";
+CM_ SG_ 782 IHU_StopMinute "PresentMinute";
+CM_ SG_ 782 IHU_ReservationChargeValid "ReservationChargeValid";
+CM_ SG_ 782 IHU_ChargingTimerSetCommand "ChargingTimerSetCommand";
+CM_ BO_ 621 "GW;";
+CM_ SG_ 621 ICU_TotalOdometer "?????";
+CM_ SG_ 1012 ACM_VCU_IntelligentChargeReq "Intelligent Charge Reqest";
+CM_ SG_ 1012 ACM_ChargeLockstatus "ChargeLock;????????";
+CM_ SG_ 1012 ACM_ChargeLidstatus "ChargeLidstatus;??????";
+CM_ SG_ 1012 ACM_stCPLine "Status CP communication line chargestation";
+CM_ SG_ 1012 ACM_stCCLine "Status CC communication line chargestation.";
+CM_ SG_ 1012 ACM_ControlCounter "Message Counter;??????";
+CM_ SG_ 1012 ACM_ControlChecksum "Message check sum;????§µ????";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "DiagState" ENUM  "no","yes";
+BA_DEF_  "NmMessageCount" INT 1 255;
+BA_DEF_  "NmBaseAddress" HEX 1024 1279;
+BA_DEF_ BO_  "NmMessage" ENUM  "No","yes";
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed";
+BA_DEF_ SG_  "GenSigStartValue" INT 0 7;
+BA_DEF_ SG_  "GenSigCycleTimeActive" INT 0 1;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 1000000;
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 1;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 65535;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","IfActive","NoMsgSendType","NotUsed";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 65535;
+BA_DEF_ BO_  "DiagResponse" ENUM  "no","yes";
+BA_DEF_ BO_  "DiagRequest" ENUM  "no","yes";
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmNode" ENUM  "no","yes";
+BA_DEF_ BU_  "NmStationAddress" HEX 0 99;
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_  "NmType" STRING ;
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_ SG_  "SystemSignalLongSymbol" STRING ;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "DiagState" "no";
+BA_DEF_DEF_  "NmMessageCount" 128;
+BA_DEF_DEF_  "NmBaseAddress" 1024;
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigCycleTimeActive" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
+BA_DEF_DEF_  "GenMsgCycleTime" 100;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "DiagResponse" "no";
+BA_DEF_DEF_  "DiagRequest" "no";
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "NmNode" "no";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "ILUsed" "Yes";
+BA_DEF_DEF_  "NmType" "Vector";
+BA_DEF_DEF_  "Manufacturer" "Vector";
+BA_DEF_DEF_  "SystemSignalLongSymbol" "";
+BA_ "BusType" "CAN";
+BA_ "GenMsgCycleTime" BO_ 130 10;
+BA_ "GenMsgCycleTime" BO_ 139 20;
+BA_ "GenMsgCycleTime" BO_ 148 10;
+BA_ "GenMsgCycleTime" BO_ 650 100;
+BA_ "GenMsgCycleTime" BO_ 136 20;
+BA_ "GenMsgCycleTime" BO_ 80 20;
+BA_ "GenMsgCycleTime" BO_ 277 10;
+BA_ "GenMsgCycleTime" BO_ 498 100;
+BA_ "GenMsgCycleTime" BO_ 528 100;
+BA_ "GenMsgCycleTime" BO_ 161 10;
+BA_ "GenMsgCycleTime" BO_ 779 10;
+BA_ "GenMsgCycleTime" BO_ 616 100;
+BA_ "GenMsgCycleTime" BO_ 727 100;
+BA_ "GenMsgCycleTime" BO_ 1236 150;
+BA_ "GenMsgCycleTime" BO_ 242 150;
+BA_ "GenMsgCycleTime" BO_ 226 50;
+BA_ "GenMsgCycleTime" BO_ 228 50;
+BA_ "GenMsgCycleTime" BO_ 210 50;
+BA_ "GenMsgCycleTime" BO_ 122 10;
+BA_ "GenMsgCycleTime" BO_ 806 100;
+BA_ "GenMsgCycleTime" BO_ 804 100;
+BA_ "GenMsgCycleTime" BO_ 104 20;
+BA_ "GenMsgCycleTime" BO_ 37 20;
+BA_ "GenMsgCycleTime" BO_ 1204 20;
+BA_ "GenMsgCycleTime" BO_ 1205 20;
+BA_ "GenMsgCycleTime" BO_ 183 10;
+BA_ "GenMsgCycleTime" BO_ 269 20;
+BA_ "GenMsgCycleTime" BO_ 783 20;
+BA_ "GenMsgCycleTime" BO_ 782 20;
+BA_ "GenMsgCycleTime" BO_ 621 100;
+BA_ "GenMsgCycleTime" BO_ 1012 100;
+BA_ "SystemSignalLongSymbol" SG_ 104 ESC_BrakePedalSwitchStatusInvali "ESC_BrakePedalSwitchStatusInvalid";
+VAL_ 130 VCU_EngStatus 7 "Fault" 6 "Reserved" 5 "Reserved" 4 "Reserved" 3 "Running" 2 "Reserved" 1 "Cranking" 0 "Engine Stop
+" ;
+VAL_ 139 VCU_ActualEngineTorque 4095 "Invalid" ;
+VAL_ 139 VCU_DriverDemandTorque 4095 "Invalid" ;
+VAL_ 139 VCU_ActualEngTorqueInvalid 1 "Invalid" 0 "Normal
+" ;
+VAL_ 139 VCU_DriverDemandTorqueInvalid 1 "Invalid" 0 "Normal
+" ;
+VAL_ 139 VCU_IPUMOT_ActRotSpd 65535 "Invalid" ;
+VAL_ 139 VCU_IPUMOT_ActRotSpdInd 1 "Not Valid" 0 "Valid
+" ;
+VAL_ 139 VCU_EPBClosedReq 1 "Closed" 0 "normal
+" ;
+VAL_ 148 VCU_EngReleased 1 "released" 0 "not released
+" ;
+VAL_ 148 VCU_EngineSpeedRPMInvalid 1 "Error" 0 "No Error
+" ;
+VAL_ 148 VCU_EngineSpeedRPM 65535 "Invalid" ;
+VAL_ 148 VCU_AccelPedalPosition 255 "Invalid" 254 "Invalid" 253 "Invalid" 252 "Invalid" 251 "Invalid
+" ;
+VAL_ 148 VCU_AccelPedalPositionInvalid 1 "invalid" 0 "normal
+" ;
+VAL_ 650 VCU_BatteryVoltage 255 "invalid value " ;
+VAL_ 650 VCU_BatteryVoltageInvalid 1 "Error????????§¹" 0 "No Error????????§¹
+" ;
+VAL_ 650 VCU_EngineReleaseSig 1 "EngineLocked" 0 "EngineReleased
+" ;
+VAL_ 136 VCU_MasterVehicleSpeed 255 "invalid value " ;
+VAL_ 277 VCU_TCU_TransGearPos 255 "invalid" 244 "L" 243 "S sport ??" 242 "D Drive ?????" 241 "N Neutral ???" 240 "P  Park ?????" 35 "z4" 34 "z3" 33 "z2" 32 "z1" 16 "R Reverse ????" 6 "6th manual gear" 5 "5th manual gear" 4 "4th manual gear" 3 "3rd manual gear" 2 "2nd manual gear" 1 "1st manual gear" 0 "reserved
+" ;
+VAL_ 277 VCU_READY_Lamp 1 "active????" 0 "inactive
+" ;
+VAL_ 277 VCU_ECO_Lamp 1 "active????" 0 "inactive
+" ;
+VAL_ 277 VCU_CruiseAsldControlSts 7 "tap decrease setspeed" 6 "tap increase setspeed" 5 "Resume last setspeed" 4 "Deccelerate" 3 "Accelerate" 2 "CC/AC overridden??Kickdown??" 1 "CC/AC active" 0 "CC/AC off/standby??Inactive??
+" ;
+VAL_ 277 VCU_CruiseSwitchSts 1 "On" 0 "Off
+" ;
+VAL_ 277 VCU_CruiseSts 1 "Cruise" 0 "Normal
+" ;
+VAL_ 277 VCU_TCUWarning 1 "Warning" 0 "Normal
+" ;
+VAL_ 277 VCU_StopChg 1 "request" 0 "normal
+" ;
+VAL_ 277 VCU_HVSysFailed 1 "Failed" 0 "normal
+" ;
+VAL_ 277 VCU_TCU_Counter 0 "initial value" ;
+VAL_ 498 VCU_MaxPermCompPowerLimt 255 "invalid value" ;
+VAL_ 498 VCU_MaxPermPTCPowerLimt 255 "invalid value" ;
+VAL_ 498 VCU_BMS_stCPLine 7 "CP signal failure" 3 "Contected and charging allowed" 2 "Contected but charging not allowed" 1 "S2 lock-up state failure" 0 "Not Connected
+" ;
+VAL_ 498 VCU_BMS_stCCLine 1 "connected" 0 "Not connected
+" ;
+VAL_ 528 VCU_EmoterOverHight 1 "Failed" 0 "normal
+" ;
+VAL_ 528 VCU_BatChargeIndicate 1 "Charge" 0 "no Charge
+" ;
+VAL_ 528 VCU_EmoterSystermFault 1 "Failed" 0 "normal
+" ;
+VAL_ 528 VCU_12VChargeDischargeInd 1 "charge" 0 "discharge
+" ;
+VAL_ 528 VCU_ChargeWireConnect 1 "connect" 0 "no connect
+" ;
+VAL_ 528 VCU_BatteryCutoff 1 "Cutoff" 0 "normal
+" ;
+VAL_ 528 VCU_BatteryFault 1 "Failed" 0 "normal
+" ;
+VAL_ 528 VCU_InsulationResistanceLow 1 "InsulationResistancelow" 0 "normal
+" ;
+VAL_ 528 VCU_BMS_BattSOC 1023 "Invalid" ;
+VAL_ 528 VCU_BMS_HVBusCur 4095 "Invaild" ;
+VAL_ 528 VCU_BMS_BattVolt 1023 "Invalid" ;
+VAL_ 528 VCU_HVILSt 1 "HVIL" 0 "normal
+" ;
+VAL_ 528 VCU_BMS_ChgTimeRemian 2047 "invalid" ;
+VAL_ 528 VCU_IPUMOT_RuningStatus 1 "Run" 0 "Not run
+" ;
+VAL_ 528 VCU_PowerLimitIndicate 1 "power limit" 0 "Normal
+" ;
+VAL_ 161 VCU_StatusRegenMax 2 "Fauty" 1 "Normal" 0 "Not Initialized
+" ;
+VAL_ 161 VCU_StatusRegenCurrent 2 "Fauty" 1 "Normal" 0 "Not Initialized
+" ;
+VAL_ 779 VCU_BMS_ChargingTimerSetStatus 2 "SET Failure" 1 "SET succeed" 0 "default
+" ;
+VAL_ 779 VCU_BMS_ChgLED_Ctrl 7 "reserved" 6 "reserved" 5 "reserved" 4 "??????? " 3 "??????" 2 "??????" 1 "??????" 0 "????
+" ;
+VAL_ 779 VCU_BMS_BookChargeReponse 4 "cancel Failure??????" 3 "cancel succeed?????? " 2 "set  Failure??????? " 1 "set succeed???¨®?? " 0 "default
+" ;
+VAL_ 616 ACU_DrvSeatbeltBucklestatus 1 "safety belt not tied(Switch on)?????¦Ä? ????" 0 "safety belt tied(Switch off )????????
+" ;
+VAL_ 616 ACU_PassSeatbeltBucklestatus 1 "safety belt not tied(Switch on)?????¦Ä? ????" 0 "safety belt tied(Switch off )????????
+" ;
+VAL_ 616 ACU_PassSeatOccupantSensorStat 1 "Occupied?????????????" 0 "Empty?????????????
+" ;
+VAL_ 616 ACU_PassengerAirbagStatus 1 "PAB enable?????????????????" 0 "PAB disable????????????????????
+" ;
+VAL_ 616 ACU_AirbagWarningChime 1 "ACU Fail????????????" 0 "ACU Normal ???????????
+" ;
+VAL_ 616 ACU_FuelCutOffReq 1 "FuelCutOffActive????¡¤?§Ø????" 0 "FuelCutOffInactive  ??¡¤?§Ø?¦Ä????
+" ;
+VAL_ 727 BCM_DefrosterStatus 1 "Defroster active ????????????????" 0 "Defroster Inactive ????????????¦Ä????
+" ;
+VAL_ 1236 BCM_TurnIndicatorLeft 1 "on??" 0 "off????
+" ;
+VAL_ 1236 BCM_TurnIndicatorRight 1 "on" 0 "off??
+" ;
+VAL_ 1236 BCM_HoodAjarStatus 1 "HoodAjar" 0 "HoodClosed??
+" ;
+VAL_ 1236 BCM_FrontLeftDoorAjarStatus 1 "DoorAjar" 0 "DoorClosed
+" ;
+VAL_ 1236 BCM_FrontRightDoorAjarStatus 1 "DoorAjar" 0 "DoorClosed
+" ;
+VAL_ 1236 BCM_RearLeftDoorAjarStatus 1 "DoorAjar" 0 "DoorClosed
+" ;
+VAL_ 1236 BCM_RearRightDoorAjarStatus 1 "DoorAjar" 0 "DoorClosed
+" ;
+VAL_ 242 PEPS_Warning_IMMO_Fail 1 "Warning" 0 "No warning
+" ;
+VAL_ 226 PEPS_PowerMode 5 "START-Reserved" 4 "START" 3 "START-Reserved" 2 "ON" 1 "ACC" 0 "OFF
+" ;
+VAL_ 226 PEPS_ACCRelaySts 1 "Active" 0 "Inactive
+" ;
+VAL_ 226 PEPS_IGN1RelaySts 1 "Active" 0 "Inactive
+" ;
+VAL_ 226 PEPS_IGN2RelaySts 1 "Active" 0 "Inactive
+" ;
+VAL_ 226 PEPS_StarterRelaySts 1 "Active" 0 "Inactive
+" ;
+VAL_ 226 PEPS_Learning_Status 3 "Notused" 2 "Learnt" 1 "Virgin" 0 "Undefined
+" ;
+VAL_ 210 PEPS_ESCL_Unlocked 1 "Active" 0 "Inactive
+" ;
+VAL_ 122 EPS_SteeringTorque 255 "Invalid" ;
+VAL_ 122 EPS_ElectPowerConsumption 255 " Invalid" ;
+VAL_ 122 EPS_EpasFailed 1 "Failed" 0 "Not Failed
+" ;
+VAL_ 806 Comp_CompRPM 65535 "invalid" ;
+VAL_ 806 Comp_PowerConsumption 255 "invalid" ;
+VAL_ 806 Comp_Status 255 "invalid value " 3 "Error" 1 "On" 0 "Off
+" ;
+VAL_ 806 Comp_faultCode 255 "invalid value " 64 "Over Current Drop Frequency" 32 "Communication Error" 16 "Standby under voltage " 8 "Standby over voltage" 4 "Under Voltage" 2 "Over Voltage " 1 "Over Current" 0 "No Error
+" ;
+VAL_ 804 AC_FanHighSpeedReq 1 "On" 0 "Off
+" ;
+VAL_ 804 AC_CompEnable 1 "compressor On" 0 "compressor Off
+" ;
+VAL_ 804 AC_ClearRime 1 "ClearRime" 0 "Normal
+" ;
+VAL_ 804 AC_PTCEnable 1 "PTC On" 0 "PTC Off
+" ;
+VAL_ 804 AC_PTCActualPower 255 "invalid value" ;
+VAL_ 804 AC_CompPowerLimit 255 "invalid value" ;
+VAL_ 104 ABS_ESC_ABSActive 1 "Active " 0 "Inactive
+" ;
+VAL_ 104 ABS_ESC_BrakePedalSwitchSts 1 " Brake Pedal is active ?????????????" 0 " Brake Pedal is not active ??????¦Ä??????
+" ;
+VAL_ 104 ABS_ESC_EBDFailed 1 "EBD Failed     " 0 "EBD Normal
+" ;
+VAL_ 104 ABS_ESC_ABSFailed 1 "ABS Failed??" 0 "ABS Normal
+" ;
+VAL_ 104 ESC_TCSActive 1 " TCS function Active" 0 " TCS function Inactive
+" ;
+VAL_ 104 ESC_ESCActive 1 " ESC Active" 0 " ESC Inactive
+" ;
+VAL_ 104 ESC_ESCTCSWarning 1 "ESC/TCS Warning" 0 "ESC/TCS Normal
+" ;
+VAL_ 104 ESC_ESCTCS_ActiveLamp 1 "valid" 0 "invalid
+" ;
+VAL_ 104 ABS_ESC_VehicleSpeed 8191 "invalid value" ;
+VAL_ 104 ABS_ESC_VehicleSpeedInvaild 1 " Invalid " 0 " valid
+" ;
+VAL_ 104 ESC_PATAResponse 426 " ESC_ON" 170 " ESC_OFF
+" ;
+VAL_ 104 ESC_BrakePedalSwitchStatusInvali 1 " invalid" 0 " valid
+" ;
+VAL_ 104 ESC_BrakeLightControl 1 "active" 0 "inactive
+" ;
+VAL_ 104 ESC_TCSFailed 1 "TCS Function Failed" 0 "TCS Function Normal
+" ;
+VAL_ 104 ESC_ESCFailed 1 "ESC Function Failed" 0 "ESC Function Normal
+" ;
+VAL_ 104 ESC_HBB_interv 1 "active" 0 "inactive
+" ;
+VAL_ 104 ESC_HBB_Sts 3 "HBB_Disabled" 2 "HBB_FailedBoostBackup" 1 "HBB_FailedBoost/Reduced" 0 "HBB_Normal Mode
+" ;
+VAL_ 104 ESC_GearShiftInhibit 1 " Shifting suppressed" 0 " Shifting not suppressed
+" ;
+VAL_ 37 ESC_EngTrqFastDecReq 4095 "Invaild" ;
+VAL_ 37 ESC_EngTrqDecReqActive 1 "active" 0 "Inactive
+" ;
+VAL_ 1204 ABS_ESC_FLWheelSpeedKPH 8191 "Invalid Speed KPH" ;
+VAL_ 1204 ABS_ESC_FLWheelSpeedInvalid 1 "invalid" 0 "valid
+" ;
+VAL_ 1204 ABS_ESC_FRWheelSpeedKPH 8191 "Invalid Speed KPH" ;
+VAL_ 1204 ABS_ESC_FRWheelSpeedInvalid 1 "invalid" 0 "valid
+" ;
+VAL_ 1205 ABS_ESC_RLWheelSpeedKPH 8191 "Invalid Speed KPH" ;
+VAL_ 1205 ABS_ESC_RLWheelSpeedInvalid 1 "invalid" 0 "valid
+" ;
+VAL_ 1205 ABS_ESC_RRWheelSpeedKPH 8191 "Invalid Speed KPH" ;
+VAL_ 1205 ABS_ESC_RRWheelSpeedInvalid 1 "invalid" 0 "valid
+" ;
+VAL_ 183 ABS_ESC__RegenTargetStatus 2 "Fauty" 1 "Normal" 0 "Not Initialized
+" ;
+VAL_ 269 EPB_SwitchState 3 "Invalid" 2 "Release" 1 "Apply" 0 "Neutral
+" ;
+VAL_ 269 EPB_BrakeLightsReq 1 "Request" 0 "NoRequest
+" ;
+VAL_ 269 EPB_CruiseCancelReq 1 "Request" 0 "NoRequest
+" ;
+VAL_ 269 EPB_DynamicApplyStatus 3 "Degrade Apply" 2 "RWU active(????)" 1 "EDC request active" 0 "Not Active
+" ;
+VAL_ 269 EPB_SystemStatus 5 "Disengaged" 4 "Applying" 3 "Fault (Stop and not sure state)" 2 "Releasing" 1 "Applied" 0 "Released
+" ;
+VAL_ 782 IHU_ReservationChargeValid 3 "invalid" 2 "long time??????§¹" 1 "once??????§¹" 0 "default
+" ;
+VAL_ 782 IHU_ChargingTimerSetCommand 3 "invalid" 2 "Cancel" 1 "SET" 0 "default 
+" ;
+VAL_ 621 ICU_TotalOdometer 1048575 "Invalid" ;
+VAL_ 1012 ACM_VCU_IntelligentChargeReq 3 "invalid" 2 "off" 1 "on" 0 "default 
+" ;
+VAL_ 1012 ACM_ChargeLockstatus 3 "invalid" 2 "unlock" 1 "lock" 0 "default 
+" ;
+VAL_ 1012 ACM_ChargeLidstatus 3 "invalid" 2 "closed" 1 "open" 0 "default 
+" ;
+VAL_ 1012 ACM_stCPLine 7 "CP signal failure" 3 "Contected and charging allowed" 2 "Contected but charging not allowed" 1 "S2 lock-up state failure" 0 "Not Connected
+" ;
+VAL_ 1012 ACM_stCCLine 1 "connected" 0 "Not connected
+" ;
+VAL_ 1012 ACM_CC_CP_current 3 "invalid" 2 "32A" 1 "16A" 0 "default 
+" ;
+

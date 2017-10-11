@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Globalization;
 
-using DbcLib.DBC.Parser;
-using DbcLib.Model;
-using DbcLib.DBC.Lex;
-using DbcLib.DBC.Writer;
 using DbcLib.Excel.Reader;
 using DbcLib.Excel.Parser;
-
+using DbcLib.DBC.Writer;
+using DbcLib.Model;
 
 
 namespace dbc_test
@@ -22,69 +19,35 @@ namespace dbc_test
     {
         static void Main(string[] args)
         {
-            DbcWorkbook workbook = new DbcWorkbook("sample.xlsx");
+            //DbcParserTests.Start(@"..\..\ParserTestFiles\");
+            //Console.ReadKey();
 
-            DbcSheet sheet = workbook.Take(1).Single();
+            /*
+            DbcWorkbook workbook = new DbcWorkbook("sample.xlsx");
+            var sheet = workbook.FirstOrDefault();
 
             ExcelParser parser = new ExcelParser();
+
             DBC dbc = parser.Parse(sheet);
 
-
-            using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
-            {
-                //DBC dbc = DbcParser.Parse("sample.dbc");
-
-                writer.Write(dbc);
-
-            }
-
-
-            dbc = DbcParser.Parse("out.dbc");
-
-            using (DbcWriter writer = new DbcWriter(new StreamWriter("out1.dbc", false, Encoding.Default)))
-            {
-                writer.Write(dbc);
-            }
-
-
-        }
-
-
-
-
-        static void ExcelReader()
-        {
-            DBC dbc = DbcParser.Parse("sample.dbc");
-
+            if (parser.Errors.Any())
+                throw new Exception();
+   
             using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
             {
                 writer.Write(dbc);
             }
+            */
+
+            using(ExcelDBC d = ExcelParser.Parse("sample.xlsx", "Message_Detail"))
+            {
+                
+            }
         }
 
-        static void DbcParser1()
-        {
-            try
-            {
-
-
-
-
-
-
-
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
-            }
-
-
-            Console.ReadKey();
-        }
 
 
     }
+
+
 }
