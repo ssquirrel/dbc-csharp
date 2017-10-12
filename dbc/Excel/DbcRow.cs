@@ -8,83 +8,6 @@ using NPOI.SS.UserModel;
 
 namespace DbcLib.Excel
 {
-    public enum CellType
-    {
-        None,
-        Number,
-        String
-    }
-
-    class DbcCell
-    {
-        private DbcCell()
-        {
-
-        }
-
-        private DbcCell(string val, int row, int col)
-        {
-            Val = val;
-            Type = CellType.String;
-
-
-            Row = row;
-            Col = col;
-        }
-
-        private DbcCell(double num, int row, int col)
-        {
-            Num = num;
-            Type = CellType.Number;
-
-            Row = row;
-            Col = col;
-        }
-
-        public static DbcCell NewDbcCell(ICell cell)
-        {
-            if (cell == null)
-                return EmptyCell;
-
-            if (cell.CellType == NPOI.SS.UserModel.CellType.Numeric)
-            {
-                try
-                {
-                    return new DbcCell(cell.NumericCellValue,
-                        cell.RowIndex,
-                        cell.ColumnIndex);
-                }
-                catch (FormatException)
-                {
-                    //let it fall through
-                }
-            }
-            else if (cell.CellType == NPOI.SS.UserModel.CellType.String)
-            {
-                string trimed = cell.StringCellValue.Trim();
-
-                if (trimed.Length != 0)
-                {
-                    return new DbcCell(trimed,
-                        cell.RowIndex,
-                        cell.ColumnIndex);
-                }
-            }
-
-            return EmptyCell;
-        }
-
-        public static readonly DbcCell EmptyCell = new DbcCell();
-
-        public string Val { get; } = "";
-        public double Num { get; }
-
-        public int Row { get; }
-        public int Col { get; }
-
-        public CellType Type { get; }
-    }
-
     enum RowType
     {
         Unknown,
@@ -96,62 +19,102 @@ namespace DbcLib.Excel
     {
         private DbcCell[] cells = new DbcCell[24];
 
-        public DbcRow(IRow row)
+        public DbcRow(IRow raw)
         {
-            Raw = row;
+            Row = raw.RowNum;
 
-            for (int i = 0; i < cells.Length; ++i)
-                cells[i] = DbcCell.EmptyCell;
-
-            foreach (var cell in row)
+            foreach (var cell in raw)
             {
                 if (cell.ColumnIndex >= cells.Length)
                     return;
 
-                cells[cell.ColumnIndex] = DbcCell.NewDbcCell(cell);
+                cells[cell.ColumnIndex] = new DbcCell(cell);
             }
         }
-
-        public IRow Raw { get; }
 
         public RowType Type
         {
             get
             {
-                if (MsgName != DbcCell.EmptyCell)
+                if (!MsgName.IsEmpty())
                     return RowType.Msg;
 
-                if (SignalName != DbcCell.EmptyCell)
+                if (!SignalName.IsEmpty())
                     return RowType.Signal;
 
                 return RowType.Unknown;
             }
         }
 
-        public DbcCell Transmitter => cells[0];
-        public DbcCell MsgID => cells[1];
-        public DbcCell MsgName => cells[2];
-        public DbcCell FixedPeriodic => cells[3];
-        public DbcCell Event => cells[4];
-        public DbcCell PeriodicEvent => cells[5];
-        public DbcCell MsgSize => cells[6];
-        public DbcCell SignalName => cells[7];
-        public DbcCell SignalSize => cells[8];
-        public DbcCell BitPos => cells[9];
-        public DbcCell DetailedMeaning => cells[10];
-        public DbcCell State => cells[11];
-        public DbcCell Unit => cells[12];
-        public DbcCell Factor => cells[13];
-        public DbcCell Offset => cells[14];
-        public DbcCell LogicalMin => cells[15];
-        public DbcCell PhysicalMin => cells[16];
-        public DbcCell LogicalMax => cells[17];
-        public DbcCell PhysicalMax => cells[18];
-        public DbcCell DefaultVal => cells[19];
-        public DbcCell DefaultTimeout => cells[20];
-        public DbcCell Storage => cells[21];
-        public DbcCell Receiver => cells[22];
-        public DbcCell MsgComment => cells[23];
+        public int Row { get; }
+
+        public DbcCell Transmitter => GetCell(0);
+        public DbcCell MsgID => GetCell(1);
+        public DbcCell MsgName => GetCell(2);
+        public DbcCell FixedPeriodic => GetCell(3);
+        public DbcCell Event => GetCell(4);
+        public DbcCell PeriodicEvent => GetCell(5);
+        public DbcCell MsgSize => GetCell(6);
+        public DbcCell SignalName => GetCell(7);
+        public DbcCell SignalSize => GetCell(8);
+        public DbcCell BitPos => GetCell(9);
+        public DbcCell DetailedMeaning => GetCell(10);
+        public DbcCell State => GetCell(11);
+        public DbcCell Unit => GetCell(12);
+        public DbcCell Factor => GetCell(13);
+        public DbcCell Offset => GetCell(14);
+        public DbcCell LogicalMin => GetCell(15);
+        public DbcCell PhysicalMin => GetCell(16);
+        public DbcCell LogicalMax => GetCell(17);
+        public DbcCell PhysicalMax => GetCell(18);
+        public DbcCell DefaultVal => GetCell(19);
+        public DbcCell DefaultTimeout => GetCell(20);
+        public DbcCell Storage => GetCell(21);
+        public DbcCell Receiver => GetCell(22);
+        public DbcCell MsgComment => GetCell(23);
+
+        public void Commmit(IRow row)
+        {
+            foreach (DbcCell cell in cells)
+            {
+                if (cell == null)
+                    continue;
+
+                if (cell.Type == CellType.Number)
+                {
+                    ICell raw = GetOrCreateCell(row, cell.Col);
+                    raw.SetCellValue(cell.Num);
+                }
+                else if (cell.Type == CellType.String)
+                {
+                    ICell raw = GetOrCreateCell(row, cell.Col);
+                    raw.SetCellValue(cell.Val);
+                }
+
+            }
+        }
+
+        private DbcCell GetCell(int idx)
+        {
+            DbcCell cell = cells[idx];
+
+            if (cell != null)
+                return cell;
+
+            cells[idx] = new DbcCell(Row, idx);
+
+            return cells[idx];
+        }
+
+        private static ICell GetOrCreateCell(IRow row, int col)
+        {
+            ICell cell = row.GetCell(col);
+
+            if (cell != null)
+                return cell;
+
+            return row.CreateCell(col);
+        }
     }
 
 }

@@ -66,7 +66,7 @@ namespace DbcLib.Excel.Parser
 
         public string String(DbcCell cell)
         {
-            if (cell == DbcCell.EmptyCell)
+            if (cell.IsEmpty())
                 return "";
 
             if (cell.Type == CellType.Number)
@@ -94,9 +94,9 @@ namespace DbcLib.Excel.Parser
 
         public int MsgSendType(DbcRow row)
         {
-            bool cyclic = row.FixedPeriodic != DbcCell.EmptyCell;
-            bool ifActive = row.Event != DbcCell.EmptyCell;
-            bool TBD = row.PeriodicEvent != DbcCell.EmptyCell;
+            bool cyclic = !row.FixedPeriodic.IsEmpty();
+            bool ifActive = !row.Event.IsEmpty();
+            bool TBD = !row.PeriodicEvent.IsEmpty();
 
             if (cyclic && !ifActive && !TBD)
                 return DbcTemplate.MsgSendType_Cyclic;
@@ -140,7 +140,7 @@ namespace DbcLib.Excel.Parser
 
         public IList<ValueDesc> SignalValDescs(DbcCell cell)
         {
-            if (cell == DbcCell.EmptyCell)
+            if (cell.IsEmpty())
                 return new List<ValueDesc>();
 
             IList<ValueDesc> result = new List<ValueDesc>();
@@ -187,7 +187,7 @@ namespace DbcLib.Excel.Parser
 
         public IList<string> Receiver(DbcCell cell)
         {
-            if (cell == DbcCell.EmptyCell)
+            if (cell.IsEmpty())
             {
                 return new List<string> { "Vector__XXX" };
             }
