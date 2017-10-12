@@ -4,49 +4,113 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using System.Globalization;
-
-using DbcLib.Excel.Reader;
 using DbcLib.Model;
-using DbcLib.DBC.Parser;
-using System.Collections;
 using NPOI.SS.UserModel;
+using System.IO;
 
 namespace DbcLib.Excel.Parser
 {
+    public class ExcelDBC : IDisposable
+    {
+        internal ExcelDBC(IWorkbook wb, Model.DBC dbc)
+        {
+            Workbook = wb;
+            DBC = dbc;
+        }
+
+        internal ExcelDBC(IWorkbook wb, IReadOnlyList<ParseError> err)
+        {
+            Workbook = wb;
+            Errors = err;
+        }
+
+        public Model.DBC DBC { get; }
+
+        internal IWorkbook Workbook { get; }
+        internal IReadOnlyList<ParseError> Errors { get; }
+
+        public void Dispose()
+        {
+            Workbook.Close();
+        }
+    }
+
     public class ExcelParser
     {
-        private RowParser parser = new RowParser();
+        private IWorkbook workbook;
+        private ISheet sheet;
 
-        public ExcelParser()
+        private CellParser parser = new CellParser();
+
+        private Model.DBC dbc = DbcTemplate.LoadTemplate("template.dbc");
+
+        private ExcelParser(string fn, string sn)
         {
-            //workbook = new DbcWorkbook(fn);
+            FileStream stream = File.Open(fn,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite);
+
+            workbook = WorkbookFactory.Create(stream);
+            sheet = workbook.GetSheet(sn);
+
+            if (sheet == null)
+            {
+                throw new ArgumentException(fn + " does not contain a sheet named " + sn);
+            }
         }
 
-        public IReadOnlyCollection<ParseError> Errors => parser.Errors;
-
-        public Model.DBC Parse(DbcSheet sheet)
+        public static ExcelDBC Parse(string fn, string sheet)
         {
-            Model.DBC dbc = DbcTemplate.LoadTemplate("Template.dbc");
+            ExcelParser parser = new ExcelParser(fn, sheet);
 
-            Message parent = null;
-            foreach (var row in sheet)
+            return parser.Parse();
+        }
+
+        public ExcelDBC Parse()
+        {
+            List<DbcRow> rows = new List<DbcRow>();
+
+            int skip = 0;
+
+            foreach (IRow raw in sheet)
             {
-                if (row.RowType == RowType.Msg)
+                if (skip < 2)
                 {
-                    parent = NewMessage(row, dbc);
-                }
-                else if (row.RowType == RowType.Signal)
-                {
-                    NewSignal(row, parent, dbc);
+                    ++skip;
+                    continue;
                 }
 
+                rows.Add(new DbcRow(raw));
             }
 
-            return dbc;
+            return ParseImpl(rows);
         }
 
-        private Message NewMessage(DbcRow row, Model.DBC dbc)
+        private ExcelDBC ParseImpl(List<DbcRow> rows)
+        {
+            Message parent = null;
+
+            foreach (var row in rows)
+            {
+                if (row.Type == RowType.Msg)
+                {
+                    parent = NewMessage(row);
+                }
+                else if (row.Type == RowType.Signal)
+                {
+                    if (parent != null)
+                        NewSignal(row, parent);
+                }
+            }
+
+            if (parser.Errors.Count > 0)
+                return new ExcelDBC(workbook, parser.Errors);
+            else
+                return new ExcelDBC(workbook, dbc);
+        }
+
+        private Message NewMessage(DbcRow row)
         {
             Message msg = new Message();
             msg.MsgID = parser.Hex(row.MsgID);
@@ -58,14 +122,14 @@ namespace DbcLib.Excel.Parser
             string comment = parser.String(row.MsgComment);
             int sendType = parser.MsgSendType(row);
             int cycleTime = sendType == DbcTemplate.MsgSendType_Cyclic ?
-                cycleTime = parser.Unsigned(row.FixedPeriodic) : 0;
+                parser.Unsigned(row.FixedPeriodic) : 0;
 
             if (parser.Errors.Any())
                 return null;
 
             dbc.Messages.Add(msg);
 
-            if (sendType == DbcTemplate.MsgSendTypeDefault)
+            if (sendType != DbcTemplate.MsgSendTypeDefault)
                 dbc.AttributeValues.Add(new ObjAttributeValue
                 {
                     AttributeName = DbcTemplate.Attr_MsgSendType,
@@ -79,7 +143,7 @@ namespace DbcLib.Excel.Parser
             else if (cycleTime != DbcTemplate.MsgCycleTimeDefault)
                 dbc.AttributeValues.Add(new ObjAttributeValue
                 {
-                    AttributeName = DbcTemplate.Attr_MsgSendType,
+                    AttributeName = DbcTemplate.Attr_MsgCycleTime,
                     Type = Keyword.MESSAGES,
                     MsgID = msg.MsgID,
                     Value = new AttributeValue
@@ -100,7 +164,7 @@ namespace DbcLib.Excel.Parser
             return msg;
         }
 
-        private void NewSignal(DbcRow row, Message msg, Model.DBC dbc)
+        private void NewSignal(DbcRow row, Message msg)
         {
             var sig = new Signal();
             sig.Name = parser.Identifier(row.SignalName);
@@ -117,7 +181,7 @@ namespace DbcLib.Excel.Parser
             sig.ByteOrder = "0";
             sig.ValueType = "+";
 
-            var comment = parser.String(row.SignalComment);
+            var comment = parser.String(row.DetailedMeaning);
             var descs = parser.SignalValDescs(row.State);
 
             if (parser.Errors.Any())
@@ -143,5 +207,7 @@ namespace DbcLib.Excel.Parser
                 });
         }
     }
+
+
 
 }

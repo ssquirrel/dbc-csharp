@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Globalization;
 
 using DbcLib.Model;
-using DbcLib.Excel.Reader;
 
 namespace DbcLib.Excel.Parser
 {
@@ -15,27 +14,29 @@ namespace DbcLib.Excel.Parser
 
     public class ParseError
     {
+        private DbcCell cell;
+
         internal ParseError(string s, DbcCell cell)
         {
-
+            this.cell = cell;
         }
     }
 
-    class RowParser
+    class CellParser
     {
         private List<ParseError> errors = new List<ParseError>();
 
-        public IReadOnlyCollection<ParseError> Errors => errors;
+        public IReadOnlyList<ParseError> Errors => errors;
 
         public int Unsigned(DbcCell cell)
         {
-            if (cell.Assert(CellType.UNSIGNED))
-                return (int)cell.Num;
+            if (TryGetNum(cell, out double num))
+            {
+                int u = (int)num;
 
-            if (cell.Assert(CellType.TEXT) &&
-                int.TryParse(cell.Val, out int num) &&
-                num >= 0)
-                return num;
+                if (u == num)
+                    return u;
+            }
 
             errors.Add(new ParseError("", cell));
 
@@ -44,11 +45,7 @@ namespace DbcLib.Excel.Parser
 
         public double Double(DbcCell cell)
         {
-            if (cell.Assert(CellType.DOUBLE))
-                return cell.Num;
-
-            if (cell.Assert(CellType.TEXT) &&
-                double.TryParse(cell.Val, out double num))
+            if (TryGetNum(cell, out double num))
                 return num;
 
             errors.Add(new ParseError("", cell));
@@ -58,7 +55,7 @@ namespace DbcLib.Excel.Parser
 
         public string Identifier(DbcCell cell)
         {
-            if (cell.Assert(CellType.TEXT) &&
+            if (cell.Type == CellType.String &&
                 IsIdentifier(cell.Val))
                 return cell.Val;
 
@@ -69,13 +66,13 @@ namespace DbcLib.Excel.Parser
 
         public string String(DbcCell cell)
         {
-            if (cell.Assert(CellType.None))
+            if (cell == DbcCell.EmptyCell)
                 return "";
 
-            if (cell.Assert(CellType.DOUBLE))
+            if (cell.Type == CellType.Number)
                 return cell.Val.ToString();
 
-            if (cell.Assert(CellType.TEXT) &&
+            if (cell.Type == CellType.String &&
                 cell.Val.All((ch) => ch != '"'))
                 return cell.Val;
 
@@ -86,7 +83,7 @@ namespace DbcLib.Excel.Parser
 
         public int Hex(DbcCell cell)
         {
-            if (cell.Assert(CellType.TEXT) &&
+            if (cell.Type == CellType.String &&
                 HexTryParse(cell.Val, out int num))
                 return num;
 
@@ -97,9 +94,9 @@ namespace DbcLib.Excel.Parser
 
         public int MsgSendType(DbcRow row)
         {
-            bool cyclic = row.FixedPeriodic != DbcRow.EmptyCell;
-            bool ifActive = row.Event != DbcRow.EmptyCell;
-            bool TBD = row.PeriodicEvent != DbcRow.EmptyCell;
+            bool cyclic = row.FixedPeriodic != DbcCell.EmptyCell;
+            bool ifActive = row.Event != DbcCell.EmptyCell;
+            bool TBD = row.PeriodicEvent != DbcCell.EmptyCell;
 
             if (cyclic && !ifActive && !TBD)
                 return DbcTemplate.MsgSendType_Cyclic;
@@ -117,10 +114,10 @@ namespace DbcLib.Excel.Parser
 
         public int StartBit(DbcCell cell)
         {
-            if (cell.Assert(CellType.UNSIGNED))
+            if (cell.Type == CellType.Number)
                 return (int)cell.Num;
 
-            if (cell.Assert(CellType.TEXT))
+            if (cell.Type == CellType.String)
             {
                 StringBuilder builder = new StringBuilder();
 
@@ -143,14 +140,19 @@ namespace DbcLib.Excel.Parser
 
         public IList<ValueDesc> SignalValDescs(DbcCell cell)
         {
-            if (!cell.Assert(CellType.TEXT))
-            {
+            if (cell == DbcCell.EmptyCell)
                 return new List<ValueDesc>();
-            }
 
             IList<ValueDesc> result = new List<ValueDesc>();
 
             string[] pairs = cell.Val.Split('\n');
+
+            if (pairs.Length == 0)
+            {
+                errors.Add(new ParseError("", cell));
+                return new List<ValueDesc>();
+            }
+
             foreach (string pairstr in pairs)
             {
                 int colon = pairstr.IndexOf(':');
@@ -165,14 +167,8 @@ namespace DbcLib.Excel.Parser
                 string hex = pairstr.Substring(0, colon).Trim();
                 string val = pairstr.Substring(colon + 1).Trim();
 
-                if (!HexTryParse(hex.ToLower(), out int num))
-                {
-                    errors.Add(new ParseError("", cell));
-
-                    break;
-                }
-
-                if (val.Any((ch) => ch == '"'))
+                if (!HexTryParse(hex.ToLower(), out int num) ||
+                    val.Any((ch) => ch == '"'))
                 {
                     errors.Add(new ParseError("", cell));
 
@@ -191,11 +187,10 @@ namespace DbcLib.Excel.Parser
 
         public IList<string> Receiver(DbcCell cell)
         {
-            if (cell == DbcRow.EmptyCell)
+            if (cell == DbcCell.EmptyCell)
             {
                 return new List<string> { "Vector__XXX" };
             }
-
 
             string[] receivers = cell.Val.Trim().Split(null);
 
@@ -205,6 +200,17 @@ namespace DbcLib.Excel.Parser
             errors.Add(new ParseError("", cell));
 
             return new List<string>();
+        }
+
+        private static bool TryGetNum(DbcCell cell, out double num)
+        {
+            if (cell.Type == CellType.Number)
+            {
+                num = cell.Num;
+                return true;
+            }
+
+            return double.TryParse(cell.Val, out num);
         }
 
         private static bool HexTryParse(string hexstring, out int hex)
