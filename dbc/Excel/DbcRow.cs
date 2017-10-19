@@ -4,116 +4,72 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DbcLib.Model;
+using DbcLib.Excel.Parser;
 using NPOI.SS.UserModel;
+using System.Collections;
 
 namespace DbcLib.Excel
 {
-    enum RowType
-    {
-        Unknown,
-        Msg,
-        Signal
-    }
-
-    class DbcRow
+    class DbcRow : IEnumerable<DbcCell>
     {
         private DbcCell[] cells = new DbcCell[24];
 
         public DbcRow(IRow raw)
         {
-            Row = raw.RowNum;
+            Raw = raw;
 
             foreach (var cell in raw)
             {
                 if (cell.ColumnIndex >= cells.Length)
-                    return;
+                    break;
 
                 cells[cell.ColumnIndex] = new DbcCell(cell);
             }
-        }
 
-        public RowType Type
-        {
-            get
+            for (int i = 0; i < cells.Length; ++i)
             {
-                if (!MsgName.IsEmpty())
-                    return RowType.Msg;
-
-                if (!SignalName.IsEmpty())
-                    return RowType.Signal;
-
-                return RowType.Unknown;
+                if (cells[i] == null)
+                    cells[i] = new DbcCell(raw.RowNum, i);
             }
         }
 
-        public int Row { get; }
+        public IRow Raw { get; }
+        public int Row => Raw.RowNum;
 
-        public DbcCell Transmitter => GetCell(0);
-        public DbcCell MsgID => GetCell(1);
-        public DbcCell MsgName => GetCell(2);
-        public DbcCell FixedPeriodic => GetCell(3);
-        public DbcCell Event => GetCell(4);
-        public DbcCell PeriodicEvent => GetCell(5);
-        public DbcCell MsgSize => GetCell(6);
-        public DbcCell SignalName => GetCell(7);
-        public DbcCell SignalSize => GetCell(8);
-        public DbcCell BitPos => GetCell(9);
-        public DbcCell DetailedMeaning => GetCell(10);
-        public DbcCell State => GetCell(11);
-        public DbcCell Unit => GetCell(12);
-        public DbcCell Factor => GetCell(13);
-        public DbcCell Offset => GetCell(14);
-        public DbcCell LogicalMin => GetCell(15);
-        public DbcCell PhysicalMin => GetCell(16);
-        public DbcCell LogicalMax => GetCell(17);
-        public DbcCell PhysicalMax => GetCell(18);
-        public DbcCell DefaultVal => GetCell(19);
-        public DbcCell DefaultTimeout => GetCell(20);
-        public DbcCell Storage => GetCell(21);
-        public DbcCell Receiver => GetCell(22);
-        public DbcCell MsgComment => GetCell(23);
+        public DbcCell Transmitter => cells[0];
+        public DbcCell MsgID => cells[1];
+        public DbcCell MsgName => cells[2];
+        public DbcCell FixedPeriodic => cells[3];
+        public DbcCell Event => cells[4];
+        public DbcCell PeriodicEvent => cells[5];
+        public DbcCell MsgSize => cells[6];
+        public DbcCell SignalName => cells[7];
+        public DbcCell SignalSize => cells[8];
+        public DbcCell BitPos => cells[9];
+        public DbcCell DetailedMeaning => cells[10];
+        public DbcCell State => cells[11];
+        public DbcCell Unit => cells[12];
+        public DbcCell Factor => cells[13];
+        public DbcCell Offset => cells[14];
+        public DbcCell LogicalMin => cells[15];
+        public DbcCell PhysicalMin => cells[16];
+        public DbcCell LogicalMax => cells[17];
+        public DbcCell PhysicalMax => cells[18];
+        public DbcCell DefaultVal => cells[19];
+        public DbcCell DefaultTimeout => cells[20];
+        public DbcCell Storage => cells[21];
+        public DbcCell Receiver => cells[22];
+        public DbcCell MsgComment => cells[23];
 
-        public void Commmit(IRow row)
+        public IEnumerator<DbcCell> GetEnumerator()
         {
-            foreach (DbcCell cell in cells)
-            {
-                if (cell == null)
-                    continue;
-
-                if (cell.Type == CellType.Number)
-                {
-                    ICell raw = GetOrCreateCell(row, cell.Col);
-                    raw.SetCellValue(cell.Num);
-                }
-                else if (cell.Type == CellType.String)
-                {
-                    ICell raw = GetOrCreateCell(row, cell.Col);
-                    raw.SetCellValue(cell.Val);
-                }
-
-            }
+            return cells.AsEnumerable().GetEnumerator();
         }
 
-        private DbcCell GetCell(int idx)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            DbcCell cell = cells[idx];
-
-            if (cell != null)
-                return cell;
-
-            cells[idx] = new DbcCell(Row, idx);
-
-            return cells[idx];
-        }
-
-        private static ICell GetOrCreateCell(IRow row, int col)
-        {
-            ICell cell = row.GetCell(col);
-
-            if (cell != null)
-                return cell;
-
-            return row.CreateCell(col);
+            return GetEnumerator();
         }
     }
 

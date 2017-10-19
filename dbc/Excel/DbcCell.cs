@@ -8,22 +8,26 @@ using NPOI.SS.UserModel;
 
 namespace DbcLib.Excel
 {
+    using DbcLib.Model;
+    using System.Globalization;
+    using static DBC.Lex.Common;
+
     enum CellType
     {
-        Empty,
+        Blank,
         Number,
         String
     }
 
-    class DbcCell
+    class BasicCell
     {
-        public DbcCell(int row, int col)
+        public BasicCell(int row, int col)
         {
             Row = row;
             Col = col;
         }
 
-        public DbcCell(ICell cell)
+        public BasicCell(ICell cell)
         {
             Row = cell.RowIndex;
             Col = cell.ColumnIndex;
@@ -45,16 +49,17 @@ namespace DbcLib.Excel
                 }
                 catch (FormatException) { }
             }
-
         }
-
-        public string Val { get; private set; } = "";
-        public double Num { get; private set; }
 
         public int Row { get; }
         public int Col { get; }
 
+        public string Val { get; private set; } = "";
+        public double Num { get; private set; }
+
         public CellType Type { get; private set; }
+
+        public bool State { get; private set; } = true;
 
         public void Set(string val)
         {
@@ -68,9 +73,192 @@ namespace DbcLib.Excel
             Type = CellType.Number;
         }
 
-        public bool IsEmpty()
+        protected T PARSE_SUCCESS<T>(T a)
         {
-            return Type == CellType.Empty;
+            State = true;
+            return a;
+        }
+
+        protected T PARSE_FAILURE<T>(T a)
+        {
+            State = false;
+            return a;
+        }
+    }
+
+    class DbcCell : BasicCell
+    {
+        public DbcCell(int row, int col) : base(row, col)
+        {
+        }
+
+        public DbcCell(ICell cell) : base(cell)
+        {
+        }
+
+        public int GetUnsigned()
+        {
+            double num = GetDouble();
+
+            if (State && num == (int)num)
+                return (int)num;
+
+            return PARSE_FAILURE(0);
+        }
+
+        public double GetDouble()
+        {
+            if (Type == CellType.Number)
+                return PARSE_SUCCESS(Num);
+
+            if (double.TryParse(Val, out double num))
+                return PARSE_SUCCESS(num);
+
+            return PARSE_FAILURE(0);
+        }
+
+        public string GetIdentifier()
+        {
+            if (Val.Length > 0 && IsIdentifier(Val))
+                return PARSE_SUCCESS(Val);
+
+            return PARSE_FAILURE(Val);
+        }
+
+        public string GetCharString()
+        {
+            if (Type == CellType.Blank)
+                return PARSE_SUCCESS("");
+
+            if (Type == CellType.Number)
+                return PARSE_SUCCESS(Num.ToString());
+
+            if (Type == CellType.String && Val.All(ch => ch != '"'))
+                return PARSE_SUCCESS(Val);
+
+            return PARSE_FAILURE(Val);
+        }
+
+        public int GetHex()
+        {
+            if (HexTryParse(Val, out int num))
+                return PARSE_SUCCESS(num);
+
+            return PARSE_FAILURE(0);
+        }
+
+        public void SetHex(int hex)
+        {
+            Set(hex.ToString("X"));
+        }
+
+        public int GetStartBit()
+        {
+            if (Type == CellType.Number)
+                return (int)PARSE_SUCCESS(Num);
+
+            if (Type == CellType.String)
+            {
+                StringBuilder builder = new StringBuilder();
+
+                foreach (char ch in Val)
+                {
+                    if (!IsDigit(ch))
+                        break;
+
+                    builder.Append(ch);
+                }
+
+                if (int.TryParse(builder.ToString(), out int num))
+                    return PARSE_SUCCESS(num);
+            }
+
+            return PARSE_FAILURE(0);
+        }
+
+        public IList<ValueDesc> GetValueDescs()
+        {
+            IList<ValueDesc> result = new List<ValueDesc>();
+
+            if (Type == CellType.Blank)
+                return PARSE_SUCCESS(result);
+
+            string[] lines = Val.Split('\n');
+            foreach (string pair in lines)
+            {
+                int colon = pair.IndexOf(':');
+
+                if (colon == -1)
+                    return PARSE_FAILURE(result);
+
+                string hex = pair.Substring(0, colon).Trim();
+                string val = pair.Substring(colon + 1).Trim();
+
+                if (!HexTryParse(hex.ToLower(), out int num) ||
+                    val.Any(ch => ch == '"'))
+                {
+                    return PARSE_FAILURE(result);
+                }
+
+                result.Add(new ValueDesc
+                {
+                    Num = num,
+                    Val = val
+                });
+            }
+
+            return PARSE_SUCCESS(result);
+        }
+
+        public void SetValueDescs(IList<ValueDesc> descs)
+        {
+            var desc = descs[0];
+
+            string result = desc.Num.ToString("X") + ":" + desc.Val;
+
+            for (int i = 1; i < descs.Count; ++i)
+            {
+                desc = descs[i];
+                result += "\n" + desc.Num.ToString("X") + ":" + desc.Val;
+            }
+
+            Set(result);
+        }
+
+        public IList<string> GetReceiver()
+        {
+            if (Type == CellType.Blank)
+                return PARSE_SUCCESS(new List<string> { "Vector__XXX" });
+
+            string[] receivers = Val.Trim().Split(null);
+            if (receivers.All(r => IsIdentifier(r)))
+                return PARSE_SUCCESS(receivers.ToList());
+
+            return PARSE_FAILURE(new List<string>());
+        }
+
+        public void SetReceiver(IList<string> receivers)
+        {
+            string result = receivers[0];
+
+            for (int i = 1; i < receivers.Count; ++i)
+                result += "\n" + receivers[i];
+
+            Set(result);
+        }
+
+        private static bool HexTryParse(string hexstring, out int hex)
+        {
+            if (!hexstring.StartsWith("0x"))
+            {
+                hex = 0;
+                return false;
+            }
+
+            return int.TryParse(hexstring.Substring(2, hexstring.Length - 2),
+                NumberStyles.AllowHexSpecifier,
+                null,
+                out hex);
         }
     }
 }

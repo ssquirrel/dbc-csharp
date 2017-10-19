@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Globalization;
 
-using DbcLib.Excel.Reader;
 using DbcLib.Excel.Parser;
 using DbcLib.DBC.Writer;
 using DbcLib.Model;
@@ -39,9 +38,11 @@ namespace dbc_test
             }
             */
 
-            using(ExcelDBC d = ExcelParser.Parse("sample.xlsx", "Message_Detail"))
+            using (ExcelDBC d = ExcelParser.Parse("sample.xlsx", "Message_Detail"))
+            using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
             {
-                
+                if (d.DBC != null)
+                    writer.Write(d.DBC);
             }
         }
 
