@@ -18,8 +18,9 @@ namespace dbc_test
     {
         static void Main(string[] args)
         {
-            //DbcParserTests.Start(@"..\..\ParserTestFiles\");
-            //Console.ReadKey();
+            
+            DbcParserTests.Start(@"..\..\ParserTestFiles\");
+            Console.ReadKey();
 
             /*
             DbcWorkbook workbook = new DbcWorkbook("sample.xlsx");
@@ -36,14 +37,14 @@ namespace dbc_test
             {
                 writer.Write(dbc);
             }
-            */
+            
 
             using (ExcelDBC d = ExcelParser.Parse("sample.xlsx", "Message_Detail"))
             using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
             {
                 if (d.DBC != null)
                     writer.Write(d.DBC);
-            }
+            }*/
         }
 
 

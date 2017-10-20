@@ -51,25 +51,20 @@ namespace dbc_test
                     FileShare.Read | FileShare.ReadWrite,
                     4096,
                     FileOptions.DeleteOnClose))
+            using (StreamReader src = new StreamReader(fn, Encoding.Default))
             {
                 DbcWriter writer = new DbcWriter(new StreamWriter(fs, Encoding.Default));
                 writer.Write(dbc);
 
                 fs.Position = 0;
 
-                var d1 = ReadNoneEmptyLines(new StreamReader(fn, Encoding.Default));
+                var d1 = ReadNoneEmptyLines(src);
                 var d2 = ReadNoneEmptyLines(new StreamReader(fs, Encoding.Default));
 
-                if (d1.Count != d2.Count)
+                if (d1.Count == 0)
                     return false;
 
-                for (int i = 0; i < d1.Count; ++i)
-                {
-                    if (d1[i] != d2[i])
-                        return false;
-                }
-
-                return true;
+                return Enumerable.SequenceEqual(d1, d2);
             }
         }
 
