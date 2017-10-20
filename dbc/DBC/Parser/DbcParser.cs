@@ -319,7 +319,7 @@ namespace DbcLib.DBC.Parser
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_DEFINITIONS))
             {
                 AttributeDefinition ad = new AttributeDefinition();
-                
+
                 if (stream.Peek().Val == Keyword.NODES ||
                     stream.Peek().Val == Keyword.MESSAGES ||
                     stream.Peek().Val == Keyword.SIGNAL ||
@@ -366,35 +366,37 @@ namespace DbcLib.DBC.Parser
                     throw new DbcParseException();
                 }
 
-                dbc.AddAttrDefinition(ad);
+                dbc.AttributeDefinitions.Add(ad);
 
                 EXPECT(";");
             }
+        }
+
+        private AttributeValue AttributeValues()
+        {
+            var av = new AttributeValue();
+
+            var t = EXPECT(TokenType.DOUBLE | TokenType.STRING);
+
+            if (t.Assert(TokenType.DOUBLE))
+                av.Num = t.DOUBLE;
+            else
+                av.Val = t.Val;
+
+            return av;
         }
 
         private void AttributeDefaults()
         {
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_DEFAULTS))
             {
-                string name = EXPECT(TokenType.STRING).Val;
-
-                AttributeDefinition attr = dbc.GetAttrDefinition(name);
-
-                if (attr == null)
-                    throw new DbcParseException();
-
                 AttributeDefault ad = new AttributeDefault
                 {
-                    AttributeName = name,
-                    Value = new AttributeValue()
+                    AttributeName = EXPECT(TokenType.STRING).Val,
+                    Value = AttributeValues()
                 };
 
-                if (attr.ValueType == "ENUM" || attr.ValueType == "STRING")
-                    ad.Value.Val = EXPECT(TokenType.STRING).Val;
-                else
-                    ad.Value.Num = EXPECT(TokenType.DOUBLE).DOUBLE;
-
-                dbc.AddAttrDefault(ad);
+                dbc.AttributeDefaults.Add(ad);
 
                 EXPECT(";");
             }
@@ -404,16 +406,9 @@ namespace DbcLib.DBC.Parser
         {
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.ATTRIBUTE_VALUES))
             {
-                string name = EXPECT(TokenType.STRING).Val;
-
-                AttributeDefinition attr = dbc.GetAttrDefinition(name);
-
-                if (attr == null)
-                    throw new DbcParseException();
-
                 ObjAttributeValue oav = new ObjAttributeValue
                 {
-                    AttributeName = name,
+                    AttributeName = EXPECT(TokenType.STRING).Val,
                     Value = new AttributeValue()
                 };
 
@@ -440,10 +435,7 @@ namespace DbcLib.DBC.Parser
 
                 }
 
-                if (attr.ValueType == "STRING")
-                    oav.Value.Val = EXPECT(TokenType.STRING).Val;
-                else
-                    oav.Value.Num = EXPECT(TokenType.DOUBLE).DOUBLE;
+                oav.Value = AttributeValues();
 
                 EXPECT(";");
             }

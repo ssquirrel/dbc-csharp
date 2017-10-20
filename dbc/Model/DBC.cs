@@ -9,12 +9,6 @@ namespace DbcLib.Model
 {
     public class DBC
     {
-        private IDictionary<string, AttributeDefinition> attributeDefinitions =
-            new Dictionary<string, AttributeDefinition>();
-
-        private IDictionary<string, AttributeDefault> attributeDefaults =
-            new Dictionary<string, AttributeDefault>();
-
         public string Version { get; set; } = "";
         public IList<string> NewSymbols { get; } = new List<string>();
         //BIT_TIMING
@@ -26,13 +20,11 @@ namespace DbcLib.Model
         //SIGNAL_TYPES
         public IList<Comment> Comments { get; } = new List<Comment>();
 
-        public IEnumerable<AttributeDefinition>
-        AttributeDefinitions => attributeDefinitions.Values;
+        public IList<AttributeDefinition> AttributeDefinitions { get; set; } = new List<AttributeDefinition>();
 
         //SIGTYPE_ATTR_LIST
 
-        public IEnumerable<AttributeDefault>
-        AttributeDefaults => attributeDefaults.Values;
+        public IList<AttributeDefault> AttributeDefaults { get; set; } = new List<AttributeDefault>();
 
         public IList<ObjAttributeValue> AttributeValues { get; } =
             new List<ObjAttributeValue>();
@@ -46,36 +38,5 @@ namespace DbcLib.Model
         //SIGNAL_TYPE_REFS
         //SIGNAL_GROUPS
         //SIGNAL_EXTENDED_VALUE_TYPE_LIST
-
-        public void AddAttrDefinition(AttributeDefinition def)
-        {
-            attributeDefinitions.Add(def.AttributeName, def);
-
-        }
-
-        public AttributeDefinition GetAttrDefinition(string name)
-        {
-            if (attributeDefinitions.TryGetValue(name,
-                out AttributeDefinition def))
-                return def;
-
-            return null;
-        }
-
-        public void AddAttrDefault(AttributeDefault ad)
-        {
-            attributeDefaults.Add(ad.AttributeName, ad);
-
-        }
-
-        public AttributeDefault GetAttrDefault(string name)
-        {
-            if (attributeDefaults.TryGetValue(name,
-                out AttributeDefault ad))
-                return ad;
-
-            return null;
-        }
-
     }
 }

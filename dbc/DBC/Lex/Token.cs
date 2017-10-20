@@ -11,9 +11,9 @@ namespace DbcLib.DBC.Lex
     {
         None = 0x0,
         TOKEN = 0x1,
-        DOUBLE = 0x2,
-        SIGNED = 0x4 | DOUBLE,
-        UNSIGNED = 0X8 | SIGNED,
+        UNSIGNED = 0x2,
+        SIGNED = 0x4 | UNSIGNED,
+        DOUBLE = 0X8 | SIGNED,
         STRING = 0x10,
         IDENTIFIER = 0x20
     }
@@ -21,7 +21,7 @@ namespace DbcLib.DBC.Lex
     class Token
     {
         public string Val { get; private set; }
-        private TokenType Type { get; set; } = TokenType.None;
+        public TokenType Type { get; set; } = TokenType.None;
 
         public double DOUBLE { get { return Double.Parse(Val); } }
         public int INT { get { return int.Parse(Val); } }
@@ -46,10 +46,10 @@ namespace DbcLib.DBC.Lex
 
         public bool Assert(TokenType t)
         {
-            if (t == TokenType.None)
+            if (Type == TokenType.None)
                 return t == Type;
 
-            return Type.HasFlag(t);
+            return t.HasFlag(Type);
         }
     }
 }
