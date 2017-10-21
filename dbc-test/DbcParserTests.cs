@@ -24,7 +24,7 @@ namespace dbc_test
                 if (test.Eval(fn.FullName))
                     Console.WriteLine(fn.Name + " Pass");
                 else
-                    Console.WriteLine(fn.Name + " Fail");
+                    Console.WriteLine(fn.Name + " FaiLLLLLLLLLLLLLLLLLLL");
             }
         }
 

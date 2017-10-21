@@ -159,7 +159,7 @@ namespace DbcLib.Excel.Parser
                 row.FixedPeriodic.GetUnsigned() : 0;
 
             if (Sweep(row))
-                return null;
+                return msg;
 
             dbc.Messages.Add(msg);
 

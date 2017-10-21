@@ -1,0 +1,1059 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: VCU ICU EPB ABS_ESC TEM IHU OBC ACM AC ACU BMS HCU
+VAL_TABLE_ VT_BMS_BattTypeCode 7 "_Polymer_Lithium_ion" 6 "_NCM" 5 "_LCO" 4 "_LMO" 3 "_LFP" 2 "Ni-H" 1 "Lead_Acid" 0 "reserved" ;
+VAL_TABLE_ VT_BMS_BookChargeReponse 7 "reserved" 6 "reserved" 5 "reserved" 4 "cancel_failure" 3 "cancel_succeed" 2 "set_failure" 1 "set_succeed" 0 "default" ;
+VAL_TABLE_ VT_BMS_ChargingTimerSetStatus 2 "SET_Failure" 1 "SET_succeed" 0 "default" ;
+VAL_TABLE_ VT_BMS_Over_Temperature 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_BalanceActive 1 "Active" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Battery_Mismatching 1 "Fault" 0 "Normal_NL/KC_Send_Normal" ;
+VAL_TABLE_ VT_BMS_Battery_Uniformity 1 "Fault" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_TempUniformity 1 "Fault" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_StoredEnergySys 1 "Fault" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Low_Temperature 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Over_SOC 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Low_SOC 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Battery_Over_Voltage 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Battery_Under_Voltage 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Cell_Over_Temperature 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Cell_Over_Voltage 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_Cell_Under_Voltage 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_TABLE_ VT_BMS_ChgLED_Ctrl 7 "reserved" 6 "reserved" 5 "Fail_silent" 4 "heating" 3 "charge_fault" 2 "charge_finished" 1 "charging" 0 "default" ;
+VAL_TABLE_ VT_BMS_OBC_ChargeEnable 11 "End_of_charge" 4 "allow_charge" 2 "standby" 0 "default" ;
+VAL_TABLE_ VT_BMS_Temp_Max_Num 3 "Pack3(reserved)" 2 "Pack2(reserved)" 1 "Pack1" 0 "default" ;
+VAL_TABLE_ VT_BMS_Temp_Min_Num 3 "Pack3(reserved)" 2 "Pack2(reserved)" 1 "Pack1" 0 "default" ;
+VAL_TABLE_ Vt_BMS_NegRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_TABLE_ Vt_BMS_PosRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_TABLE_ Vt_BMS_stPrechargeRelay 1 "Closed" 0 "Open" ;
+VAL_TABLE_ Vt_BMS_stMainRelay_Neg 1 "Closed" 0 "Open" ;
+VAL_TABLE_ Vt_BMS_stMainRelay_Pos 1 "Closed" 0 "Open" ;
+VAL_TABLE_ VT_ACU_FuelCutOffReq 1 "FuelCutOffActive" 0 "FuelCutOffInactive" ;
+VAL_TABLE_ VT_BMS_ThermalManageReq 3 "reserved" 2 "Cooling" 1 "Heating" 0 "default" ;
+VAL_TABLE_ VT_BMS_VolMax_Num 3 "Pack3(reserved)" 2 "Pack2(reserved)" 1 "Pack1" 0 "default" ;
+VAL_TABLE_ VT_BMS_VolMin_Num 3 "Pack3(reserved)" 2 "Pack2(reserved)" 1 "Pack1" 0 "default" ;
+VAL_TABLE_ VT_BMS_batteryFaultLampState 3 "reserved" 2 "reserved" 1 "lamp_on" 0 "extinguish" ;
+VAL_TABLE_ VT_BMS_dischgFaultLevel 4 "Shutdown" 3 "Limp_Home" 2 "Warning" 1 "Normal" 0 "default" ;
+VAL_TABLE_ VT_BMS_DischgHVReady 1 "Ready" 0 "Not_Ready" ;
+VAL_TABLE_ VT_BMS_stMChgPrechgRelay 1 "Closed" 0 "Open" ;
+VAL_TABLE_ VT_BMS_PrechgSt 7 "reserved" 6 "reserved" 5 "reserved" 4 "Precharge_Locked" 3 "Precharge_Failure" 2 "Precharge_Succeed" 1 "Precharging" 0 "Default" ;
+VAL_TABLE_ VT_BMS_CHGPrechgSt 7 "reserved" 6 "reserved" 5 "reserved" 4 "Precharge_Locked" 3 "Precharge_Failure" 2 "Precharge_Succeed" 1 "Precharging" 0 "Default" ;
+VAL_TABLE_ VT_BMS_DisPreRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_TABLE_ VT_BMS_ChargeRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_TABLE_ VT_BMS_PosRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_TABLE_ VT_BMS_NegRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_TABLE_ VT_BMS_chgFaultLevel 4 "Level4" 3 "Level3" 2 "Level2" 1 "Level1" 0 "Default" ;
+VAL_TABLE_ VT_BMS_Insulation_Resistance 3 "Invalid" 2 "Insulation_Error" 1 "Insulation_Warning" 0 "Insulation_OK(default)" ;
+VAL_TABLE_ VT_BMS_stPrechargeRelay 1 "Closed" 0 "Open" ;
+VAL_TABLE_ VT_BMS_stMainRelay_Neg 1 "Closed" 0 "Open" ;
+VAL_TABLE_ VT_BMS_stMainRelay_Pos 1 "Closed" 0 "Open" ;
+VAL_TABLE_ VT_BMS_stMCRelay_Pos 1 "Closed" 0 "Open" ;
+VAL_TABLE_ VT_BMS_IntelligentChargeReq 1 "request" 0 "default_no_request" ;
+VAL_TABLE_ VT_BMS_Pack_HVILSts 3 "Invalid" 1 "HVIL_1open/fault" 0 "HVIL_1_closed/OK" ;
+VAL_TABLE_ VT_BMS_stMode 15 "reserved" 14 "Emergency_Shutdown" 12 "_ChgMode" 11 "Dischg_in_ChgMode" 10 "Initial_failed" 9 "Shutdown" 8 "AfterRunMode" 4 "Normal_Discharge_Mode" 3 "precharge" 2 "standby" 1 "Initial" 0 "Reserved" ;
+VAL_TABLE_ VT_IHU_ChargingTimerSetCom 3 "Invalid" 2 "Cancel" 1 "SET" 0 "default" ;
+VAL_TABLE_ VT_OBC_iMAXHVout 1023 "Invalid" ;
+VAL_TABLE_ VT_OBC_stCPLine 4 "CP_signal_failure" 3 "Connected_charging_allowed" 2 "Connected_charging_not_allowed" 1 "S2_lock-up_state_failure" 0 "Not_connected" ;
+VAL_TABLE_ VT_OBC_stCCLine 1 "connected" 0 "Not connected" ;
+VAL_TABLE_ VT_OBC_Elock_Stmode 3 "unlock error" 2 "lock error" 1 "unlock" 0 "lock" ;
+VAL_TABLE_ VT_OBC_iOutAct 1023 "Invalid" ;
+VAL_TABLE_ VT_OBC_uOutAct 16383 "Invalid" ;
+VAL_TABLE_ VT_OBC_FailSt 3 "Emergency_Shutdown" 2 "_Fail_Silent_disable_charging" 1 "Limited_operation_Failure" 0 "No_error" ;
+VAL_TABLE_ VT_OBC_StMode 15 "INVALID" 12 "OFF" 11 "Shutdown" 10 "Fail_silent" 9 "Reduced_Power" 4 "Normal" 2 "StandBy" 1 "Init" ;
+VAL_TABLE_ VT_AC_BMS_ThermalReqFeedback 5 "Fault" 4 "Cool_fnished" 3 "Cooling" 2 "Heat_finished" 1 "Heating" 0 "Default" ;
+VAL_TABLE_ VT_HCU_BMS_chStModeCtrl 3 "reserved" 2 "reserved" 1 "charge_allowed" 0 "default_charge_forbid" ;
+VAL_TABLE_ VT_HCU_BMS_dischStModeCtrl 11 "Shutdown_relays_open" 9 "emShutdown_emergency_relayopen" 4 "Normal_relays_closed" 0 "default" ;
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ DTC_DRV_CVS_OVERLOAD : 0|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CHPG_DET_ER : 0|1@0+ (1,0) [0|0] "bit" Vector__XXX
+
+BO_ 0 New_Message_23: 8 Vector__XXX
+ SG_ New_Signal_143 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1298 DTC_Indicator3: 8 BMS
+ SG_ DTC_Kl30F_OVERVOLT : 48|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_CVS_OVERLOAD : 0|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ GPT_E_TIMEOUT_TRANSITION : 60|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ ADC_E_TIMEOUT : 61|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_NVM_SAVE_ERROR : 62|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_NVM_LOAD_ERROR : 63|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_Kl30F_UNDERVOLT : 49|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN2_Busoff : 50|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_MPU_RST : 51|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_MMU_RST : 52|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER3_RIPCORD_DRAWN : 53|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_SHUTOFFPATHTEST_ERR : 54|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_NVMTEST_ER : 55|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_CRASH_ERR : 40|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_SR_ER : 41|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_BMC_PARAM_FAULT : 42|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_CSSU_PARAM_FAULT : 43|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_CSSU_STATUS_FAULT : 44|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_CVS_TEMP_OOR : 45|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_CVS_VOLT_OOR : 46|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_CVS_TIME_OUT : 47|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_UNDERVOLTAGE : 32|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_OVERVOLTAGE : 33|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_PLAUSI_TEMP : 34|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_OVERTEMPERATURE : 35|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_OVERCURRENT : 36|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT1_SHORT2GND : 37|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT1_SHORT2BAT : 38|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT1_OVERLOAD : 39|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT1_OPENLOAD : 24|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK6_SHORT2GND : 25|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK6_SHORT2BAT : 26|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK6_OVERLOAD : 27|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK6_OPENLOAD : 28|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK5_SHORT2GND : 29|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK5_SHORT2BAT : 30|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK5_OVERLOAD : 31|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK5_OPENLOAD : 16|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK4_SHORT2GND : 17|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK4_SHORT2BAT : 18|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK4_OVERLOAD : 19|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK4_OPENLOAD : 20|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK3_SHORT2GND : 21|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK3_SHORT2BAT : 22|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK3_OVERLOAD : 23|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK3_OPENLOAD : 8|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK2_SHORT2GND : 9|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK2_SHORT2BA : 10|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK2_OVERLOAD : 11|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK2_OPENLOAD : 12|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK1_SHORT2GND : 13|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK1_SHORT2BAT : 14|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK1_OVERLOAD : 15|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRVK1_OPENLOAD : 1|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_CVS_SHORT2GND : 2|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_CVS_SHORT2BAT : 3|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_CVS_OPENLOAD : 4|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_CSSU_SHORT2GND : 5|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_CSSU_SHORT2BAT : 6|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_CSSU_OVERLOAD : 7|1@0+ (1,0) [0|0] "bit" Vector__XXX
+
+BO_ 1297 DTC_Indicator2: 8 BMS
+ SG_ DTC_HVIL_SHORT2GND : 57|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_HVIL_SHORT2BAT : 58|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_HVIL_SHORT : 59|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_CSSU_OPENLOAD : 56|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT5V0_SHORT2GND : 60|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT5V0_SHORT2BAT : 61|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT5V0_OVERLOAD : 62|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT5V0_OPENLOA : 63|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT6_SHORT2GND : 48|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT6_SHORT2BAT : 49|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT6_OVERLOAD : 50|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT6_OPENLOAD : 51|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT5_SHORT2GND : 52|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT5_SHORT2BAT : 53|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT5_OVERLOAD : 54|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT5_OPENLOAD : 55|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT4_SHORT2GND : 40|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT4_SHORT2BAT : 41|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT4_OVERLOAD : 42|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT4_OPENLOAD : 43|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT3_SHORT2GND : 44|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT3_SHORT2BAT : 45|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT3_OVERLOAD : 46|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT3_OPENLOAD : 47|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT2_SHORT2GND : 32|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT2_SHORT2BAT : 33|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT2_OVERLOAD : 34|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DRV_OUT2_OPENLOAD : 35|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ISOMON_1SIDE_CHRG : 38|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_ChrgPOS_WELD : 37|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_ChrgNEG_WELD : 36|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CHPG_DET_ERR : 39|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_PRECHG_SGG : 26|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CHG_PEAK_MAX : 27|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CELL_U_LO_ERR : 24|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CELL_U_HI_ERR : 25|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DIS_PEAK_MAX : 28|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_TLTEST_WRONGLY_NOT_DW : 30|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_TLTEST_FEEDBACK_CSSU : 31|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_TLTEST_FEEDBACK_BMU : 29|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_RAM_DII_FAULT : 23|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_VERSION : 20|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_TLTEST_TRIGGER : 16|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_REISSLEINE_DRAWN : 17|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_IDS_LOST : 19|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_IDS_FAIL : 18|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_ERR_NTC_MON_DEFECT : 22|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CSSU_ERR_CANDB : 21|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_SC_RESET : 9|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_PRGM_FLOW_ERROR : 11|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_MAINC_RESET : 8|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FAC_EEGG_SWOF : 15|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_WD_RESET : 12|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_UNIMPLINT : 13|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_ECC : 14|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CPU_CORETEST_FAIL : 10|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ISO_MONITOR_TWO_SIDE : 4|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ISO_MONITOR_ONE_SIDE : 5|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_UNEXPECTED_SHUTDOWN : 0|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_SUPPLY_VOLT_5_LOW : 2|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_NVM_CRC_ERROR : 1|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ECU_EEPROM_RESET : 3|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CHARGE_PLUG_LOW : 7|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CHARGE_PLUG_HIGH : 6|1@0+ (1,0) [0|0] "bit" Vector__XXX
+
+BO_ 1296 DTC_Indicator1: 8 BMS
+ SG_ DTC_FLAPFEEDBACK_HIGH_OPEN : 56|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FLAPFEEDBACK_LOW : 57|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FLAPCTRL_HIGH : 58|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FLAPCTRL_LOW_OPEN : 59|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FANFEEDBACK_HIGH_OPEN : 60|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FANFEEDBACK_LOW : 61|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FANENABL_HIGH : 62|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FANENABL_LOW_OPEN : 63|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FANCTRL_HIGH : 48|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FANCTRL_LOW_OPEN : 49|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CHARGER_FAULT : 50|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_CSSU_CRC_FAULT : 51|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_ROM_FAULT : 52|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_RAM_FAULT : 53|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_F_FAILED : 54|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_E_FAILED : 55|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_D_FAILED : 40|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_C_FAILED : 41|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_B_FAILED : 42|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_A_FAILED : 43|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FLAP_ERR : 44|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CELL_T_ERR : 45|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_MOD_VOLTAGE_COMPARE : 46|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_FAN_ERRR : 47|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_HVIL_OPEN : 32|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_HVIL_FAIL : 33|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BAL_RES_ERR : 34|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BAL_WOUT_CMD : 35|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_MNEG_WELD_AT_SU : 36|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_MPOS_WELD_AT_SU : 37|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CONT_CLOSE : 38|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_HV_STILL_HI_ERR : 39|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CHG_MAX : 24|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DIS_MAX : 25|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_IBAT_ERROR : 26|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_SLAVE_CAL_FAULT : 27|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CRASH_RECEIVED : 28|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_PRECHARGE_TIMEOUT : 29|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DIFF_BATTERY_TEMP_15GRAD : 30|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BATTERY_TEMP_PLUS_60GRAD : 31|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BATTERY_TEMP_MINUS_20GRAD : 16|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DIFF_CELL_VOLTAGE_06V : 17|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_DIFF_CELL_VOLTAGE_03V : 18|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BATTERY_SOC_95PERCEN : 19|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BATTERY_SOC_5PERCENT : 20|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BATTERY_VOLTAGE_403V : 21|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BATTERY_VOLTAGE_260V : 22|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_MISSING_CVS_MSG : 23|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_INVALID_CVS_MSG : 8|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_MISSING_SLAVE_MSG : 9|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_INVALID_SLAVE_MSG : 10|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_BUSOFF_CSSU : 11|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_LAYER2_ERR : 12|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_BUSOFF_CAN1 : 13|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_MISSING_ABM_MSG : 14|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_INVALID_ABM_MSG : 15|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_MISSING_CCU_MSG : 0|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_INVALID_CCU_MSG : 1|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_BMU_HW_VERSION : 2|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_SOC_QUALITY : 3|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_PWR_LIM : 4|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_PWR_PREDICTION : 5|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_MISSING_HC_MSG : 6|1@0+ (1,0) [0|0] "bit" Vector__XXX
+ SG_ DTC_CAN_INVALID_HC_MSG : 7|1@0+ (1,0) [0|0] "bit" Vector__XXX
+
+BO_ 854 BMS_batteryInfor_2: 8 BMS
+ SG_ BMS_BattTypeCode : 59|4@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_BattRatedVoltage : 41|10@0+ (1,0) [0|0] "V"  TEM
+ SG_ BMS_BattRatedEnergy : 39|14@0+ (0.1,0) [0|0] "kwh"  TEM
+ SG_ BMS_BattManufcCode : 7|32@0+ (1,0) [0|0] "bit"  TEM
+
+BO_ 782 IHU_ReservationCharge2: 8 IHU
+ SG_ IHU_ChargingTimerSetCommand : 33|2@0+ (1,0) [0|0] "bit"  BMS
+ SG_ IHU_StopMinute : 29|6@0+ (1,0) [0|63] "bit"  BMS
+ SG_ IHU_StopHour : 18|5@0+ (1,0) [0|31] "bit"  BMS
+ SG_ IHU_StopDay : 23|5@0+ (1,0) [0|31] "bit"  BMS
+ SG_ HU_StopMonth : 11|4@0+ (1,0) [0|15] "bit"  BMS
+ SG_ IHU_StopYear : 7|12@0+ (1,0) [0|4095] "bit"  BMS
+
+BO_ 783 IHU_ReservationCharge1: 8 Vector__XXX
+ SG_ IHU_PresentMonth : 11|4@0+ (1,0) [0|15] ""  BMS,ICU
+ SG_ IHU_StartMinute : 61|6@0+ (1,0) [0|63] ""  BMS
+ SG_ IHU_StartHour : 50|5@0+ (1,0) [0|31] ""  BMS
+ SG_ IHU_StartDay : 55|5@0+ (1,0) [0|31] ""  BMS
+ SG_ IHU_StartMonth : 43|4@0+ (1,0) [0|15] ""  BMS
+ SG_ IHU_StartYear : 39|12@0+ (1,0) [0|4095] ""  BMS
+ SG_ IHU_PresentMinute : 29|6@0+ (1,0) [0|63] ""  BMS,ICU
+ SG_ IHU_PresentHour : 18|5@0+ (1,0) [0|31] ""  BMS,ICU
+ SG_ IHU_PresentDay : 23|5@0+ (1,0) [0|31] ""  BMS,ICU
+ SG_ IHU_PresentYear : 7|12@0+ (1,0) [0|4095] ""  BMS,ICU
+
+BO_ 1554 OBC_ExternalValues: 8 OBC
+ SG_ OBC_ExternalValues_cksSt : 63|8@0+ (1,0) [0|0] "bit"  BMS
+ SG_ OBC_ExternalValues_ctRoll : 51|4@0+ (1,0) [0|0] "bit"  BMS
+ SG_ OBC_iMaxHVout : 23|10@0+ (0.1,0) [0|0] "A"  BMS
+
+BO_ 1553 OBC_InternalValues: 8 OBC
+ SG_ OBC_InternalValues_cksSt : 63|8@0+ (1,0) [0|0] "bit"  BMS
+ SG_ OBC_InternalValues_ctRoll : 51|4@0+ (1,0) [0|0] "bit"  BMS
+ SG_ OBC_stCPLine : 54|3@0+ (1,0) [0|0] "bit"  BMS,ICU
+ SG_ OBC_stCCLine : 44|1@0+ (1,0) [0|0] "bit"  IHU,BMS,ICU
+ SG_ OBC_Elock_Stmode : 41|2@0+ (1,0) [0|0] "bit"  BMS,ICU
+ SG_ OBC_iOutAct : 31|10@0+ (0.1,0) [0|0] "A"  BMS
+ SG_ OBC_uOutAct : 13|14@0+ (0.1,0) [0|0] "V"  BMS
+ SG_ OBC_FailSt : 5|2@0+ (1,0) [0|0] "bit"  BMS,ICU
+ SG_ OBC_StMode : 3|4@0+ (1,0) [0|0] "bit"  BMS,ICU
+
+BO_ 803 AC_Control2: 8 AC
+ SG_ AC_Control2_Counter : 51|4@0+ (1,0) [0|15] "bit"  BMS,ICU
+ SG_ AC_Control2_Checksum : 63|8@0+ (1,0) [0|255] "bit"  BMS,ICU
+ SG_ AC_BMS_ThermalReqFeedback : 55|3@0+ (1,0) [0|5] "bit"  BMS,ICU
+
+BO_ 947 BMS_infor_1: 8 BMS
+ SG_ BMS_SerialNum : 47|14@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_infor1_PackNum : 33|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_ProductSecond : 39|6@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_ProductMinute : 29|6@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_ProductHour : 18|5@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_ProductDay : 23|5@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_ProductMonth : 11|4@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_ProductYear : 7|12@0+ (1,0) [0|0] "bit"  TEM
+
+BO_ 779 BMS_Event_1: 8 BMS
+ SG_ BMS_BookChargeReponse : 4|3@0+ (1,0) [0|0] "bit"  HCU,IHU
+ SG_ BMS_ChargingTimerSetStatus : 1|2@0+ (1,0) [0|0] "bit"  IHU
+
+BO_ 897 BMS_FaultSts: 8 BMS
+ SG_ BMS_BalanceActive : 43|1@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Battery_Mismatching : 44|1@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Battery_Uniformity : 45|1@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_TempUniformity : 46|1@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_StoredEnergySys : 47|1@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Low_Temperature : 33|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Over_SOC : 35|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Low_SOC : 37|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Battery_Over_Voltage : 39|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Battery_Under_Voltage : 25|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Over_Temperature : 27|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Cell_Over_Voltage : 29|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Cell_Under_Voltage : 31|2@0+ (1,0) [0|0] "bit"  TEM
+
+BO_ 945 BMS_AllCellInfor: 8 BMS
+ SG_ BMS_TempVolt_ckSt : 63|8@0+ (1,0) [0|255] "1"  TEM
+ SG_ BMS_TempVolt_ctRoll : 51|4@0+ (1,0) [0|0] ""  TEM
+ SG_ BMS_Cell_TotalNum : 15|8@0+ (1,0) [0|0] ""  TEM
+ SG_ BMS_TempSensor_TotalNum : 7|8@0+ (1,0) [0|0] ""  TEM
+ SG_ BMS_PackIndex2 : 53|2@0+ (1,0) [0|0] ""  TEM
+ SG_ BMS_CellVolt : 47|10@0+ (0.01,0) [0|0] "V"  TEM
+ SG_ BMS_CellVolt_Num : 39|8@0+ (1,0) [0|0] ""  TEM
+ SG_ BMS_TempSensor_Temp : 31|8@0+ (0.5,-40) [0|0] "C"  TEM
+ SG_ BMS_TempSensor_Num : 23|8@0+ (1,0) [0|0] ""  TEM
+
+BO_ 1560 BMS_OBC_Control: 8 BMS
+ SG_ BMS_ChgLEDCtrl : 15|3@0+ (1,0) [0|0] "bit"  TEM,OBC,ICU,IHU
+ SG_ BMS_ChgTimeRemian : 10|11@0+ (1,0) [0|0] "min"  ICU,IHU
+ SG_ BMS_OBC_iOutSetP : 33|10@0+ (0.1,0) [0|0] "A"  OBC
+ SG_ BMS_OBC_cksSt : 63|8@0+ (1,0) [0|0] "bit"  OBC
+ SG_ BMS_OBC_ctRoll : 51|4@0+ (1,0) [0|0] "bit"  OBC
+ SG_ BMS_OBC_uOutSetP : 31|14@0+ (0.1,0) [0|0] "V"  OBC
+ SG_ BMS_OBC_ChargeEnable : 3|4@0+ (1,0) [0|0] "bit"  OBC
+
+BO_ 887 BMS_PwrLimit: 8 BMS
+ SG_ BMS_PwrLimit_Chg_cksSt : 63|8@0+ (1,0) [0|255] "bit"  TEM,HCU
+ SG_ BMS_PwrLimit_Chg_ctRoll : 51|4@0+ (1,0) [0|15] "bit"  TEM,HCU
+ SG_ BMS_BattSOH : 45|10@0+ (0.1,0) [0|0] "%"  HCU
+ SG_ BMS_MaxDchgPwrCont : 31|8@0+ (1,0) [0|0] "kW"  HCU
+ SG_ BMS_BattSOC : 39|10@0+ (0.1,0) [0|0] "%"  TEM,ACM,ICU,HCU
+ SG_ BMS_MaxChgPwrCont : 15|8@0+ (1,0) [0|0] "kW"  HCU
+ SG_ BMS_MaxDchgPwrPeak : 23|8@0+ (1,0) [0|0] "kW"  HCU
+ SG_ BMS_MaxChgPwrPeak : 7|8@0+ (1,0) [0|0] "kW"  ICU,HCU
+
+BO_ 876 BMS_Temp_1: 8 BMS
+ SG_ BMS_TempMin_Num : 41|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_TempMax_Num : 43|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_Temp_ckSt : 63|8@0+ (1,0) [0|0] "bit"  ICU,TEM
+ SG_ BMS_Temp_ctRoll : 51|4@0+ (1,0) [0|0] "bit"  ICU,TEM
+ SG_ BMS_PackIndex1 : 47|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_CellTempMin_Num : 39|8@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_CellTempMax_Num : 31|8@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_PackTempMin : 23|8@0+ (0.5,-40) [0|0] "C"  TEM
+ SG_ BMS_PackTempMax : 15|8@0+ (0.5,-40) [0|0] "C"  TEM
+ SG_ BMS_BattTempAvg : 7|8@0+ (0.5,-40) [0|0] "C"  TEM
+
+BO_ 878 BMS_ThermalManage: 8 BMS
+ SG_ BMS_WaterTempChangeRateReq : 47|4@0+ (1,0) [0|0] "C/min"  AC,VCU
+ SG_ BMS_InletWaterTempTarget_reserve : 39|8@0+ (0.5,-40) [0|0] "C"  AC,VCU
+ SG_ BMS_FlowRateReq : 31|8@0+ (0.1,0) [0|0] "L/min"  AC,VCU
+ SG_ BMS_ThermalManageReq : 23|2@0+ (1,0) [0|0] ""  AC,VCU
+ SG_ BMS_Outlet_WaterTemp_reserved : 15|8@0+ (0.5,-40) [0|0] "C"  AC,VCU
+ SG_ BMS_Inlet_WaterTemp : 7|8@0+ (0.5,-40) [0|0] "C"  AC,VCU
+
+BO_ 874 BMS_CellVolt: 8 BMS
+ SG_ BMS_General_ckSt : 63|8@0+ (1,0) [0|0] ""  TEM
+ SG_ BMS_General_ctRoll : 51|4@0+ (1,0) [0|0] ""  TEM
+ SG_ BMS_VoltMax_Num : 53|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_VoltMin_Num : 55|2@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_CellVoltMin : 39|16@0+ (0.001,0) [0|0] "V"  TEM
+ SG_ BMS_CellVoltMax : 23|16@0+ (0.001,0) [0|0] "V"  TEM
+ SG_ BMS_CellVoltMin_Num : 15|8@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_CellVoltMax_Num : 7|8@0+ (1,0) [0|0] "bit"  TEM
+
+BO_ 678 BMS_VoltCurr: 8 BMS
+ SG_ BMS_VoltCurr_cksSt : 63|8@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_VolCurr_ctRoll : 51|4@0+ (1,0) [0|0] "bit"  TEM
+ SG_ BMS_batteryFaultLampState : 55|2@0+ (1,0) [0|0] "bit"  ICU
+ SG_ BMS_BattRemainEnergy : 37|14@0+ (0.1,0) [0|0] "kWh"  TEM
+ SG_ BMS_BattVolt : 31|10@0+ (1,0) [0|0] "V"  ICU
+ SG_ BMS_HVBusVolt : 9|10@0+ (1,0) [0|0] "V"  TEM,ICU
+ SG_ BMS_BattCurr : 7|14@0+ (0.1,-500) [0|0] "A"  TEM,ICU
+
+BO_ 560 BMS_General: 8 BMS
+ SG_ BMS_DisPreRelay_WeldSts : 36|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_ChargeRelay_WeldSts : 39|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_NegRelay_WeldSts : 37|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_PosRelay_WeldSts : 38|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_Pack_HVILSts : 15|2@0+ (1,0) [0|0] "bit"  TEM,HCU
+ SG_ BMS_General_ckSt : 63|8@0+ (1,0) [0|255] "bit"  TEM,HCU
+ SG_ BMS_General_ctRoll : 51|4@0+ (1,0) [0|0] "bit"  TEM,HCU
+ SG_ BMS_dischgFaultLevel : 55|4@0+ (1,0) [0|15] "bit"  ACM,HCU
+ SG_ BMS_DischgHVReady : 47|1@0+ (1,0) [0|0] "bit"  HCU
+ SG_ BMS_stMChgPrechgRelay : 46|1@0+ (1,0) [0|0] "bit"  HCU
+ SG_ BMS_PrechgSt : 45|3@0+ (1,0) [0|7] "bit"  HCU
+ SG_ BMS_CHGPrechgSt : 42|3@0+ (1,0) [0|7] "bit"  HCU
+ SG_ BMS_chgFaultLevel : 35|4@0+ (1,0) [0|15] "bit"  HCU
+ SG_ BMS_Insulation_Resistance : 27|2@0+ (1,0) [0|3] "bit"  HCU
+ SG_ BMS_stPrechargeRelay : 28|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_stMainRelay_Neg : 29|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_stMainRelay_Pos : 30|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_stMCRelay_Pos : 31|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_InsulationRes : 9|10@0+ (5,0) [0|25000] "kOhm"  TEM,HCU
+ SG_ BMS_IntelligentChargeReq : 11|1@0+ (1,0) [0|1] "bit"  HCU
+ SG_ BMS_stMode : 3|4@0+ (1,0) [0|15] "bit"  HCU
+
+BO_ 616 ACU_ChimeTelltaleReq: 3 ACU
+ SG_ ACU_RollingCounter : 15|4@0+ (1,0) [0|15] "bit"  EPB,ABS_ESC,BMS
+ SG_ ACU_Checksum : 23|8@0+ (1,0) [0|255] "bit"  EPB,ABS_ESC,BMS
+ SG_ ACU_FuelCutOffReq : 8|1@0+ (1,0) [0|1] "bit"  BMS,HCU
+
+BO_ 673 HCU_BMS_Ctrl: 8 HCU
+ SG_ HCU_BMS_Ctrl_cksSt : 63|8@0+ (1,0) [0|255] "bit"  BMS
+ SG_ HCU_BMS_Ctrl_ctRoll : 51|4@0+ (1,0) [0|15] "bit"  BMS
+ SG_ HCU_BMS_chStModeCtrl : 5|2@0+ (1,0) [0|3] "bit"  BMS
+ SG_ HCU_BMS_dischStModeCtrl : 3|4@0+ (1,0) [0|15] "bit"  TEM,BMS
+
+
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+CM_ BO_ 1298 "For test";
+CM_ BO_ 1297 "For test";
+CM_ BO_ 1296 "For test";
+CM_ BO_ 854 "The message will be sent N times with a period of T,After TB of theBMS wakeup.N =3.T=100ms.TB = 5s.";
+CM_ SG_ 854 BMS_BattRatedVoltage "battery_rated_Voltage
+0x259-0x3FF: _Invalid";
+CM_ SG_ 854 BMS_BattRatedEnergy "battery_rated_energy
+0x2710-0x3FF: _Invalid";
+CM_ SG_ 854 BMS_BattManufcCode "battery_manufacturer_code";
+CM_ BO_ 782 "The message will be sent N times as long as IHU detected the eventsignal is triggered,If triggered again by other reason,IHU shouldrepeat this action.Tmin = 20ms.N =3. T=100msGW";
+CM_ SG_ 782 IHU_ChargingTimerSetCommand "ChargingTimerSetCommand
+0x0:default
+0x1:SET
+0x2:Cancel
+0x3:invalid";
+CM_ SG_ 782 IHU_StopMinute "PresentMinute";
+CM_ SG_ 782 IHU_StopHour "PresentHour";
+CM_ SG_ 782 IHU_StopDay "PresentDay";
+CM_ SG_ 782 HU_StopMonth "PresentMonth";
+CM_ SG_ 782 IHU_StopYear "PresentYear";
+CM_ BO_ 783 "The message will be sent N times as long as IHU detected the eventsignal is triggered,If triggered again by other reason,IHU shouldrepeat this action.Tmin = 20ms.N =3.";
+CM_ SG_ 783 IHU_PresentMonth "PresentMonth";
+CM_ SG_ 783 IHU_StartMinute "StartMinute";
+CM_ SG_ 783 IHU_StartHour "StartHour";
+CM_ SG_ 783 IHU_StartDay "StartDay";
+CM_ SG_ 783 IHU_StartMonth "StartMonth";
+CM_ SG_ 783 IHU_StartYear "StartYear";
+CM_ SG_ 783 IHU_PresentMinute "PresentMinute";
+CM_ SG_ 783 IHU_PresentHour "PresentHour";
+CM_ SG_ 783 IHU_PresentDay "PresentDay";
+CM_ SG_ 783 IHU_PresentYear "PresentYear";
+CM_ SG_ 1554 OBC_ExternalValues_cksSt "OBC Checksum of CAN Message
+Checksum(Byte7)= Byte0 XOR Byte1 XOR Byte2 XOR Byte3 XORByte4 XOR Byte5 XOR Byte6";
+CM_ SG_ 1554 OBC_ExternalValues_ctRoll "rolling counter";
+CM_ SG_ 1554 OBC_iMaxHVout "Maximum HV output current
+0x3FF:Invalid";
+CM_ SG_ 1553 OBC_InternalValues_cksSt "OBC Checksum of CAN Message
+Checksum(Byte7)= Byte0 XOR Byte1 XOR Byte2 XOR Byte3 XORByte4 XOR Byte5 XOR Byte6";
+CM_ SG_ 1553 OBC_InternalValues_ctRoll "rolling counter";
+CM_ SG_ 1553 OBC_stCPLine "Status CP communication line chargestation
+0x0:Not Connected
+0x1:S2 lock-up state failure
+0x2:Contected but charging not allowed0x3:Contected and charging allowed
+0x7:CP signal failure";
+CM_ SG_ 1553 OBC_stCCLine "Status CC communication line chargestation
+0x0:Not connected
+0x1:connected";
+CM_ SG_ 1553 OBC_Elock_Stmode "electric lock StateMode
+0x0:lock
+0x1:unlock
+0x2:lock error
+0x3:unlock error";
+CM_ SG_ 1553 OBC_iOutAct "Actual output current HV-side
+0x3FF:Invalid";
+CM_ SG_ 1553 OBC_uOutAct "Actual Output voltage HV-side
+0x3FFF:Invalid";
+CM_ SG_ 1553 OBC_FailSt "0x0:No error
+0x1:Limited operation Failure
+0x2: Fail Silent disable charging
+0x3:Emergency Shutdown";
+CM_ SG_ 1553 OBC_StMode "OBC sends StateMode
+0x1:Init
+0x2:Standby
+0x4:Normal
+0x9:Reduced Power
+0xA:Fail silent 
+0xB:Shutdown
+0xC:OFF
+0xF:INVALID";
+CM_ SG_ 803 AC_Control2_Counter "rollingcounter";
+CM_ SG_ 803 AC_Control2_Checksum "Checksum";
+CM_ SG_ 803 AC_BMS_ThermalReqFeedback "0x0:Defaul
+t0x1:Heating
+0x2:Heat fiinished
+0x3:Cooling
+0x4:Cool fiinished
+0x5:Fault";
+CM_ BO_ 947 "The message will be sent N times with a period of T,After TB of theBMS wakeup.N =3.T=100ms.TB = 5s.";
+CM_ SG_ 947 BMS_SerialNum "SerialNum
+0x2710-0x3FFF:Invalid";
+CM_ SG_ 947 BMS_infor1_PackNum "infor1_PackNum
+0x3D-0x3F:Invalid";
+CM_ SG_ 947 BMS_ProductSecond "battery sys PresentSecond
+0x3D-0x3F:Invalid";
+CM_ SG_ 947 BMS_ProductMinute "battery sys ProductMinute
+0x3D-0x3F:Invalid";
+CM_ SG_ 947 BMS_ProductHour "battery sys ProductHour
+0x19-0x1F:Invalid";
+CM_ SG_ 947 BMS_ProductDay "battery sys ProductDay
+";
+CM_ SG_ 947 BMS_ProductMonth "battery sys ProductMonth
+0xD~0xF:Invalid";
+CM_ SG_ 947 BMS_ProductYear "battery sys ProductYear";
+CM_ BO_ 779 "Reservatio charge reponse";
+CM_ SG_ 779 BMS_BookChargeReponse "Precharge Reponse
+0X0:default
+0x1:set succeed
+0x2:set Failure
+0x3:cancel succeed
+0x4:cancel Failure
+0x5:reserved
+0x6:reserved
+0x7:reserved";
+CM_ SG_ 779 BMS_ChargingTimerSetStatus "ChargingTimerSetStatus
+0x0:default
+0x1:SET succeed
+0x2:SET Failure";
+CM_ BO_ 897 "charge state";
+CM_ SG_ 897 BMS_Battery_Mismatching "0x0:Nomal
+0x1:Error
+";
+CM_ SG_ 897 BMS_Battery_Uniformity "0x0:Nomal
+0x1:Error
+";
+CM_ SG_ 897 BMS_TempUniformity "0x0:Nomal
+0x1:Error
+";
+CM_ SG_ 897 BMS_StoredEnergySys "0x0:Nomal
+0x1:Error
+";
+CM_ SG_ 897 BMS_Low_Temperature "0x0:Normal
+0x1:Fault Level I
+0x2:Fault Level II
+0x3:Fault Level III";
+CM_ SG_ 897 BMS_Over_SOC "0x0:Normal
+0x1:Fault Level I
+0x2:Fault Level II
+0x3:Fault Level III";
+CM_ SG_ 897 BMS_Low_SOC "0x0:Normal
+0x1:Fault Level I
+0x2:Fault Level II
+0x3:Fault Level III";
+CM_ SG_ 897 BMS_Battery_Over_Voltage "0x0:Normal
+0x1:Fault Level I
+0x2:Fault Level II
+0x3:Fault Level III";
+CM_ SG_ 897 BMS_Battery_Under_Voltage "0x0:Normal
+0x1:Fault Level I
+0x2:Fault Level II
+0x3:Fault Level III";
+CM_ SG_ 897 BMS_Over_Temperature "0x0:Normal
+0x1:Fault Level I
+0x2:Fault Level II
+0x3:Fault Level III";
+CM_ SG_ 897 BMS_Cell_Over_Voltage "0x0:Normal
+0x1:Fault Level I
+0x2:Fault Level II
+0x3:Fault Level III";
+CM_ SG_ 897 BMS_Cell_Under_Voltage "0x0:Normal
+0x1:Fault Level I
+0x2:Fault Level II
+0x3:Fault Level III";
+CM_ BO_ 945 "All cell voltage and tempture";
+CM_ SG_ 945 BMS_TempVolt_ckSt "BMS Checksum of CAN Message";
+CM_ SG_ 945 BMS_Cell_TotalNum "Cell Total Num
+0xFF:Invalid";
+CM_ SG_ 945 BMS_TempSensor_TotalNum "TempSensor TotalNum
+0xFF:Invalid";
+CM_ SG_ 945 BMS_PackIndex2 "the Num of battery
+0x00:default 
+0x01:Pack1
+0x02:Pack2(reserved)
+0x03:Pack3(reserved)";
+CM_ SG_ 945 BMS_CellVolt "CellVolt
+0x3FF:Invalid";
+CM_ SG_ 945 BMS_CellVolt_Num "CellVolt_Num
+0xC9-0xFF:Invalid";
+CM_ SG_ 945 BMS_TempSensor_Temp "Stylet_Temp
+0xFF:Invalid";
+CM_ SG_ 945 BMS_TempSensor_Num "Stylet_Num
+0xC9-0xFF:Invalid";
+CM_ BO_ 1560 "battery power limited";
+CM_ SG_ 1560 BMS_ChgLEDCtrl "chage_state_indeicate";
+CM_ SG_ 1560 BMS_ChgTimeRemian "0x709-0x7FF: invalid";
+CM_ SG_ 1560 BMS_OBC_iOutSetP "charge request current by BMS
+0x1F5-0x3FF:Invalid";
+CM_ SG_ 1560 BMS_OBC_cksSt "Checksum(Byte7)= Byte0 XOR Byte1 XOR Byte2 XOR Byte3 XORByte4 XOR Byte5 XOR Byte6";
+CM_ SG_ 1560 BMS_OBC_uOutSetP "Output request Voltage from BMS
+0x2711-0x3FFF:Invalid";
+CM_ SG_ 1560 BMS_OBC_ChargeEnable "BMS Sends Charge Enable to the ChargerOBC
+0x0:Default
+0x4:allow charge 
+0xB:End of charge 
+0x2:standby";
+CM_ BO_ 887 "battery power limited";
+CM_ SG_ 887 BMS_PwrLimit_Chg_ctRoll "rolling counter";
+CM_ SG_ 887 BMS_BattSOH "Average State of Charge
+0x3E9~0x3FF:Invalid
+";
+CM_ SG_ 887 BMS_MaxDchgPwrCont "Max continuous discharge power
+0xFF:Invalid";
+CM_ SG_ 887 BMS_BattSOC "Average State of Charge
+0x3E9~0x3FF:Invalid
+";
+CM_ SG_ 887 BMS_MaxChgPwrCont "Max continuous charge power
+0xFF:Invalid";
+CM_ SG_ 887 BMS_MaxDchgPwrPeak "Max Instantaneous Peak Discharge power
+0xFF:Invalid";
+CM_ SG_ 887 BMS_MaxChgPwrPeak "Max Instantaneous Peak charge power
+0xFF:Invalid";
+CM_ BO_ 876 "battery tempture limited informatin1";
+CM_ SG_ 876 BMS_TempMin_Num "Stylet_TempMaxNum
+0xFF:Invalid";
+CM_ SG_ 876 BMS_TempMax_Num "Stylet_TempMaxNum
+0xFF:Invalid";
+CM_ SG_ 876 BMS_Temp_ckSt "Checksum(Byte7)= Byte0 XOR Byte1 XOR Byte2 XOR Byte3 XORByte4 XOR Byte5 XOR Byte6";
+CM_ SG_ 876 BMS_PackIndex1 "the Num of battery
+0x00:default 
+0x01:Pack1
+0x02:Pack2(reserved)
+0x03:Pack3(reserved)";
+CM_ SG_ 876 BMS_CellTempMin_Num "Stylet_TempMinNum
+0xFF:Invalid";
+CM_ SG_ 876 BMS_CellTempMax_Num "Stylet_TempMaxNum
+0xFF:Invalid";
+CM_ SG_ 876 BMS_PackTempMin "Min battery temperature
+0xFF:Invalid";
+CM_ SG_ 876 BMS_PackTempMax "Max battery temperature
+0xFF:Invalid";
+CM_ SG_ 876 BMS_BattTempAvg "Average battery temperature
+0xFF:Invalid";
+CM_ SG_ 878 BMS_ThermalManageReq "BMS_ThermalManageReq";
+CM_ SG_ 878 BMS_Outlet_WaterTemp_reserved "the temperature of outlet water
+0xFF:Invalid";
+CM_ SG_ 878 BMS_Inlet_WaterTemp "the temperature of inlet water
+0xFF:Invalid";
+CM_ BO_ 874 "cell voltage limited informatin";
+CM_ SG_ 874 BMS_General_ckSt "BMS Checksum of CAN Message";
+CM_ SG_ 874 BMS_General_ctRoll "rolling counter";
+CM_ SG_ 874 BMS_VoltMax_Num "the battery Num of MaxCellVolt
+0x00:default 
+0x01:Pack1
+0x02:Pack2(reserved)
+0x03:Pack3(reserved)";
+CM_ SG_ 874 BMS_VoltMin_Num "the battery Num of MinCellVolt
+0x00:default 
+0x01:Pack1
+0x02:Pack2(reserved)
+0x03:Pack3(reserved)";
+CM_ SG_ 874 BMS_CellVoltMin "min cell voltage
+0x1389-0xFFFF:Invalid";
+CM_ SG_ 874 BMS_CellVoltMax "Maximum cell voltage
+0x1389-0xFFFF:Invalid";
+CM_ SG_ 874 BMS_CellVoltMin_Num "CellVoltmin_Num
+0xC9-0xFF:Invalid";
+CM_ SG_ 874 BMS_CellVoltMax_Num "CellVoltmax_Num
+0xC9-0xFF:Invalid";
+CM_ BO_ 678 "battery voltage ¡¢current";
+CM_ SG_ 678 BMS_VoltCurr_cksSt "Checksum(Byte7)= Byte0 XOR Byte1 XOR Byte2 XOR Byte3 XORByte4 XOR Byte5 XOR Byte6";
+CM_ SG_ 678 BMS_batteryFaultLampState "battery system Fault Lamp State
+0:extinguish 
+1:lamp on
+2:flash 
+3: reserved ";
+CM_ SG_ 678 BMS_BattRemainEnergy "Battery Remain Energy
+0x2710-0x3FFF:Invalid";
+CM_ SG_ 678 BMS_BattVolt "Actual Battery voltage
+0x259-0x3FF:Invalid";
+CM_ SG_ 678 BMS_HVBusVolt "Actual HV Bus Voltage 
+0x259-0x3FF:Invalid";
+CM_ SG_ 678 BMS_BattCurr "Actual Battery current
+0x2711-0x3FFF:Invalid
+";
+CM_ SG_ 560 BMS_DisPreRelay_WeldSts "BMS_DisPreRelay_WeldSts
+0x0:No welded
+0x1:Welded";
+CM_ SG_ 560 BMS_ChargeRelay_WeldSts "BMS_ChargeRelay_WeldSts
+0x0:No welded
+0x1:Welded";
+CM_ SG_ 560 BMS_NegRelay_WeldSts "BMS_NegRelay_WeldSts
+0x0:No welded
+0x1:Welded";
+CM_ SG_ 560 BMS_PosRelay_WeldSts "BMS_PosRelay_WeldSts
+0x0:No welded
+0x1:Welded";
+CM_ SG_ 560 BMS_General_ckSt "BMS Checksum of CAN Message";
+CM_ SG_ 560 BMS_General_ctRoll "rolling counter";
+CM_ SG_ 560 BMS_dischgFaultLevel "0x0:Default
+0x1:Normal 
+0x2:Warning 
+0x3:Limp home 
+0x4:Shutdoum 
+0x05-0xF:invalid";
+CM_ SG_ 560 BMS_DischgHVReady "discharge HV loop on, main relays closed, vehicle can use battery .
+0x0:Not Ready
+0x1:Ready";
+CM_ SG_ 560 BMS_stMChgPrechgRelay "charge loop Precharg relay state of BMS.
+0x0:Open
+0x1:Closed";
+CM_ SG_ 560 BMS_PrechgSt "discharge loop precharge state of BMS.
+0x00:Default 
+0x01:Precharging 
+0x02:Prechgarge Suceed 
+0x03:Precharge Failue
+0x04:Precharge Locked
+0x05~0x07: reserved";
+CM_ SG_ 560 BMS_CHGPrechgSt "charge loop precharge state of BMS.
+0x00:Default
+0x01:Precharging 
+0x02:Prechgarge Suceed 
+0x03:Precharge Failue 
+0x04:Precharge Locked
+0x05~0x07£ºreserved";
+CM_ SG_ 560 BMS_chgFaultLevel "BMS charge fault level
+0x0:Default
+0x1::Level1
+0x2:Level2
+0x3:Level3
+0x4:Level4
+0x05-0xF:reserved";
+CM_ SG_ 560 BMS_Insulation_Resistance "Battery isolation state:
+
+0x0:Insulation OK 
+0x1:Insulation Error 
+0x2~0x3:Reserved";
+CM_ SG_ 560 BMS_stPrechargeRelay "0x0:Open
+0x1:Closed";
+CM_ SG_ 560 BMS_stMainRelay_Neg "0x0:Open
+0x1:Closed";
+CM_ SG_ 560 BMS_stMainRelay_Pos "0x0:Open
+0x1:Closed";
+CM_ SG_ 560 BMS_stMCRelay_Pos "0x0:Open
+0x1:Closed";
+CM_ SG_ 560 BMS_IntelligentChargeReq "BMS_IntelligentChargeReq
+0x0:default no request
+0x1:request";
+CM_ SG_ 560 BMS_stMode "0x00:reserved
+0x01:initial 
+0x02:standby 
+0x03:precharge 
+0x04:Normal Discharge Mode
+0x08:AfterRunMode 
+0x09:Shutdown 
+0x0A:initial failed 
+0x0B:Dischg in ChgMode(Not atA_Sample)
+0x0C: ChgMode 
+0x0E:Emergency Shutdown 
+0x0F: reserved";
+CM_ SG_ 616 ACU_Checksum "checksum";
+CM_ SG_ 616 ACU_FuelCutOffReq "0x0:FuelCutOffInactive 
+0x1:FuelCutOffActive";
+CM_ BO_ 673 "BMS State control";
+CM_ SG_ 673 HCU_BMS_Ctrl_cksSt "BMS Checksum of CAN Message";
+CM_ SG_ 673 HCU_BMS_Ctrl_ctRoll "rolling counter";
+CM_ SG_ 673 HCU_BMS_chStModeCtrl "0x0:default / charge forbid 
+0x1:charge allowed
+0x2-0x3reserved";
+CM_ SG_ 673 HCU_BMS_dischStModeCtrl "0x0:default
+0x4:Normal (relays closed )
+0x9:emShutdown (emergency relaysopen)
+0xB:Shutdown (relays open)";
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 100000;
+BA_DEF_ SG_  "GenSigStartValue" FLOAT 0 100000000000;
+BA_DEF_ SG_  "GenSigEVName" STRING ;
+BA_DEF_ SG_  "GenSigEnvVarType" ENUM  "int","float","undef";
+BA_DEF_ SG_  "NWM_WakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ SG_  "InvalidHex" STRING ;
+BA_DEF_ BO_  "TpTxIndex" INT 0 10000;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "FixedPeriodic","Event";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 100;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 100000;
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "NetworkInitialization" ENUM  "No","Yes";
+BA_DEF_ BO_  "NetworkWakeUp" ENUM  "No","Yes";
+BA_DEF_ BO_  "NetworkInitializationCommand" ENUM  "No","Yes";
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "NetworkInitializationUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmCAN" INT 1 2;
+BA_DEF_  "NmMessageCount" INT 0 128;
+BA_DEF_  "NmBaseAddress" HEX 0 2047;
+BA_DEF_  "NmType" STRING ;
+BA_DEF_  "VersionYear" INT 0 3000;
+BA_DEF_  "VersionMonth" INT 0 12;
+BA_DEF_  "VersionDay" INT 0 31;
+BA_DEF_  "VersionNumber" INT 0 10000;
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_ SG_  "NWM-WakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "GenNodSleepTime" INT 0 1000000;
+BA_DEF_ BU_  "NmStationAddress" HEX 0 0;
+BA_DEF_  "GenNWMTalkNM" STRING ;
+BA_DEF_  "GenNWMSleepTime" INT 0 1000000;
+BA_DEF_  "GenNWMGotoMode_BusSleep" STRING ;
+BA_DEF_  "GenNWMGotoMode_Awake" STRING ;
+BA_DEF_  "GenNWMApCanWakeUp" STRING ;
+BA_DEF_  "GenNWMApCanSleep" STRING ;
+BA_DEF_  "GenNWMApCanOn" STRING ;
+BA_DEF_  "GenNWMApCanOff" STRING ;
+BA_DEF_  "GenNWMApCanNormal" STRING ;
+BA_DEF_  "GenNWMApBusSleep" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigEVName" "";
+BA_DEF_DEF_  "GenSigEnvVarType" "undef";
+BA_DEF_DEF_  "NWM_WakeupAllowed" "No";
+BA_DEF_DEF_  "InvalidHex" "";
+BA_DEF_DEF_  "TpTxIndex" 0;
+BA_DEF_DEF_  "GenMsgSendType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 1;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 10;
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "NetworkInitialization" "No";
+BA_DEF_DEF_  "NetworkWakeUp" "No";
+BA_DEF_DEF_  "NetworkInitializationCommand" "No";
+BA_DEF_DEF_  "ILUsed" "No";
+BA_DEF_DEF_  "NetworkInitializationUsed" "No";
+BA_DEF_DEF_  "NmCAN" 1;
+BA_DEF_DEF_  "NmMessageCount" 0;
+BA_DEF_DEF_  "NmBaseAddress" 0;
+BA_DEF_DEF_  "NmType" "";
+BA_DEF_DEF_  "VersionYear" 0;
+BA_DEF_DEF_  "VersionMonth" 0;
+BA_DEF_DEF_  "VersionDay" 0;
+BA_DEF_DEF_  "VersionNumber" 0;
+BA_DEF_DEF_  "Manufacturer" "Chery / FEV";
+BA_DEF_DEF_  "NWM-WakeupAllowed" "";
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "NmNode" "No";
+BA_DEF_DEF_  "GenNodSleepTime" 0;
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "GenNWMTalkNM" "TalkNM()";
+BA_DEF_DEF_  "GenNWMSleepTime" 0;
+BA_DEF_DEF_  "GenNWMGotoMode_BusSleep" "GotoMode_BusSleep()";
+BA_DEF_DEF_  "GenNWMGotoMode_Awake" "GotoMode_Awake()";
+BA_DEF_DEF_  "GenNWMApCanWakeUp" "apCanWakeUp()";
+BA_DEF_DEF_  "GenNWMApCanSleep" "apCanSleep()";
+BA_DEF_DEF_  "GenNWMApCanOn" "apCanOn()";
+BA_DEF_DEF_  "GenNWMApCanOff" "apCanOff()";
+BA_DEF_DEF_  "GenNWMApCanNormal" "apCanNormal()";
+BA_DEF_DEF_  "GenNWMApBusSleep" "apBusSleep()";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+BA_ "GenMsgSendType" BO_ 854 0;
+BA_ "GenMsgCycleTime" BO_ 854 1000;
+BA_ "GenMsgSendType" BO_ 782 1;
+BA_ "GenMsgSendType" BO_ 783 1;
+BA_ "GenMsgCycleTime" BO_ 1554 100;
+BA_ "GenMsgSendType" BO_ 1554 0;
+BA_ "GenMsgCycleTime" BO_ 1553 100;
+BA_ "GenMsgSendType" BO_ 1553 0;
+BA_ "GenMsgCycleTime" BO_ 803 100;
+BA_ "GenMsgSendType" BO_ 803 0;
+BA_ "GenMsgSendType" BO_ 947 1;
+BA_ "GenMsgSendType" BO_ 779 1;
+BA_ "GenMsgCycleTime" BO_ 897 100;
+BA_ "GenMsgSendType" BO_ 897 0;
+BA_ "NmMessage" BO_ 897 1;
+BA_ "GenMsgCycleTime" BO_ 945 100;
+BA_ "GenMsgSendType" BO_ 945 0;
+BA_ "GenMsgCycleTime" BO_ 1560 100;
+BA_ "GenMsgSendType" BO_ 1560 0;
+BA_ "GenMsgCycleTime" BO_ 887 100;
+BA_ "GenMsgSendType" BO_ 887 0;
+BA_ "GenMsgCycleTime" BO_ 876 100;
+BA_ "GenMsgSendType" BO_ 876 0;
+BA_ "GenMsgSendType" BO_ 878 0;
+BA_ "GenMsgCycleTime" BO_ 878 100;
+BA_ "GenMsgSendType" BO_ 874 0;
+BA_ "GenMsgCycleTime" BO_ 874 100;
+BA_ "GenMsgSendType" BO_ 678 0;
+BA_ "GenMsgCycleTime" BO_ 678 20;
+BA_ "GenMsgSendType" BO_ 560 0;
+BA_ "GenMsgCycleTime" BO_ 560 10;
+BA_ "NmMessage" BO_ 560 1;
+BA_ "GenMsgSendType" BO_ 616 0;
+BA_ "GenMsgCycleTime" BO_ 616 100;
+BA_ "GenMsgSendType" BO_ 673 0;
+BA_ "GenMsgCycleTime" BO_ 673 10;
+BA_ "GenSigStartValue" SG_ 1553 OBC_Elock_Stmode 1;
+BA_ "GenSigStartValue" SG_ 1553 OBC_iOutAct 0;
+BA_ "GenSigStartValue" SG_ 1553 OBC_StMode 2;
+BA_ "GenSigStartValue" SG_ 945 BMS_TempSensor_Temp 255;
+BA_ "GenSigStartValue" SG_ 1560 BMS_ChgLEDCtrl 0;
+BA_ "GenSigStartValue" SG_ 1560 BMS_ChgTimeRemian 0;
+BA_ "GenSigStartValue" SG_ 1560 BMS_OBC_iOutSetP 50;
+BA_ "GenSigStartValue" SG_ 1560 BMS_OBC_uOutSetP 0;
+BA_ "GenSigStartValue" SG_ 1560 BMS_OBC_ChargeEnable 0;
+BA_ "GenSigStartValue" SG_ 876 BMS_TempMin_Num 0;
+BA_ "GenSigStartValue" SG_ 876 BMS_TempMax_Num 0;
+BA_ "GenSigStartValue" SG_ 876 BMS_CellTempMin_Num 0;
+BA_ "GenSigStartValue" SG_ 876 BMS_CellTempMax_Num 0;
+BA_ "GenSigStartValue" SG_ 876 BMS_PackTempMin 255;
+BA_ "GenSigStartValue" SG_ 876 BMS_PackTempMax 255;
+BA_ "GenSigStartValue" SG_ 876 BMS_BattTempAvg 255;
+BA_ "GenSigStartValue" SG_ 878 BMS_WaterTempChangeRateReq 0;
+BA_ "GenSigStartValue" SG_ 878 BMS_InletWaterTempTarget_reserve 80;
+BA_ "GenSigStartValue" SG_ 878 BMS_ThermalManageReq 0;
+BA_ "GenSigStartValue" SG_ 878 BMS_Outlet_WaterTemp_reserved 255;
+BA_ "GenSigStartValue" SG_ 878 BMS_Inlet_WaterTemp 255;
+BA_ "GenSigStartValue" SG_ 874 BMS_CellVoltMin 65535;
+BA_ "GenSigStartValue" SG_ 874 BMS_CellVoltMax 65535;
+BA_ "GenSigStartValue" SG_ 678 BMS_BattVolt 1023;
+BA_ "GenSigStartValue" SG_ 678 BMS_HVBusVolt 1023;
+BA_ "GenSigStartValue" SG_ 678 BMS_BattCurr 5000;
+BA_ "GenSigStartValue" SG_ 560 BMS_InsulationRes 204.6;
+BA_ "GenSigStartValue" SG_ 673 HCU_BMS_dischStModeCtrl 2;
+VAL_ 854 BMS_BattTypeCode 7 "_Polymer_Lithium_ion" 6 "_NCM" 5 "_LCO" 4 "_LMO" 3 "_LFP" 2 "Ni-H" 1 "Lead_Acid" 0 "reserved" ;
+VAL_ 782 IHU_ChargingTimerSetCommand 3 "Invalid" 2 "Cancel" 1 "SET" 0 "default" ;
+VAL_ 1554 OBC_iMaxHVout 1023 "Invalid" ;
+VAL_ 1553 OBC_stCPLine 7 "CP_signal_failure" 3 "Connected_charging_allowed" 2 "Connected_charging_not_allowed" 1 "S2_lock-up_state_failure" 0 "Not_connected" ;
+VAL_ 1553 OBC_stCCLine 1 "connected" 0 "Not connected" ;
+VAL_ 1553 OBC_Elock_Stmode 3 "unlock error" 2 "lock error" 1 "unlock" 0 "lock" ;
+VAL_ 1553 OBC_iOutAct 1023 "Invalid" ;
+VAL_ 1553 OBC_uOutAct 16383 "Invalid" ;
+VAL_ 1553 OBC_FailSt 3 "Emergency_Shutdown" 2 "_Fail_Silent_disable_charging" 1 "Limited_operation_Failure" 0 "No_error" ;
+VAL_ 1553 OBC_StMode 15 "INVALID" 12 "OFF" 11 "Shutdown" 10 "Fail_silent" 9 "Reduced_Power" 4 "Normal" 2 "StandBy" 1 "Init" ;
+VAL_ 803 AC_BMS_ThermalReqFeedback 5 "Fault" 4 "Cool_fnished" 3 "Cooling" 2 "Heat_finished" 1 "Heating" 0 "Default" ;
+VAL_ 779 BMS_BookChargeReponse 7 "reserved" 6 "reserved" 5 "reserved" 4 "cancel_failure" 3 "cancel_succeed" 2 "set_failure" 1 "set_succeed" 0 "default" ;
+VAL_ 779 BMS_ChargingTimerSetStatus 2 "SET_Failure" 1 "SET_succeed" 0 "default" ;
+VAL_ 897 BMS_BalanceActive 1 "Active" 0 "Normal" ;
+VAL_ 897 BMS_Battery_Mismatching 1 "Fault" 0 "Normal_NL/KC_Send_Normal" ;
+VAL_ 897 BMS_Battery_Uniformity 1 "Fault" 0 "Normal" ;
+VAL_ 897 BMS_TempUniformity 1 "Fault" 0 "Normal" ;
+VAL_ 897 BMS_StoredEnergySys 1 "Fault" 0 "Normal" ;
+VAL_ 897 BMS_Low_Temperature 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_ 897 BMS_Over_SOC 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_ 897 BMS_Low_SOC 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_ 897 BMS_Battery_Over_Voltage 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_ 897 BMS_Battery_Under_Voltage 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_ 897 BMS_Over_Temperature 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_ 897 BMS_Cell_Over_Voltage 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_ 897 BMS_Cell_Under_Voltage 3 "Fault_Level_III" 2 "Fault_Level_II" 1 "Fault_Level_I" 0 "Normal" ;
+VAL_ 1560 BMS_ChgLEDCtrl 7 "reserved" 6 "reserved" 5 "Fail_silent" 4 "heating" 3 "charge_fault" 2 "charge_finished" 1 "charging" 0 "default" ;
+VAL_ 1560 BMS_OBC_ChargeEnable 11 "End_of_charge" 4 "allow_charge" 2 "standby" 0 "default" ;
+VAL_ 876 BMS_TempMin_Num 3 "Pack3(reserved)" 2 "Pack2(reserved)" 1 "Pack1" 0 "default" ;
+VAL_ 876 BMS_TempMax_Num 3 "Pack3(reserved)" 2 "Pack2(reserved)" 1 "Pack1" 0 "default" ;
+VAL_ 878 BMS_ThermalManageReq 3 "reserved" 2 "Cooling" 1 "Heating" 0 "default" ;
+VAL_ 874 BMS_VoltMax_Num 3 "Pack3(reserved)" 2 "Pack2(reserved)" 1 "Pack1" 0 "default" ;
+VAL_ 874 BMS_VoltMin_Num 3 "Pack3(reserved)" 2 "Pack2(reserved)" 1 "Pack1" 0 "default" ;
+VAL_ 678 BMS_batteryFaultLampState 3 "reserved" 2 "reserved" 1 "lamp_on" 0 "extinguish" ;
+VAL_ 560 BMS_DisPreRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_ 560 BMS_ChargeRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_ 560 BMS_NegRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_ 560 BMS_PosRelay_WeldSts 1 "welded" 0 "No welded" ;
+VAL_ 560 BMS_Pack_HVILSts 3 "Invalid" 1 "HVIL_1open/fault" 0 "HVIL_1_closed/OK" ;
+VAL_ 560 BMS_dischgFaultLevel 4 "Shutdown" 3 "Limp_Home" 2 "Warning" 1 "Normal" 0 "default" ;
+VAL_ 560 BMS_DischgHVReady 1 "Ready" 0 "Not_Ready" ;
+VAL_ 560 BMS_stMChgPrechgRelay 1 "Closed" 0 "Open" ;
+VAL_ 560 BMS_PrechgSt 7 "reserved" 6 "reserved" 5 "reserved" 4 "Precharge_Locked" 3 "Precharge_Failure" 2 "Precharge_Succeed" 1 "Precharging" 0 "Default" ;
+VAL_ 560 BMS_CHGPrechgSt 7 "reserved" 6 "reserved" 5 "reserved" 4 "Precharge_Locked" 3 "Precharge_Failure" 2 "Precharge_Succeed" 1 "Precharging" 0 "Default" ;
+VAL_ 560 BMS_chgFaultLevel 4 "Level4" 3 "Level3" 2 "Level2" 1 "Level1" 0 "Default" ;
+VAL_ 560 BMS_Insulation_Resistance 3 "Invalid" 2 "Insulation_Error" 1 "Insulation_Warning" 0 "Insulation_OK(default)" ;
+VAL_ 560 BMS_stPrechargeRelay 1 "Closed" 0 "Open" ;
+VAL_ 560 BMS_stMainRelay_Neg 1 "Closed" 0 "Open" ;
+VAL_ 560 BMS_stMainRelay_Pos 1 "Closed" 0 "Open" ;
+VAL_ 560 BMS_stMCRelay_Pos 1 "Closed" 0 "Open" ;
+VAL_ 560 BMS_IntelligentChargeReq 1 "request" 0 "default_no_request" ;
+VAL_ 560 BMS_stMode 15 "reserved" 14 "Emergency_Shutdown" 12 "_ChgMode" 11 "Dischg_in_ChgMode" 10 "Initial_failed" 9 "Shutdown" 8 "AfterRunMode" 4 "Normal_Discharge_Mode" 3 "precharge" 2 "standby" 1 "Initial" 0 "Reserved" ;
+VAL_ 616 ACU_FuelCutOffReq 1 "FuelCutOffActive" 0 "FuelCutOffInactive" ;
+VAL_ 673 HCU_BMS_chStModeCtrl 3 "reserved" 2 "reserved" 1 "charge_allowed" 0 "default_charge_forbid" ;
+VAL_ 673 HCU_BMS_dischStModeCtrl 11 "Shutdown_relays_open" 9 "emShutdown_emergency_relayopen" 4 "Normal_relays_closed" 0 "default" ;
+

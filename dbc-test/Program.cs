@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Globalization;
 
+using DbcLib.DBC.Parser;
 using DbcLib.Excel.Parser;
 using DbcLib.DBC.Writer;
 using DbcLib.Model;
@@ -18,9 +19,9 @@ namespace dbc_test
     {
         static void Main(string[] args)
         {
-            
+
             DbcParserTests.Start(@"..\..\ParserTestFiles\");
-            Console.ReadKey();
+
 
             /*
             DbcWorkbook workbook = new DbcWorkbook("sample.xlsx");
@@ -44,7 +45,18 @@ namespace dbc_test
             {
                 if (d.DBC != null)
                     writer.Write(d.DBC);
-            }*/
+            }
+
+            DBC dbc = DbcParser.Parse("M16_PHEV_HS-CAN3_Message_list_C-Sample_V1.4.dbc");
+
+            using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
+            {
+                writer.Write(dbc);
+            }
+            */
+
+            //Console.Write(double.Parse("-.1E+100"));
+            Console.ReadKey();
         }
 
 

@@ -62,7 +62,7 @@ namespace DbcLib.DBC.Parser
             NewSymbols();
             BitTiming();
             Nodes();
-            SkipValueTables();
+            ValueTables();
             Messages();
 
             //MessageTransmitters();
@@ -116,21 +116,34 @@ namespace DbcLib.DBC.Parser
             return t;
         }
 
-        private Token EXPECT(string e1, string e2)
+        private double EXPECT(double e1, double e2)
         {
-            {
-                Token t = stream.Consume(e1);
+            Token t = stream.Consume(TokenType.DOUBLE);
 
-                if (t != TokenStream.Sentinel)
-                    return t;
-            }
+            if (t == TokenStream.Sentinel)
+                throw new DbcParseException();
 
-            {
-                Token t = stream.Consume(e2);
+            if (t.Num == e1)
+                return t.Num;
 
-                if (t != TokenStream.Sentinel)
-                    return t;
-            }
+            if (t.Num == e2)
+                return t.Num;
+
+            throw new DbcParseException();
+        }
+
+        private string EXPECT(string e1, string e2)
+        {
+            Token t = stream.Peek();
+
+            if (t == TokenStream.Sentinel)
+                throw new DbcParseException();
+
+            if (t.Val == e1)
+                return stream.Read().Val;
+
+            if (t.Val == e2)
+                return stream.Read().Val;
 
             throw new DbcParseException();
         }
@@ -180,13 +193,23 @@ namespace DbcLib.DBC.Parser
             }
         }
 
-        private void SkipValueTables()
+        private void ValueTables()
         {
             while (stream.ConsumeIf(stream.Peek().Val == Keyword.VALUE_TABLES))
             {
-                while (stream.ConsumeIf(stream.Peek().Val != ";")) { }
+                ValueTable table = new ValueTable
+                {
+                    Descs = new List<ValueDesc>()
+                };
 
-                stream.Read();
+                table.Name = EXPECT(TokenType.IDENTIFIER).Val;
+
+                while (!stream.ConsumeIf(stream.Peek().Val == ";"))
+                {
+                    table.Descs.Add(ValueDescriptions());
+                }
+
+                dbc.ValueTables.Add(table);
             }
         }
 
@@ -204,9 +227,8 @@ namespace DbcLib.DBC.Parser
                 {
                     Signals = new List<Signal>()
                 };
-                dbc.Messages.Add(msg);
 
-                msg.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+                msg.MsgID = EXPECT(TokenType.DOUBLE).Num;//use double here to store larger ints
                 msg.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
                 EXPECT(":");
@@ -218,6 +240,8 @@ namespace DbcLib.DBC.Parser
                 {
                     msg.Signals.Add(Signal());
                 }
+
+                dbc.Messages.Add(msg);
             }
         }
 
@@ -250,19 +274,19 @@ namespace DbcLib.DBC.Parser
             EXPECT("|");
             signal.SignalSize = EXPECT(TokenType.UNSIGNED).INT;
             EXPECT("@");
-            signal.ByteOrder = EXPECT("0", "1").Val;
-            signal.ValueType = EXPECT("+", "-").Val;
+            signal.ByteOrder = EXPECT(0, 1).ToString();
+            signal.ValueType = EXPECT("+", "-");
 
             EXPECT("(");
-            signal.Factor = EXPECT(TokenType.DOUBLE).DOUBLE;
+            signal.Factor = EXPECT(TokenType.DOUBLE).Num;
             EXPECT(",");
-            signal.Offset = EXPECT(TokenType.DOUBLE).DOUBLE;
+            signal.Offset = EXPECT(TokenType.DOUBLE).Num;
             EXPECT(")");
 
             EXPECT("[");
-            signal.Min = EXPECT(TokenType.DOUBLE).DOUBLE;
+            signal.Min = EXPECT(TokenType.DOUBLE).Num;
             EXPECT("|");
-            signal.Max = EXPECT(TokenType.DOUBLE).DOUBLE;
+            signal.Max = EXPECT(TokenType.DOUBLE).Num;
             EXPECT("]");
 
             signal.Unit = EXPECT(TokenType.STRING).Val;
@@ -293,19 +317,15 @@ namespace DbcLib.DBC.Parser
                 else if (stream.Peek().Val == Keyword.MESSAGES)
                 {
                     cm.Type = stream.Read().Val;
-                    cm.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+                    cm.MsgID = EXPECT(TokenType.DOUBLE).Num;
 
                 }
                 else if (stream.Peek().Val == Keyword.SIGNAL)
                 {
                     cm.Type = stream.Read().Val;
-                    cm.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+                    cm.MsgID = EXPECT(TokenType.DOUBLE).Num;
                     cm.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
-                }
-                else
-                {
-                    throw new DbcParseException();
                 }
 
                 cm.Val = EXPECT(TokenType.STRING).Val;
@@ -341,8 +361,8 @@ namespace DbcLib.DBC.Parser
                 else if (stream.Peek().Val == "FLOAT")
                 {
                     ad.ValueType = stream.Read().Val;
-                    ad.Num1 = EXPECT(TokenType.DOUBLE).DOUBLE;
-                    ad.Num2 = EXPECT(TokenType.DOUBLE).DOUBLE;
+                    ad.Num1 = EXPECT(TokenType.DOUBLE).Num;
+                    ad.Num2 = EXPECT(TokenType.DOUBLE).Num;
                 }
                 else if (stream.Peek().Val == "STRING")
                 {
@@ -379,7 +399,7 @@ namespace DbcLib.DBC.Parser
             var t = EXPECT(TokenType.DOUBLE | TokenType.STRING);
 
             if (t.Assert(TokenType.DOUBLE))
-                av.Num = t.DOUBLE;
+                av.Num = t.Num;
             else
                 av.Val = t.Val;
 
@@ -424,13 +444,13 @@ namespace DbcLib.DBC.Parser
                 else if (stream.Peek().Val == Keyword.MESSAGES)
                 {
                     oav.Type = stream.Read().Val;
-                    oav.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+                    oav.MsgID = EXPECT(TokenType.DOUBLE).Num;
 
                 }
                 else if (stream.Peek().Val == Keyword.SIGNAL)
                 {
                     oav.Type = stream.Read().Val;
-                    oav.MsgID = EXPECT(TokenType.UNSIGNED).INT;
+                    oav.MsgID = EXPECT(TokenType.DOUBLE).Num;
                     oav.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
                 }
@@ -445,7 +465,7 @@ namespace DbcLib.DBC.Parser
         {
             ValueDesc vd = new ValueDesc
             {
-                Num = EXPECT(TokenType.DOUBLE).DOUBLE,
+                Num = EXPECT(TokenType.DOUBLE).Num,
                 Val = EXPECT(TokenType.STRING).Val
             };
 
@@ -465,7 +485,7 @@ namespace DbcLib.DBC.Parser
             {
                 SignalValueDescription vd = new SignalValueDescription
                 {
-                    MsgID = EXPECT(TokenType.UNSIGNED).INT,
+                    MsgID = EXPECT(TokenType.DOUBLE).Num,
                     Name = EXPECT(TokenType.IDENTIFIER).Val,
                     Descs = new List<ValueDesc>()
                 };

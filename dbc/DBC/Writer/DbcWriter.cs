@@ -9,6 +9,7 @@ using System.IO;
 
 using DbcLib.Model;
 using DbcLib.DBC.Lex;
+using System.Globalization;
 
 namespace DbcLib.DBC.Writer
 {
@@ -32,7 +33,7 @@ namespace DbcLib.DBC.Writer
             NewSymbols(dbc.NewSymbols);
             BitTiming();
             Nodes(dbc.Nodes);
-            //ValueTables;
+            ValueTables(dbc.ValueTables);
             Messages(dbc.Messages);
             //MessageTransmitter;
             //ENVIRONMENT_VARIABLES
@@ -98,9 +99,23 @@ namespace DbcLib.DBC.Writer
             {
                 writer.Write(" " + node);
             }
+
             writer.WriteLine();
-            writer.WriteLine();
-            writer.WriteLine();
+        }
+
+        private void ValueTables(IEnumerable<ValueTable> valueTables)
+        {
+            foreach (var table in valueTables)
+            {
+                writer.Write(Keyword.VALUE_TABLES + " " + table.Name);
+
+                foreach (ValueDesc vd in table.Descs)
+                {
+                    writer.Write(" {0} \"{1}\"", vd.Num, vd.Val);
+                }
+
+                writer.WriteLine(" ;");
+            }
         }
 
         private void Messages(IEnumerable<Message> messages)

@@ -20,16 +20,27 @@ namespace DbcLib.DBC.Lex
 
     class Token
     {
-        public string Val { get; private set; }
-        public TokenType Type { get; set; } = TokenType.None;
-
-        public double DOUBLE { get { return Double.Parse(Val); } }
-        public int INT { get { return int.Parse(Val); } }
-
         //creates a sentinel token
         public Token()
         {
 
+        }
+
+        public Token(double n)
+        {
+            Num = n;
+
+            if (n == (int)n)
+            {
+                if (n < 0)
+                    Type = TokenType.SIGNED;
+                else
+                    Type = TokenType.UNSIGNED;
+            }
+            else
+            {
+                Type = TokenType.DOUBLE;
+            }
         }
 
         public Token(string v)
@@ -43,6 +54,13 @@ namespace DbcLib.DBC.Lex
             Val = v;
             Type = t;
         }
+
+        public string Val { get; private set; }
+        public double Num { get; private set; }
+
+        public TokenType Type { get; set; } = TokenType.None;
+
+        public int INT { get { return (int)Num; } }
 
         public bool Assert(TokenType t)
         {

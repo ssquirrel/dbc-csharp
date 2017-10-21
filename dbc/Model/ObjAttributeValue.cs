@@ -11,7 +11,7 @@ namespace DbcLib.Model
         public string AttributeName { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
-        public int MsgID { get; set; }
+        public double MsgID { get; set; }
 
         public AttributeValue Value { get; set; }
     }

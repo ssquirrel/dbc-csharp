@@ -8,7 +8,7 @@ namespace DbcLib.Model
 {
     public class Message
     {
-        public int MsgID { get; set; }
+        public double MsgID { get; set; }
         public string Name { get; set; }
         public int Size { get; set; }
         public string Transmitter { get; set; }

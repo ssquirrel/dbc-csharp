@@ -126,29 +126,43 @@ namespace DbcLib.DBC.Lex
 
         private Token LexNumber(StringBuilder builder)
         {
-            TokenType type =
-                builder.Length > 0 ? TokenType.SIGNED : TokenType.UNSIGNED;
-
             builder.Append((char)reader.Read());
 
+            bool dot = true;
+            int exp = -1;
             while (!reader.EndOfStream)
             {
                 char ch = (char)reader.Peek();
 
-                if (!IsDigit(ch))
+                if (IsDigit(ch))
                 {
-                    if (ch == '.' && type != TokenType.DOUBLE)
-                        type = TokenType.DOUBLE;
+                    exp = 0;
+                }
+                else
+                {
+                    if (ch == '.' && dot)
+                    {
+                        dot = false;
+                    }
+                    else if ((ch == 'e' || ch == 'E') && exp == 0)
+                    {
+                        exp = builder.Length + 1;
+                    }
+                    else if ((ch == '+' || ch == '-') && exp == builder.Length)
+                    {
+
+                    }
                     else
+                    {
                         break;
+                    }
                 }
 
                 builder.Append(ch);
-
                 reader.Read();
             }
 
-            return new Token(builder.ToString(), type);
+            return new Token(double.Parse(builder.ToString()));
         }
 
         private Token LexMinusSign()

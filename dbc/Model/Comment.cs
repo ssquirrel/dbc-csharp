@@ -12,7 +12,7 @@ namespace DbcLib.Model
     {
         public string Type { get; set; }
         public string Name { get; set; }
-        public int MsgID { get; set; }
+        public double MsgID { get; set; }
         public string Val { get; set; }
     }
 }
