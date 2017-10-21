@@ -128,7 +128,7 @@ namespace DbcLib.DBC.Lex
         {
             builder.Append((char)reader.Read());
 
-            bool mantissa = false;
+            bool mantissa = IsDigit(builder[0]);
             bool dot = true;
             int exp = 0;
             while (!reader.EndOfStream)
