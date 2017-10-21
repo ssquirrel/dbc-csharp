@@ -128,35 +128,34 @@ namespace DbcLib.DBC.Lex
         {
             builder.Append((char)reader.Read());
 
+            bool mantissa = false;
             bool dot = true;
-            int exp = -1;
+            int exp = 0;
             while (!reader.EndOfStream)
             {
                 char ch = (char)reader.Peek();
 
                 if (IsDigit(ch))
                 {
-                    exp = 0;
+                    mantissa = true;
+                }
+                else if (ch == '.' && dot)
+                {
+                    dot = false;
+                }
+                else if ((ch == 'e' || ch == 'E') && mantissa && exp == 0)
+                {
+                    exp = builder.Length + 1;
+                }
+                else if ((ch == '+' || ch == '-') && exp == builder.Length)
+                {
+                    //fall through
                 }
                 else
                 {
-                    if (ch == '.' && dot)
-                    {
-                        dot = false;
-                    }
-                    else if ((ch == 'e' || ch == 'E') && exp == 0)
-                    {
-                        exp = builder.Length + 1;
-                    }
-                    else if ((ch == '+' || ch == '-') && exp == builder.Length)
-                    {
-
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    break;
                 }
+
 
                 builder.Append(ch);
                 reader.Read();
