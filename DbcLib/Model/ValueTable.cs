@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace DbcLib.Model
 {
-    public class AttributeDefault : AttributeValue, PropTree.IAttribute
+    public class ValueTable
     {
-        public string AttributeName { get; set; }
+        public string Name { get; set; }
+        public IList<ValueDesc> Descs { get; set; }
     }
 }

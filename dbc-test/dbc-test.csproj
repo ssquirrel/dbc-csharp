@@ -51,6 +51,7 @@
     <None Include="ParserTestFiles\CANoeTemplate.dbc" />
     <None Include="ParserTestFiles\CANTemplate.dbc" />
     <None Include="ParserTestFiles\EmptyTemplate.dbc" />
+    <None Include="ParserTestFiles\FE_3HP_BCAN_Messages_V1.2_BMS_draft.dbc" />
     <None Include="ParserTestFiles\FlexRayTemplate.dbc" />
     <None Include="ParserTestFiles\GenAddOnTemplate.dbc" />
     <None Include="ParserTestFiles\GenNWMTemplate.dbc" />
@@ -58,6 +59,7 @@
     <None Include="ParserTestFiles\J1939Template.dbc" />
     <None Include="ParserTestFiles\J1939Template_old.dbc" />
     <None Include="ParserTestFiles\LINdb-Template.dbc" />
+    <None Include="ParserTestFiles\M16_PHEV_HS-CAN3_Message_list_C-Sample_V1.4.dbc" />
     <None Include="ParserTestFiles\MOSTTemplate.dbc" />
     <None Include="ParserTestFiles\NMEATemplate.dbc" />
     <None Include="ParserTestFiles\sample.dbc" />

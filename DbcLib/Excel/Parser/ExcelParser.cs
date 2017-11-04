@@ -49,12 +49,12 @@ namespace DbcLib.Excel.Parser
 
     public class ExcelParser
     {
-        private Model.PropTree.PropTree tree = new Model.PropTree.PropTree();
-
         private IWorkbook workbook;
         private ISheet sheet;
 
         private List<ParseError> errors = new List<ParseError>();
+
+        private Model.DBC dbc = DbcTemplate.LoadTemplate("template.dbc");
 
         private ExcelParser(string fn, string sn)
         {
@@ -88,8 +88,6 @@ namespace DbcLib.Excel.Parser
 
         private ExcelDBC ParseImpl(IEnumerable<IRow> rows)
         {
-            List<Message> msgs = new List<Message>();
-
             Message parent = null;
             foreach (IRow raw in rows)
             {
@@ -98,9 +96,6 @@ namespace DbcLib.Excel.Parser
                 if (row.MsgName.Type != CellType.Blank)
                 {
                     parent = NewMessage(row);
-
-                    if (errors.Count != 0)
-                        msgs.Add(parent);
                 }
                 else if (row.SignalName.Type != CellType.Blank)
                 {
@@ -112,9 +107,6 @@ namespace DbcLib.Excel.Parser
                 }
             }
 
-            Model.DBC dbc = tree.ToDBC();
-            dbc.Messages = msgs;
-
             if (errors.Count > 0)
                 return new ExcelDBC(workbook, errors);
             else
@@ -125,7 +117,7 @@ namespace DbcLib.Excel.Parser
         {
             foreach (var cell in row)
             {
-                if (cell.State == 0)
+                if (!cell.State)
                     errors.Add(new ParseError("", cell));
             }
 
@@ -145,9 +137,11 @@ namespace DbcLib.Excel.Parser
                 return DbcTemplate.MsgSendType_IfActive;
 
             if (cyclicEvent && !cyclic && !ifActive)
-                return DbcTemplate.MsgSendType_CyclicEvent;
+                return DbcTemplate.MsgSendType_CyclicEvent; //?????
 
-            return DbcTemplate.MsgSendTypeDefault;
+            errors.Add(new ParseError("", row.FixedPeriodic));
+
+            return 0;
         }
 
         private Message NewMessage(DbcRow row)
@@ -155,22 +149,51 @@ namespace DbcLib.Excel.Parser
             Message msg = new Message();
             msg.MsgID = row.MsgID.GetHex();
             msg.Name = row.MsgName.GetIdentifier();
-            msg.Size = row.MsgSize.GetInt();
+            msg.Size = row.MsgSize.GetUnsigned();
             msg.Transmitter = row.Transmitter.GetIdentifier();
             msg.Signals = new List<Signal>();
 
             string comment = row.MsgComment.GetCharString();
             int sendType = SendType(row);
             int cycleTime = sendType == DbcTemplate.MsgSendType_Cyclic ?
-                row.FixedPeriodic.GetInt() : 0;
+                row.FixedPeriodic.GetUnsigned() : 0;
 
             if (Sweep(row))
                 return msg;
 
-            var prop = tree.Insert(msg.MsgID).MsgProp;
+            dbc.Messages.Add(msg);
 
-            prop.Attribute.Insert(DbcTemplate.Attr_MsgSendType, cycleTime);
-            prop.CM.Val = comment;
+            if (sendType != DbcTemplate.MsgSendTypeDefault)
+                dbc.AttributeValues.Add(new ObjAttributeValue
+                {
+                    AttributeName = DbcTemplate.Attr_MsgSendType,
+                    Type = Keyword.MESSAGES,
+                    MsgID = msg.MsgID,
+                    Value = new AttributeValue
+                    {
+                        Num = sendType
+                    }
+                });
+            else if (cycleTime != DbcTemplate.MsgCycleTimeDefault)
+                dbc.AttributeValues.Add(new ObjAttributeValue
+                {
+                    AttributeName = DbcTemplate.Attr_MsgCycleTime,
+                    Type = Keyword.MESSAGES,
+                    MsgID = msg.MsgID,
+                    Value = new AttributeValue
+                    {
+                        Num = cycleTime
+                    }
+                });
+
+            if (comment.Length > 0)
+                dbc.Comments.Add(new Comment
+                {
+                    Type = Keyword.MESSAGES,
+                    MsgID = msg.MsgID,
+                    Val = comment
+                });
+
 
             return msg;
         }
@@ -180,8 +203,8 @@ namespace DbcLib.Excel.Parser
         {
             var sig = new Signal();
             sig.Name = row.SignalName.GetIdentifier();
-            sig.SignalSize = row.SignalSize.GetInt();
-            sig.StartBit = row.BitPos.GetInt();
+            sig.SignalSize = row.SignalSize.GetUnsigned();
+            sig.StartBit = row.BitPos.GetStartBit();
 
             sig.Unit = row.Unit.GetCharString();
             sig.Factor = row.Factor.GetDouble();
@@ -207,11 +230,22 @@ namespace DbcLib.Excel.Parser
 
             msg.Signals.Add(sig);
 
-            var prop = tree.ID(msg.MsgID).Insert(sig.Name);
+            if (comment.Length > 0)
+                dbc.Comments.Add(new Comment
+                {
+                    Type = Keyword.SIGNAL,
+                    MsgID = msg.MsgID,
+                    Name = sig.Name,
+                    Val = comment
+                });
 
-            prop.CM.Val = comment;
-            prop.VD.Descs = descs;
-
+            if (descs.Count > 0)
+                dbc.ValueDescriptions.Add(new SignalValueDescription
+                {
+                    MsgID = msg.MsgID,
+                    Name = sig.Name,
+                    Descs = descs
+                });
         }
     }
 

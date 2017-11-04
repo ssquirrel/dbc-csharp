@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{227C05F6-E01E-4200-AE3C-17A427A50155}</ProjectGuid>
+    <ProjectGuid>{FEDD9805-F560-45B3-B3CC-E77EF086C024}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DbcLib</RootNamespace>
-    <AssemblyName>dbc</AssemblyName>
+    <AssemblyName>DbcLib</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -56,30 +56,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBC\Lex\Common.cs" />
-    <Compile Include="DBC\Writer\DbcWriter.cs" />
-    <Compile Include="Excel\Sheet\DbcCell.cs" />
-    <Compile Include="Excel\DbcTemplate.cs" />
-    <Compile Include="Excel\Sheet\EmptyCell.cs" />
-    <Compile Include="Excel\Sheet\DbcRow.cs" />
-    <Compile Include="Excel\Sheet\NormalCell.cs" />
-    <Compile Include="Excel\Parser\ExcelParser.cs" />
-    <Compile Include="Excel\DbcModel\DbcProp.cs" />
-    <Compile Include="Excel\DbcModel\DbcQuery.cs" />
-    <Compile Include="Excel\Writer\ExcelWriter.cs" />
-    <Compile Include="Model\Keyword.cs" />
     <Compile Include="DBC\Lex\Lexer.cs" />
     <Compile Include="DBC\Lex\Token.cs" />
     <Compile Include="DBC\Parser\DbcParser.cs" />
+    <Compile Include="DBC\Writer\DbcWriter.cs" />
+    <Compile Include="Excel\DbcCell.cs" />
+    <Compile Include="Excel\DbcRow.cs" />
+    <Compile Include="Excel\DbcTemplate.cs" />
+    <Compile Include="Excel\Parser\ExcelParser.cs" />
+    <Compile Include="Excel\Writer\DbcQuery.cs" />
+    <Compile Include="Excel\Writer\ExcelWriter.cs" />
     <Compile Include="Model\AttributeDefault.cs" />
     <Compile Include="Model\AttributeDefinition.cs" />
     <Compile Include="Model\AttributeValue.cs" />
     <Compile Include="Model\Comment.cs" />
     <Compile Include="Model\DBC.cs" />
+    <Compile Include="Model\Keyword.cs" />
     <Compile Include="Model\Message.cs" />
     <Compile Include="Model\ObjAttributeValue.cs" />
-    <Compile Include="Model\PropTree\Attributes.cs" />
-    <Compile Include="Model\PropTree\ObjProp.cs" />
-    <Compile Include="Model\PropTree\Tree.cs" />
     <Compile Include="Model\Signal.cs" />
     <Compile Include="Model\SignalValueDescription.cs" />
     <Compile Include="Model\ValueDescription.cs" />
@@ -87,8 +81,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

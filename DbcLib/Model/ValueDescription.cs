@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace DbcLib.Model
 {
-    public class AttributeDefault : AttributeValue, PropTree.IAttribute
+    public class ValueDesc
     {
-        public string AttributeName { get; set; }
+        public double Num { get; set; }
+        public string Val { get; set; }
     }
 }

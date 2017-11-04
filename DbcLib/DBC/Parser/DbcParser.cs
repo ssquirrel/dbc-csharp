@@ -437,19 +437,19 @@ namespace DbcLib.DBC.Parser
                 if (stream.Peek().Val == Keyword.NODES ||
                     stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
                 {
-                    oav.ObjType = stream.Read().Val;
+                    oav.Type = stream.Read().Val;
                     oav.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
                 }
                 else if (stream.Peek().Val == Keyword.MESSAGES)
                 {
-                    oav.ObjType = stream.Read().Val;
+                    oav.Type = stream.Read().Val;
                     oav.MsgID = (long)EXPECT(TokenType.UNSIGNED).Num;
 
                 }
                 else if (stream.Peek().Val == Keyword.SIGNAL)
                 {
-                    oav.ObjType = stream.Read().Val;
+                    oav.Type = stream.Read().Val;
                     oav.MsgID = (long)EXPECT(TokenType.UNSIGNED).Num;
                     oav.Name = EXPECT(TokenType.IDENTIFIER).Val;
 

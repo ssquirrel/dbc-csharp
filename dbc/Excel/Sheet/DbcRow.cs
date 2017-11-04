@@ -17,25 +17,26 @@ namespace DbcLib.Excel
 
         public DbcRow(IRow raw)
         {
-            Raw = raw;
+            NRow = raw;
 
             foreach (var cell in raw)
             {
                 if (cell.ColumnIndex >= cells.Length)
                     break;
 
-                cells[cell.ColumnIndex] = new DbcCell(cell);
+                cells[cell.ColumnIndex] = new NormalCell(cell);
             }
 
             for (int i = 0; i < cells.Length; ++i)
             {
                 if (cells[i] == null)
-                    cells[i] = new DbcCell(raw.RowNum, i);
+                    cells[i] = new EmptyCell(NRow, i);
             }
         }
 
-        public IRow Raw { get; }
-        public int Row => Raw.RowNum;
+        public IRow NRow { get; }
+
+        public int Row => NRow.RowNum;
 
         public DbcCell Transmitter => cells[0];
         public DbcCell MsgID => cells[1];

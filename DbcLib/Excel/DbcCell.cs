@@ -29,6 +29,8 @@ namespace DbcLib.Excel
 
         public BasicCell(ICell cell)
         {
+            Raw = cell;
+
             Row = cell.RowIndex;
             Col = cell.ColumnIndex;
 
@@ -50,6 +52,8 @@ namespace DbcLib.Excel
                 catch (FormatException) { }
             }
         }
+
+        public ICell Raw { get; set; }
 
         public int Row { get; }
         public int Col { get; }
@@ -139,17 +143,17 @@ namespace DbcLib.Excel
             return PARSE_FAILURE(Val);
         }
 
-        public int GetHex()
+        public long GetHex()
         {
-            if (HexTryParse(Val, out int num))
+            if (Hex.TryParse(Val, out long num))
                 return PARSE_SUCCESS(num);
 
             return PARSE_FAILURE(0);
         }
 
-        public void SetHex(int hex)
+        public void SetHex(long hex)
         {
-            Set(hex.ToString("X"));
+            Set("0x" + hex.ToString("X3"));
         }
 
         public int GetStartBit()
@@ -194,7 +198,7 @@ namespace DbcLib.Excel
                 string hex = pair.Substring(0, colon).Trim();
                 string val = pair.Substring(colon + 1).Trim();
 
-                if (!HexTryParse(hex.ToLower(), out int num) ||
+                if (!Hex.TryParse(hex.ToLower(), out int num) ||
                     val.Any(ch => ch == '"'))
                 {
                     return PARSE_FAILURE(result);
@@ -214,12 +218,12 @@ namespace DbcLib.Excel
         {
             var desc = descs[0];
 
-            string result = desc.Num.ToString("X") + ":" + desc.Val;
+            string result = "0x" + ((int)desc.Num).ToString("X") + ":" + desc.Val;
 
             for (int i = 1; i < descs.Count; ++i)
             {
                 desc = descs[i];
-                result += "\n" + desc.Num.ToString("X") + ":" + desc.Val;
+                result += "\n0x" + ((int)desc.Num).ToString("X") + ":" + desc.Val;
             }
 
             Set(result);
@@ -246,19 +250,38 @@ namespace DbcLib.Excel
 
             Set(result);
         }
+    }
 
-        private static bool HexTryParse(string hexstring, out int hex)
+    class Hex
+    {
+        public static bool TryParse(string str, out int hex)
         {
-            if (!hexstring.StartsWith("0x"))
-            {
-                hex = 0;
-                return false;
-            }
+            string hexstr = GetHexString(str);
 
-            return int.TryParse(hexstring.Substring(2, hexstring.Length - 2),
+            return int.TryParse(hexstr,
                 NumberStyles.AllowHexSpecifier,
                 null,
                 out hex);
+        }
+
+        public static bool TryParse(string str, out long hex)
+        {
+            string hexstr = GetHexString(str);
+
+            return long.TryParse(hexstr,
+                NumberStyles.AllowHexSpecifier,
+                null,
+                out hex);
+        }
+
+        private static string GetHexString(string str)
+        {
+            if (str.StartsWith("0x"))
+            {
+                return str.Substring(2, str.Length - 2);
+            }
+
+            return null;
         }
     }
 }

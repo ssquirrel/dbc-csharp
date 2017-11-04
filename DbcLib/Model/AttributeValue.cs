@@ -16,7 +16,7 @@ namespace DbcLib.Model
     public class AttributeValue
     {
         private double num;
-        private string val = "";
+        private string val;
 
         public AttrValType Type { get; private set; }
 

@@ -21,15 +21,9 @@ namespace DbcLib.Excel
         public static readonly int MsgSendTypeDefault = 0;
         public static readonly int MsgCycleTimeDefault = 100;
 
-        public static ObjAttributeValue NewMsgSendType(long id, int type)
+        public static Model.DBC LoadTemplate(string fn)
         {
-            return new ObjAttributeValue
-            {
-                AttributeName = Attr_MsgSendType,
-                ObjType = Keyword.MESSAGES,
-                MsgID = id,
-                Num = type
-            };
+            return DbcParser.Parse(fn);
         }
     }
 }

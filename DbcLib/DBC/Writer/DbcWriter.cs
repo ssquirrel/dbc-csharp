@@ -260,10 +260,10 @@ namespace DbcLib.DBC.Writer
                     Keyword.ATTRIBUTE_VALUES,
                     av.AttributeName);
 
-                if (av.ObjType != null)
-                    writer.Write(" " + av.ObjType);
+                if (av.Type != null)
+                    writer.Write(" " + av.Type);
 
-                switch (av.ObjType)
+                switch (av.Type)
                 {
                     case Keyword.NODES:
                     case Keyword.ENVIRONMENT_VARIABLES:

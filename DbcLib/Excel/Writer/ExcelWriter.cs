@@ -14,24 +14,6 @@ namespace DbcLib.Excel.Writer
 {
     class ExcelTemplate
     {
-        public ExcelTemplate(string fn)
-        {
-            File.Copy("template.xlsx", fn, true);
-
-            FileStream stream = new FileStream(fn, FileMode.Open);
-
-            Workbook = WorkbookFactory.Create(stream);
-
-            StackedTextStyle = Workbook.CreateCellStyle();
-            StackedTextStyle.Alignment = HorizontalAlignment.Left;
-            StackedTextStyle.VerticalAlignment = VerticalAlignment.Bottom;
-            StackedTextStyle.WrapText = true;
-        }
-
-        public IWorkbook Workbook { get; }
-
-        public ICellStyle StackedTextStyle { get; }
-
         public static IWorkbook LoadTemplate(string fn)
         {
             File.Copy("template.xlsx", fn, true);
@@ -44,8 +26,6 @@ namespace DbcLib.Excel.Writer
 
     public class ExcelWriter : IDisposable
     {
-        private Model.PropTree.PropTree tree;
-
         private string filename;
         private IWorkbook workbook;
         private DbcQuery query;
@@ -66,12 +46,7 @@ namespace DbcLib.Excel.Writer
 
         public void Add(string sn, Model.DBC dbc)
         {
-            tree = new Model.PropTree.PropTree(dbc);
-            tree.Def.TryInsert(new AttributeDefault
-            {
-                AttributeName = DbcTemplate.Attr_MsgSendType,
-                Num = DbcTemplate.MsgSendTypeDefault
-            });
+            query = new DbcQuery(dbc);
 
             ISheet sheet = AllocateSheet(sn);
 
@@ -114,39 +89,52 @@ namespace DbcLib.Excel.Writer
 
         private void Messages(DbcRow row, Message msg)
         {
-            var prop = tree.ID(msg.MsgID).MsgProp;
+            var prop = query.GetMsgProp(msg.MsgID);
 
             row.MsgID.SetHex(msg.MsgID);
             row.MsgName.Set(msg.Name);
             row.MsgSize.Set(msg.Size);
             row.Transmitter.Set(msg.Transmitter);
 
-            row.MsgComment.Set(prop.CM.Val);
-
-            var sendType = prop.Attribute[DbcTemplate.Attr_MsgSendType];
-            var type = sendType.Num;
-
-            if (type == DbcTemplate.MsgSendType_Cyclic)
+            if (prop != null)
             {
-                var cycleTime = prop.Attribute[DbcTemplate.Attr_MsgCycleTime];
+                if (prop.CM != null)
+                {
+                    row.MsgComment.Set(prop.CM.Val);
+                }
 
-                if (cycleTime != null)
-                    row.FixedPeriodic.Set(cycleTime.Num);
-            }
-            else if (type == DbcTemplate.MsgSendType_IfActive)
-            {
-                row.Event.Set("x");
-            }
-            else if (type == DbcTemplate.MsgSendType_CyclicEvent)
-            {
-                row.PeriodicEvent.Set("x");
+                var sendType = prop.GetAttribute(DbcTemplate.Attr_MsgSendType);
+                var cycleTime = prop.GetAttribute(DbcTemplate.Attr_MsgCycleTime);
+
+                if (sendType != null)
+                {
+                    if (sendType.Value.Num == DbcTemplate.MsgSendType_IfActive)
+                    {
+                        row.Event.Set("x");
+                    }
+                    else if (sendType.Value.Num == DbcTemplate.MsgSendType_CyclicEvent)
+                    {
+                        row.PeriodicEvent.Set("x");
+                    }
+                }
+                else if (cycleTime != null)
+                {
+                    row.FixedPeriodic.Set(cycleTime.Value.Num);
+                }
+                else
+                {
+                    var t = query.GetAttributeDefault(DbcTemplate.Attr_MsgCycleTime);
+                    row.FixedPeriodic.Set(t.Value.Num);
+                }
+
             }
 
+            row.Commit();
         }
 
         private void Signals(DbcRow row, Signal signal, long id)
         {
-            var prop = tree.ID(id).Name(signal.Name);
+            var prop = query.GetSignalProp(id, signal.Name);
 
             row.SignalName.Set(signal.Name);
             row.SignalSize.Set(signal.SignalSize);
@@ -158,25 +146,34 @@ namespace DbcLib.Excel.Writer
             row.PhysicalMax.Set(signal.Max);
             row.Receiver.SetReceiver(signal.Receivers);
 
+            if (prop.CM != null)
+            {
+                row.DetailedMeaning.Set(prop.CM.Val);
+            }
 
-            row.DetailedMeaning.Set(prop.CM.Val);
-            row.State.SetValueDescs(prop.VD.Descs);
+            int descHeight = 0;
 
-            int descHeight = prop.VD.Descs.Count;
+            if (prop.VD != null)
+            {
+                row.State.SetValueDescs(prop.VD.Descs);
+
+                descHeight = prop.VD.Descs.Count;
+            }
+
+            row.Commit();
+
             int height = Math.Max(descHeight, signal.Receivers.Count);
 
             if (height > 1)
             {
-                row.NRow.HeightInPoints = height * row.NRow.HeightInPoints;
+                row.Raw.HeightInPoints = height * row.Raw.HeightInPoints;
             }
 
-            var state = row.State.NCell;
-            if (state != null)
-                state.CellStyle = stackedTextStyle;
+            if (row.State.Raw != null)
+                row.State.Raw.CellStyle = stackedTextStyle;
 
-            var receiver = row.Receiver.NCell;
-            if (receiver != null)
-                receiver.CellStyle = stackedTextStyle;
+            if (row.Receiver.Raw != null)
+                row.Receiver.Raw.CellStyle = stackedTextStyle;
         }
 
     }
