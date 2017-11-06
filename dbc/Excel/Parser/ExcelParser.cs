@@ -117,7 +117,7 @@ namespace DbcLib.Excel.Parser
         {
             foreach (var cell in row)
             {
-                if (cell.State == 0)
+                if (cell.State != 0)
                     errors.Add(new ParseError("", cell));
             }
 
@@ -169,19 +169,12 @@ namespace DbcLib.Excel.Parser
                     Val = comment
                 });
 
-            builder.SendTypes.Add(new ObjAttributeValue
-            {
-                AttributeName = DbcStruct.Attr_MsgCycleTime,
-                ObjType = Keyword.MESSAGES,
-                MsgID = msg.MsgID,
-                Value = new AttributeValue
-                {
-                    Num = sendType
-                }
-            });
+            builder.SendTypes.Add(sendType);
+            builder.CycleTime.Add(cycleTime);
 
+            /*
             if (cycleTime != 0)
-                builder.SendTypes.Add(new ObjAttributeValue
+                builder.CycleTime.Add(new ObjAttributeValue
                 {
                     AttributeName = DbcStruct.Attr_MsgCycleTime,
                     ObjType = Keyword.MESSAGES,
@@ -191,7 +184,7 @@ namespace DbcLib.Excel.Parser
                         Num = cycleTime
                     }
                 });
-
+                */
 
             return msg;
         }

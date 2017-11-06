@@ -213,7 +213,6 @@ namespace DbcLib.Excel
 
         private T PARSE_SUCCESS<T>(T a)
         {
-            State = 1;
             return a;
         }
 

@@ -57,21 +57,39 @@ namespace dbc_test
             }
            
 
-            {
-                DBC dbc = DbcParser.Parse("sample.dbc");
-                ExcelWriter writer = new ExcelWriter(@"out.xlsx");
-                writer.Add("Message_Detail", dbc);
-                writer.Write();
-                writer.Dispose();
-            }
+
             */
 
-            using (ExcelDBC d = ExcelParser.Parse("out.xlsx", "Message_Detail"))
-            using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
+
+
+            using (ExcelWriter writer = new ExcelWriter(@"out1.xlsx"))
+            {
+                DBC dbc = DbcParser.Parse("sample.dbc");
+                writer.Add("Message_Detail", dbc);
+                writer.Write();
+            }
+
+            using (ExcelDBC d = ExcelParser.Parse("out1.xlsx", "Message_Detail"))
+            using (DbcWriter writer = new DbcWriter(new StreamWriter("out1.dbc", false, Encoding.Default)))
             {
                 if (d.DBC != null)
                     writer.Write(d.DBC);
             }
+
+            using (ExcelWriter writer = new ExcelWriter(@"out2.xlsx"))
+            {
+                DBC dbc = DbcParser.Parse("out1.dbc");
+                writer.Add("Message_Detail", dbc);
+                writer.Write();
+            }
+
+            using (ExcelDBC d = ExcelParser.Parse("out2.xlsx", "Message_Detail"))
+            using (DbcWriter writer = new DbcWriter(new StreamWriter("out2.dbc", false, Encoding.Default)))
+            {
+                if (d.DBC != null)
+                    writer.Write(d.DBC);
+            }
+
 
             Console.ReadKey();
         }
