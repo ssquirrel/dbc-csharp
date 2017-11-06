@@ -43,7 +43,7 @@ namespace DbcLib.Excel.Parser
             int winner = FindMaxIndex(sendTypeCount);
 
             if (winner == 3 &&
-                sendTypeCount[winner] == sendTypeCount.Length)
+                sendTypeCount[winner] == SendTypes.Count)
                 return;
 
             dbc.AttributeDefinitions.Add(new AttributeDefinition
@@ -98,18 +98,18 @@ namespace DbcLib.Excel.Parser
             }
 
             int winner = 0;
-            int max = 0;
+            int maxCount = 0;
 
             foreach (var pair in count)
             {
-                if (pair.Value > max)
+                if (pair.Value > maxCount)
                 {
                     winner = pair.Key;
-                    max = pair.Value;
+                    maxCount = pair.Value;
                 }
             }
 
-            if (max == 0)
+            if (winner == 0)
                 return;
 
             dbc.AttributeDefinitions.Add(new AttributeDefinition
@@ -118,7 +118,7 @@ namespace DbcLib.Excel.Parser
                 ObjectType = Keyword.MESSAGES,
                 ValueType = "INT",
                 Num1 = 0,
-                Num2 = max
+                Num2 = maxCount
             });
 
             dbc.AttributeDefaults.Add(new AttributeDefault

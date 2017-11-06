@@ -56,13 +56,7 @@ namespace dbc_test
 
             }
            
-
-
-            */
-
-
-
-            using (ExcelWriter writer = new ExcelWriter(@"out1.xlsx"))
+                        using (ExcelWriter writer = new ExcelWriter(@"out1.xlsx"))
             {
                 DBC dbc = DbcParser.Parse("sample.dbc");
                 writer.Add("Message_Detail", dbc);
@@ -85,6 +79,17 @@ namespace dbc_test
 
             using (ExcelDBC d = ExcelParser.Parse("out2.xlsx", "Message_Detail"))
             using (DbcWriter writer = new DbcWriter(new StreamWriter("out2.dbc", false, Encoding.Default)))
+            {
+                if (d.DBC != null)
+                    writer.Write(d.DBC);
+            }
+
+            */
+
+
+
+            using (ExcelDBC d = ExcelParser.Parse("out1.xlsx", "Message_Detail"))
+            using (DbcWriter writer = new DbcWriter(new StreamWriter("out1.dbc", false, Encoding.Default)))
             {
                 if (d.DBC != null)
                     writer.Write(d.DBC);
