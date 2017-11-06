@@ -49,7 +49,7 @@ namespace DbcLib.Excel.Parser
 
     public class ExcelParser
     {
-        private Model.PropTree.PropTree tree = new Model.PropTree.PropTree();
+        private DbcBuilder builder = new DbcBuilder();
 
         private IWorkbook workbook;
         private ISheet sheet;
@@ -88,8 +88,6 @@ namespace DbcLib.Excel.Parser
 
         private ExcelDBC ParseImpl(IEnumerable<IRow> rows)
         {
-            List<Message> msgs = new List<Message>();
-
             Message parent = null;
             foreach (IRow raw in rows)
             {
@@ -98,9 +96,6 @@ namespace DbcLib.Excel.Parser
                 if (row.MsgName.Type != CellType.Blank)
                 {
                     parent = NewMessage(row);
-
-                    if (errors.Count != 0)
-                        msgs.Add(parent);
                 }
                 else if (row.SignalName.Type != CellType.Blank)
                 {
@@ -112,13 +107,10 @@ namespace DbcLib.Excel.Parser
                 }
             }
 
-            Model.DBC dbc = tree.ToDBC();
-            dbc.Messages = msgs;
-
             if (errors.Count > 0)
                 return new ExcelDBC(workbook, errors);
             else
-                return new ExcelDBC(workbook, dbc);
+                return new ExcelDBC(workbook, builder.ToDBC());
         }
 
         private bool Sweep(DbcRow row)
@@ -139,15 +131,15 @@ namespace DbcLib.Excel.Parser
             bool cyclicEvent = row.PeriodicEvent.Type != CellType.Blank;
 
             if (cyclic && !ifActive && !cyclicEvent)
-                return DbcTemplate.MsgSendType_Cyclic;
+                return DbcStruct.MsgST_Cyclic;
 
             if (ifActive && !cyclic && !cyclicEvent)
-                return DbcTemplate.MsgSendType_IfActive;
+                return DbcStruct.MsgST_IfActive;
 
             if (cyclicEvent && !cyclic && !ifActive)
-                return DbcTemplate.MsgSendType_CyclicEvent;
+                return DbcStruct.MsgST_CyclicEvent;
 
-            return DbcTemplate.MsgSendTypeDefault;
+            return DbcStruct.MsgST_NoSendType;
         }
 
         private Message NewMessage(DbcRow row)
@@ -161,16 +153,45 @@ namespace DbcLib.Excel.Parser
 
             string comment = row.MsgComment.GetCharString();
             int sendType = SendType(row);
-            int cycleTime = sendType == DbcTemplate.MsgSendType_Cyclic ?
+            int cycleTime = sendType == DbcStruct.MsgST_Cyclic ?
                 row.FixedPeriodic.GetInt() : 0;
 
             if (Sweep(row))
                 return msg;
 
-            var prop = tree.Insert(msg.MsgID).MsgProp;
+            builder.Messages.Add(msg);
 
-            prop.Attribute.Insert(DbcTemplate.Attr_MsgSendType, cycleTime);
-            prop.CM.Val = comment;
+            if (comment.Length > 0)
+                builder.Comments.Add(new Comment
+                {
+                    Type = Keyword.MESSAGES,
+                    MsgID = msg.MsgID,
+                    Val = comment
+                });
+
+            builder.SendTypes.Add(new ObjAttributeValue
+            {
+                AttributeName = DbcStruct.Attr_MsgCycleTime,
+                ObjType = Keyword.MESSAGES,
+                MsgID = msg.MsgID,
+                Value = new AttributeValue
+                {
+                    Num = sendType
+                }
+            });
+
+            if (cycleTime != 0)
+                builder.SendTypes.Add(new ObjAttributeValue
+                {
+                    AttributeName = DbcStruct.Attr_MsgCycleTime,
+                    ObjType = Keyword.MESSAGES,
+                    MsgID = msg.MsgID,
+                    Value = new AttributeValue
+                    {
+                        Num = cycleTime
+                    }
+                });
+
 
             return msg;
         }
@@ -196,7 +217,6 @@ namespace DbcLib.Excel.Parser
             var comment = row.DetailedMeaning.GetCharString();
             var descs = row.State.GetValueDescs();
 
-
             if (msg == null)
             {
                 errors.Add(new ParseError("a sig without parent", row.Transmitter));
@@ -207,11 +227,22 @@ namespace DbcLib.Excel.Parser
 
             msg.Signals.Add(sig);
 
-            var prop = tree.ID(msg.MsgID).Insert(sig.Name);
+            if (comment.Length > 0)
+                builder.Comments.Add(new Comment
+                {
+                    Type = Keyword.SIGNAL,
+                    MsgID = msg.MsgID,
+                    Name = sig.Name,
+                    Val = comment
+                });
 
-            prop.CM.Val = comment;
-            prop.VD.Descs = descs;
-
+            if (descs.Count > 0)
+                builder.ValueDescriptions.Add(new SignalValueDescription
+                {
+                    MsgID = msg.MsgID,
+                    Name = sig.Name,
+                    Descs = descs
+                });
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,109 +7,74 @@ using System.Threading.Tasks;
 
 namespace DbcLib.Model.PropTree
 {
-    public interface IAttribute
+    abstract class Attributes : IAttributes, IEnumerable<ObjAttributeValue>
     {
-        string AttributeName { get; set; }
+        private DefaultAttributes def;
+        private List<ObjAttributeValue> list = new List<ObjAttributeValue>();
 
-        AttrValType Type { get; }
-
-        double Num { get; }
-        string Val { get; }
-    }
-
-    public interface IAttributes
-    {
-        IAttribute this[string name] { get; }
-    }
-
-    public class DefaultAttributes : IAttributes
-    {
-        private IDictionary<string, IAttribute> dict =
-            new Dictionary<string, IAttribute>();
-
-        public DefaultAttributes(IEnumerable<IAttribute> defaults)
+        public Attributes(DefaultAttributes def)
         {
-            dict = defaults.ToDictionary(def => def.AttributeName);
+            this.def = def;
         }
 
-        public IAttribute this[string name]
-        {
-            get
-            {
-                dict.TryGetValue(name, out var def);
-
-                return def;
-            }
-        }
-
-        public bool TryInsert(IAttribute ia)
-        {
-            bool pred = dict.ContainsKey(ia.AttributeName);
-
-            if (!pred)
-                dict.Add(ia.AttributeName, ia);
-
-            return pred;
-        }
-    }
-
-    public class Attributes : IAttributes
-    {
-        private IAttributes defs;
-        private List<IAttribute> list = new List<IAttribute>();
-
-        public Attributes(IAttributes defs)
-        {
-            this.defs = defs;
-        }
-
-        public IAttribute this[string name]
+        public IAttributeValue this[string name]
         {
             get => Get(name);
         }
 
-        public void Insert(IAttribute attribute)
+        public IEnumerator<ObjAttributeValue> GetEnumerator()
         {
-            list.Add(attribute);
+            foreach (var val in def)
+            {
+                var av = Construct();
+                av.AttributeName = val.AttributeName;
+                av.Value = av.Value;
+
+                yield return av;
+            }
+
+            foreach (var av in list)
+                yield return av;
         }
 
-        private IAttribute Get(string name)
+        public ObjAttributeValue Insert(ObjAttributeValue attribute)
+        {
+            list.Add(attribute);
+
+            return attribute;
+        }
+
+        protected abstract ObjAttributeValue Construct();
+
+        private IAttributeValue Get(string name)
         {
             var attr = list.Find(a => a.AttributeName == name);
 
-            return attr ?? defs[name];
+            return attr != null ? attr.Value : def[name];
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 
-    public class MsgAttributes : Attributes
+    class MsgAttributes : Attributes
     {
         private long id;
 
-        public MsgAttributes(long id, IAttributes defs) : base(defs)
+        public MsgAttributes(long id, DefaultAttributes defs) : base(defs)
         {
             this.id = id;
         }
 
-        public void Insert(string name, double num)
+        protected override ObjAttributeValue Construct()
         {
-            Insert(new ObjAttributeValue
+            return new ObjAttributeValue
             {
-                AttributeName = name,
                 ObjType = Keyword.MESSAGES,
-                MsgID = id,
-                Num = num
-            });
-        }
-
-        public void Insert(string name, string val)
-        {
-            Insert(new ObjAttributeValue
-            {
-                AttributeName = name,
-                ObjType = Keyword.MESSAGES,
-                MsgID = id,
-                Val = val
-            });
+                MsgID = id
+            };
         }
     }
 

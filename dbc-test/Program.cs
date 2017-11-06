@@ -52,23 +52,26 @@ namespace dbc_test
 
             
 
+           
+
+            }
+           
+
+            {
+                DBC dbc = DbcParser.Parse("sample.dbc");
+                ExcelWriter writer = new ExcelWriter(@"out.xlsx");
+                writer.Add("Message_Detail", dbc);
+                writer.Write();
+                writer.Dispose();
+            }
+            */
+
             using (ExcelDBC d = ExcelParser.Parse("out.xlsx", "Message_Detail"))
             using (DbcWriter writer = new DbcWriter(new StreamWriter("out.dbc", false, Encoding.Default)))
             {
                 if (d.DBC != null)
                     writer.Write(d.DBC);
             }
-
-            }
-
-             {
-                DBC dbc = DbcParser.Parse("sample.dbc");
-                ExcelWriter writer = new ExcelWriter(@"C:\Users\LXL_z\Desktop\test\out.xlsx");
-                writer.Add("Message_Detail", dbc);
-                writer.Write();
-                writer.Dispose();
-            }
-            */
 
             Console.ReadKey();
         }

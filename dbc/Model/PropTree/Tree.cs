@@ -6,65 +6,82 @@ using System.Threading.Tasks;
 
 namespace DbcLib.Model.PropTree
 {
-    public interface IByIdLeaf
-    {
-        SignalProp Name(string name);
-        MsgProp MsgProp { get; }
-
-        SignalProp Insert(string name);
-    }
-
-    class EmptyLeaf : IByIdLeaf
-    {
-        public MsgProp MsgProp => null;
-
-        public SignalProp Insert(string name)
-        {
-            return null;
-        }
-
-        public SignalProp Name(string name)
-        {
-            return null;
-        }
-    }
-
     public class PropTree
     {
-        private IDictionary<long, IByIdLeaf> byID =
-            new Dictionary<long, IByIdLeaf>();
+        private static readonly DefaultAttributes Empty_Def =
+            new DefaultAttributes(Enumerable.Empty<AttributeDefault>());
 
-        public PropTree()
-        {
+        private static readonly MsgProp SENTINEL_MSG = new MsgProp(0, Empty_Def);
+        private static readonly SignalProp SENTINEL_SIG = new SignalProp(0, "");
 
-        }
+        private IDictionary<long, MsgProp> byID =
+            new Dictionary<long, MsgProp>();
 
         public PropTree(DBC dbc)
         {
             Def = new DefaultAttributes(dbc.AttributeDefaults);
+
+            foreach (Comment cm in dbc.Comments)
+            {
+                switch (cm.Type)
+                {
+                    case Keyword.MESSAGES:
+                        Internal_Insert(cm.MsgID).CM = cm;
+                        break;
+
+                    case Keyword.SIGNAL:
+                        Internal_Insert(cm.MsgID).Internal_Insert(cm.Name).CM = cm;
+                        break;
+                }
+            }
+
+            foreach (ObjAttributeValue av in dbc.AttributeValues)
+            {
+                switch (av.ObjType)
+                {
+                    case Keyword.MESSAGES:
+                        Internal_Insert(av.MsgID).Attributes.Insert(av);
+                        break;
+                }
+            }
+
+            foreach (SignalValueDescription vd in dbc.ValueDescriptions)
+            {
+                Internal_Insert(vd.MsgID).Internal_Insert(vd.Name).VD = vd;
+            }
         }
+
+        public static IAttributeValue EmptyAttributeValue { get; } = new AttributeValue();
+        public static IQueryById EmptyQuery { get; } = SENTINEL_MSG;
+        public static IMsgProp EmptyMsgProp { get; } = SENTINEL_MSG;
+        public static ISignalProp EmptySignalProp { get; } = SENTINEL_SIG;
 
         public DefaultAttributes Def { get; set; }
 
-        public DBC ToDBC()
+        public IQueryById ID(long id)
         {
-            return null;
-        }
-
-        public IByIdLeaf ID(long id)
-        {
-            return null;
-        }
-
-        public IByIdLeaf Insert(long id)
-        {
-            if (!byID.TryGetValue(id, out var leaf))
+            if (byID.TryGetValue(id, out var leaf))
             {
-                leaf = new MsgProp(id, Def);
-                byID.Add(id, leaf);
+                return leaf;
             }
 
             return leaf;
         }
+
+        public IQueryById Insert(long id)
+        {
+            return Internal_Insert(id);
+        }
+
+        private MsgProp Internal_Insert(long id)
+        {
+            if (!byID.TryGetValue(id, out var prop))
+            {
+                prop = byID[id] = new MsgProp(id, Def);
+            }
+
+            return prop;
+        }
+
     }
 }

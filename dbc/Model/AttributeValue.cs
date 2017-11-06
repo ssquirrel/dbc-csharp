@@ -13,9 +13,9 @@ namespace DbcLib.Model
         String
     }
 
-    public class AttributeValue
+    public class AttributeValue : PropTree.IAttributeValue
     {
-        private double num;
+        private double num = double.NaN;
         private string val = "";
 
         public AttrValType Type { get; private set; }

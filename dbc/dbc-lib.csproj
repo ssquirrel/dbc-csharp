@@ -57,15 +57,15 @@
   <ItemGroup>
     <Compile Include="DBC\Lex\Common.cs" />
     <Compile Include="DBC\Writer\DbcWriter.cs" />
+    <Compile Include="Excel\Parser\DbcBuilder.cs" />
     <Compile Include="Excel\Sheet\DbcCell.cs" />
-    <Compile Include="Excel\DbcTemplate.cs" />
+    <Compile Include="Excel\DbcStruct.cs" />
     <Compile Include="Excel\Sheet\EmptyCell.cs" />
     <Compile Include="Excel\Sheet\DbcRow.cs" />
     <Compile Include="Excel\Sheet\NormalCell.cs" />
     <Compile Include="Excel\Parser\ExcelParser.cs" />
-    <Compile Include="Excel\DbcModel\DbcProp.cs" />
-    <Compile Include="Excel\DbcModel\DbcQuery.cs" />
     <Compile Include="Excel\Writer\ExcelWriter.cs" />
+    <Compile Include="Excel\Writer\SemanticAnalysis.cs" />
     <Compile Include="Model\Keyword.cs" />
     <Compile Include="DBC\Lex\Lexer.cs" />
     <Compile Include="DBC\Lex\Token.cs" />
@@ -78,7 +78,10 @@
     <Compile Include="Model\Message.cs" />
     <Compile Include="Model\ObjAttributeValue.cs" />
     <Compile Include="Model\PropTree\Attributes.cs" />
-    <Compile Include="Model\PropTree\ObjProp.cs" />
+    <Compile Include="Model\PropTree\DefaultAttributes.cs" />
+    <Compile Include="Model\PropTree\MsgProp.cs" />
+    <Compile Include="Model\PropTree\Public.cs" />
+    <Compile Include="Model\PropTree\SignalProp.cs" />
     <Compile Include="Model\PropTree\Tree.cs" />
     <Compile Include="Model\Signal.cs" />
     <Compile Include="Model\SignalValueDescription.cs" />

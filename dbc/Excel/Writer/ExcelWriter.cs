@@ -8,6 +8,7 @@ using System.IO;
 
 using NPOI.SS.UserModel;
 using DbcLib.Model;
+using DbcLib.Model.PropTree;
 using System.Threading;
 
 namespace DbcLib.Excel.Writer
@@ -44,11 +45,12 @@ namespace DbcLib.Excel.Writer
 
     public class ExcelWriter : IDisposable
     {
-        private Model.PropTree.PropTree tree;
+        private SemanticAnalysis analysis;
+
+        private PropTree tree;
 
         private string filename;
         private IWorkbook workbook;
-        private DbcQuery query;
 
         private ICellStyle stackedTextStyle;
 
@@ -66,12 +68,9 @@ namespace DbcLib.Excel.Writer
 
         public void Add(string sn, Model.DBC dbc)
         {
-            tree = new Model.PropTree.PropTree(dbc);
-            tree.Def.TryInsert(new AttributeDefault
-            {
-                AttributeName = DbcTemplate.Attr_MsgSendType,
-                Num = DbcTemplate.MsgSendTypeDefault
-            });
+            analysis = new SemanticAnalysis(dbc);
+
+            tree = new PropTree(dbc);
 
             ISheet sheet = AllocateSheet(sn);
 
@@ -114,40 +113,38 @@ namespace DbcLib.Excel.Writer
 
         private void Messages(DbcRow row, Message msg)
         {
-            var prop = tree.ID(msg.MsgID).MsgProp;
-
             row.MsgID.SetHex(msg.MsgID);
             row.MsgName.Set(msg.Name);
             row.MsgSize.Set(msg.Size);
             row.Transmitter.Set(msg.Transmitter);
 
-            row.MsgComment.Set(prop.CM.Val);
+            var prop = tree.ID(msg.MsgID).MsgProp;
 
-            var sendType = prop.Attribute[DbcTemplate.Attr_MsgSendType];
-            var type = sendType.Num;
+            if (prop.Comment.Length > 0)
+                row.MsgComment.Set(prop.CM.Val);
 
-            if (type == DbcTemplate.MsgSendType_Cyclic)
+            var sendType = prop.Attributes[DbcStruct.Attr_MsgSendType];
+            var type = analysis.GetSendType(sendType);
+
+            if (type == analysis.MsgST_Cyclic)
             {
-                var cycleTime = prop.Attribute[DbcTemplate.Attr_MsgCycleTime];
+                var cycleTime = prop.Attributes[DbcStruct.Attr_MsgCycleTime];
 
-                if (cycleTime != null)
+                if (cycleTime != PropTree.EmptyAttributeValue)
                     row.FixedPeriodic.Set(cycleTime.Num);
             }
-            else if (type == DbcTemplate.MsgSendType_IfActive)
+            else if (type == analysis.MsgST_IfActive)
             {
                 row.Event.Set("x");
             }
-            else if (type == DbcTemplate.MsgSendType_CyclicEvent)
+            else if (type == analysis.MsgST_CyclicEvent)
             {
                 row.PeriodicEvent.Set("x");
             }
-
         }
 
         private void Signals(DbcRow row, Signal signal, long id)
         {
-            var prop = tree.ID(id).Name(signal.Name);
-
             row.SignalName.Set(signal.Name);
             row.SignalSize.Set(signal.SignalSize);
             row.BitPos.Set(signal.StartBit);
@@ -158,11 +155,15 @@ namespace DbcLib.Excel.Writer
             row.PhysicalMax.Set(signal.Max);
             row.Receiver.SetReceiver(signal.Receivers);
 
+            var prop = tree.ID(id).Name(signal.Name);
 
-            row.DetailedMeaning.Set(prop.CM.Val);
-            row.State.SetValueDescs(prop.VD.Descs);
+            if (prop.Comment.Length > 0)
+                row.DetailedMeaning.Set(prop.Comment);
 
-            int descHeight = prop.VD.Descs.Count;
+            if (prop.Descs.Count > 0)
+                row.State.SetValueDescs(prop.Descs);
+
+            int descHeight = prop.Descs.Count;
             int height = Math.Max(descHeight, signal.Receivers.Count);
 
             if (height > 1)
