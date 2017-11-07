@@ -245,6 +245,27 @@ namespace DbcLib.DBC.Parser
             }
         }
 
+        private void MultiplexerIndicator(Signal sig)
+        {
+            string val = stream.Peek().Val;
+
+            if (val.StartsWith("m"))
+            {
+                if (!int.TryParse(val.Substring(1), out int num))
+                {
+                    throw new DbcParseException();
+                }
+
+                sig.MultiplexerSwitchValue = num;
+                stream.Read();
+            }
+            else if (val == "M")
+            {
+                sig.IsMultiplexerSwitch = true;
+                stream.Read();
+            }
+        }
+
         //signal = 'SG_' signal_name multiplexer_indicator ':' start_bit '|'
         //signal_size '@' byte_order value_type '(' factor ',' offset ')'
         //       '[' minimum '|' maximum ']' unit receiver {',' receiver} ;
@@ -268,6 +289,8 @@ namespace DbcLib.DBC.Parser
                 Name = EXPECT(TokenType.IDENTIFIER).Val,
                 Receivers = new List<string>()
             };
+
+            MultiplexerIndicator(signal);
 
             EXPECT(":");
             signal.StartBit = EXPECT(TokenType.UNSIGNED).INT;
@@ -308,24 +331,27 @@ namespace DbcLib.DBC.Parser
                 Comment cm = new Comment();
                 dbc.Comments.Add(cm);
 
-                if (stream.Peek().Val == Keyword.NODES ||
-                    stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
+                switch (stream.Peek().Val)
                 {
-                    cm.Type = stream.Read().Val;
-                    cm.Name = EXPECT(TokenType.IDENTIFIER).Val;
-                }
-                else if (stream.Peek().Val == Keyword.MESSAGES)
-                {
-                    cm.Type = stream.Read().Val;
-                    cm.MsgID = (long)EXPECT(TokenType.UNSIGNED).Num;
+                    case Keyword.NODES:
+                    case Keyword.ENVIRONMENT_VARIABLES:
+                        cm.Type = stream.Read().Val;
+                        cm.Name = EXPECT(TokenType.IDENTIFIER).Val;
 
-                }
-                else if (stream.Peek().Val == Keyword.SIGNAL)
-                {
-                    cm.Type = stream.Read().Val;
-                    cm.MsgID = (long)EXPECT(TokenType.UNSIGNED).Num;
-                    cm.Name = EXPECT(TokenType.IDENTIFIER).Val;
+                        break;
 
+                    case Keyword.MESSAGES:
+                        cm.Type = stream.Read().Val;
+                        cm.MsgID = (long)EXPECT(TokenType.UNSIGNED).Num;
+
+                        break;
+
+                    case Keyword.SIGNAL:
+                        cm.Type = stream.Read().Val;
+                        cm.MsgID = (long)EXPECT(TokenType.UNSIGNED).Num;
+                        cm.Name = EXPECT(TokenType.IDENTIFIER).Val;
+
+                        break;
                 }
 
                 cm.Val = EXPECT(TokenType.STRING).Val;
@@ -340,50 +366,53 @@ namespace DbcLib.DBC.Parser
             {
                 AttributeDefinition ad = new AttributeDefinition();
 
-                if (stream.Peek().Val == Keyword.NODES ||
-                    stream.Peek().Val == Keyword.MESSAGES ||
-                    stream.Peek().Val == Keyword.SIGNAL ||
-                    //To pass all tests include EV_
-                    stream.Peek().Val == Keyword.ENVIRONMENT_VARIABLES)
+                switch (stream.Peek().Val)
                 {
-                    ad.ObjectType = stream.Read().Val;
+                    case Keyword.NODES:
+                    case Keyword.MESSAGES:
+                    case Keyword.SIGNAL:
+                    //To pass all tests include EV_
+                    case Keyword.ENVIRONMENT_VARIABLES:
+                        ad.ObjectType = stream.Read().Val;
+                        break;
                 }
 
                 ad.AttributeName = EXPECT(TokenType.STRING).Val;
 
-                if (stream.Peek().Val == "INT" ||
-                    stream.Peek().Val == "HEX")
+                switch (stream.Peek().Val)
                 {
-                    ad.ValueType = stream.Read().Val;
-                    ad.Num1 = EXPECT(TokenType.SIGNED).INT;
-                    ad.Num2 = EXPECT(TokenType.SIGNED).INT;
-                }
-                else if (stream.Peek().Val == "FLOAT")
-                {
-                    ad.ValueType = stream.Read().Val;
-                    ad.Num1 = EXPECT(TokenType.DOUBLE).Num;
-                    ad.Num2 = EXPECT(TokenType.DOUBLE).Num;
-                }
-                else if (stream.Peek().Val == "STRING")
-                {
-                    ad.ValueType = stream.Read().Val;
-                }
-                else if (stream.Peek().Val == "ENUM")
-                {
-                    ad.ValueType = stream.Read().Val;
-                    ad.Values = new List<string> {
-                        //expects at least one enum
-                        EXPECT(TokenType.STRING).Val
-                    };
+                    case "INT":
+                    case "HEX":
+                        ad.ValueType = stream.Read().Val;
+                        ad.Num1 = EXPECT(TokenType.SIGNED).INT;
+                        ad.Num2 = EXPECT(TokenType.SIGNED).INT;
+                        break;
 
-                    while (stream.ConsumeIf(stream.Peek().Val == ","))
-                    {
-                        ad.Values.Add(EXPECT(TokenType.STRING).Val);
-                    }
-                }
-                else
-                {
-                    throw new DbcParseException();
+                    case "FLOAT":
+                        ad.ValueType = stream.Read().Val;
+                        ad.Num1 = EXPECT(TokenType.DOUBLE).Num;
+                        ad.Num2 = EXPECT(TokenType.DOUBLE).Num;
+                        break;
+
+                    case "STRING":
+                        ad.ValueType = stream.Read().Val;
+                        break;
+
+                    case "ENUM":
+                        ad.ValueType = stream.Read().Val;
+                        ad.Values = new List<string> {
+                            //expects at least one enum
+                            EXPECT(TokenType.STRING).Val
+                        };
+
+                        while (stream.ConsumeIf(stream.Peek().Val == ","))
+                        {
+                            ad.Values.Add(EXPECT(TokenType.STRING).Val);
+                        }
+                        break;
+
+                    default:
+                        throw new DbcParseException();
                 }
 
                 dbc.AttributeDefinitions.Add(ad);

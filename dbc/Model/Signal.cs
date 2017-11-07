@@ -9,7 +9,8 @@ namespace DbcLib.Model
     public class Signal
     {
         public string Name { get; set; }
-        //multiplexerIndicator
+        public bool IsMultiplexerSwitch { get; set; }
+        public int MultiplexerSwitchValue { get; set; }
         public int StartBit { get; set; }
         public int SignalSize { get; set; }
         public string ByteOrder { get; set; } //"0" Motorola, big endian{get;set;} "1" Intel, little endian
