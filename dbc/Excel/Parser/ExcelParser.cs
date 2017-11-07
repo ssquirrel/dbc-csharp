@@ -126,7 +126,7 @@ namespace DbcLib.Excel.Parser
 
         private int SendType(DbcRow row)
         {
-            bool cyclic = row.FixedPeriodic.Type != CellType.Blank;
+            bool cyclic = row.MsgCycleTime.Type != CellType.Blank;
             bool ifActive = row.Event.Type != CellType.Blank;
             bool cyclicEvent = row.PeriodicEvent.Type != CellType.Blank;
 
@@ -154,7 +154,7 @@ namespace DbcLib.Excel.Parser
             string comment = row.MsgComment.GetCharString();
             int sendType = SendType(row);
             int cycleTime = sendType == DbcStruct.MsgST_Cyclic ?
-                row.FixedPeriodic.GetInt() : 0;
+                row.MsgCycleTime.GetInt() : 0;
 
             if (Sweep(row))
                 return msg;
@@ -172,20 +172,6 @@ namespace DbcLib.Excel.Parser
             builder.SendTypes.Add(sendType);
             builder.CycleTime.Add(cycleTime);
 
-            /*
-            if (cycleTime != 0)
-                builder.CycleTime.Add(new ObjAttributeValue
-                {
-                    AttributeName = DbcStruct.Attr_MsgCycleTime,
-                    ObjType = Keyword.MESSAGES,
-                    MsgID = msg.MsgID,
-                    Value = new AttributeValue
-                    {
-                        Num = cycleTime
-                    }
-                });
-                */
-
             return msg;
         }
 
@@ -194,9 +180,10 @@ namespace DbcLib.Excel.Parser
         {
             var sig = new Signal();
             sig.Name = row.SignalName.GetIdentifier();
-            sig.SignalSize = row.SignalSize.GetInt();
-            sig.StartBit = row.BitPos.GetInt();
-
+            sig.StartBit = row.StartBit.GetInt();
+            sig.SignalSize = row.SizeInBits.GetInt();
+            sig.ByteOrder = row.ByteOrder.GetByteOrder();
+            sig.ValueType = row.ValueType.GetValueType();
             sig.Unit = row.Unit.GetCharString();
             sig.Factor = row.Factor.GetDouble();
             sig.Offset = row.Offset.GetDouble();
@@ -204,11 +191,9 @@ namespace DbcLib.Excel.Parser
             sig.Max = row.PhysicalMax.GetDouble();
             sig.Receivers = row.Receiver.GetReceiver();
 
-            sig.ByteOrder = "0";
-            sig.ValueType = "+";
-
-            var comment = row.DetailedMeaning.GetCharString();
-            var descs = row.State.GetValueDescs();
+            var comment = row.SigComment.GetCharString();
+            var descs = row.ValueDescs.GetValueDescs();
+            var startVal = row.SigStartValue.GetInt();
 
             if (msg == null)
             {

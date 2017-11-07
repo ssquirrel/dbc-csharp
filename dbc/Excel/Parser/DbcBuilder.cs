@@ -70,7 +70,7 @@ namespace DbcLib.Excel.Parser
 
                 dbc.AttributeValues.Add(new ObjAttributeValue
                 {
-                    AttributeName = DbcStruct.Attr_MsgCycleTime,
+                    AttributeName = DbcStruct.Attr_MsgSendType,
                     ObjType = Keyword.MESSAGES,
                     MsgID = dbc.Messages[i].MsgID,
                     Value = new AttributeValue
@@ -100,8 +100,15 @@ namespace DbcLib.Excel.Parser
             int winner = 0;
             int maxCount = 0;
 
+            int max = 0;
+
             foreach (var pair in count)
             {
+                if(pair.Key > max)
+                {
+                    max = pair.Key;
+                }
+
                 if (pair.Value > maxCount)
                 {
                     winner = pair.Key;
@@ -118,7 +125,7 @@ namespace DbcLib.Excel.Parser
                 ObjectType = Keyword.MESSAGES,
                 ValueType = "INT",
                 Num1 = 0,
-                Num2 = maxCount
+                Num2 = max
             });
 
             dbc.AttributeDefaults.Add(new AttributeDefault
@@ -134,7 +141,7 @@ namespace DbcLib.Excel.Parser
             {
                 int t = CycleTime[i];
 
-                if (t == 0 || t == winner)
+                if (t == winner)
                     continue;
 
                 dbc.AttributeValues.Add(new ObjAttributeValue

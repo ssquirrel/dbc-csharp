@@ -131,7 +131,7 @@ namespace DbcLib.Excel.Writer
                 var cycleTime = prop.Attributes[DbcStruct.Attr_MsgCycleTime];
 
                 if (cycleTime != PropTree.EmptyAttributeValue)
-                    row.FixedPeriodic.Set(cycleTime.Num);
+                    row.MsgCycleTime.Set(cycleTime.Num);
             }
             else if (type == analysis.MsgST_IfActive)
             {
@@ -146,8 +146,8 @@ namespace DbcLib.Excel.Writer
         private void Signals(DbcRow row, Signal signal, long id)
         {
             row.SignalName.Set(signal.Name);
-            row.SignalSize.Set(signal.SignalSize);
-            row.BitPos.Set(signal.StartBit);
+            row.SizeInBits.Set(signal.SignalSize);
+            row.StartBit.Set(signal.StartBit);
             row.Unit.Set(signal.Unit);
             row.Factor.Set(signal.Factor);
             row.Offset.Set(signal.Offset);
@@ -158,10 +158,10 @@ namespace DbcLib.Excel.Writer
             var prop = tree.ID(id).Name(signal.Name);
 
             if (prop.Comment.Length > 0)
-                row.DetailedMeaning.Set(prop.Comment);
+                row.SigComment.Set(prop.Comment);
 
             if (prop.Descs.Count > 0)
-                row.State.SetValueDescs(prop.Descs);
+                row.ValueDescs.SetValueDescs(prop.Descs);
 
             int descHeight = prop.Descs.Count;
             int height = Math.Max(descHeight, signal.Receivers.Count);
@@ -171,7 +171,7 @@ namespace DbcLib.Excel.Writer
                 row.NRow.HeightInPoints = height * row.NRow.HeightInPoints;
             }
 
-            var state = row.State.NCell;
+            var state = row.ValueDescs.NCell;
             if (state != null)
                 state.CellStyle = stackedTextStyle;
 

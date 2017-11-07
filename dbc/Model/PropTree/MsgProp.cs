@@ -49,12 +49,12 @@ namespace DbcLib.Model.PropTree
             return Internal_Insert(name);
         }
 
-        internal SignalProp Internal_Name(string name)
+        public SignalProp Internal_Name(string name)
         {
             return list.Find(p => p.Name == name);
         }
 
-        internal SignalProp Internal_Insert(string name)
+        public SignalProp Internal_Insert(string name)
         {
             var prop = Internal_Name(name);
 

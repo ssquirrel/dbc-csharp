@@ -109,6 +109,16 @@ namespace DbcLib.Excel
             return PARSE_FAILURE(0);
         }
 
+        public string GetByteOrder()
+        {
+            return "0";
+        }
+
+        public string GetValueType()
+        {
+            return "0";
+        }
+
         public IList<ValueDesc> GetValueDescs()
         {
             IList<ValueDesc> result = new List<ValueDesc>();
@@ -158,6 +168,16 @@ namespace DbcLib.Excel
         public void SetHex(long hex)
         {
             Set("0x" + hex.ToString("X3"));
+        }
+
+        public void SetByteOrder(string bo)
+        {
+
+        }
+
+        public void SetValueType(string vt)
+        {
+
         }
 
         public void SetValueDescs(IEnumerable<ValueDesc> descs)

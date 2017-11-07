@@ -8,12 +8,6 @@ namespace DbcLib.Model.PropTree
 {
     public class PropTree
     {
-        private static readonly DefaultAttributes Empty_Def =
-            new DefaultAttributes(Enumerable.Empty<AttributeDefault>());
-
-        private static readonly MsgProp SENTINEL_MSG = new MsgProp(0, Empty_Def);
-        private static readonly SignalProp SENTINEL_SIG = new SignalProp(0, "");
-
         private IDictionary<long, MsgProp> byID =
             new Dictionary<long, MsgProp>();
 
@@ -52,9 +46,21 @@ namespace DbcLib.Model.PropTree
         }
 
         public static IAttributeValue EmptyAttributeValue { get; } = new AttributeValue();
-        public static IQueryById EmptyQuery { get; } = SENTINEL_MSG;
-        public static IMsgProp EmptyMsgProp { get; } = SENTINEL_MSG;
-        public static ISignalProp EmptySignalProp { get; } = SENTINEL_SIG;
+        public static IQueryById EmptyQuery { get; }
+        public static IMsgProp EmptyMsgProp { get; }
+        public static ISignalProp EmptySignalProp { get; } = new SignalProp(0, "");
+
+        static PropTree()
+        {
+            DefaultAttributes def =
+                new DefaultAttributes(Enumerable.Empty<AttributeDefault>());
+
+            MsgProp prop = new MsgProp(0, def);
+
+            EmptyQuery = prop;
+            EmptyMsgProp = prop;
+        }
+
 
         public DefaultAttributes Def { get; set; }
 
