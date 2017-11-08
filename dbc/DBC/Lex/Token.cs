@@ -26,6 +26,10 @@ namespace DbcLib.DBC.Lex
 
         }
 
+        public Token(char ch) : this(ch.ToString())
+        {
+        }
+
         public Token(double n)
         {
             Num = n;

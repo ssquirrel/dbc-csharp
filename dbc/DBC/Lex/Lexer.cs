@@ -102,9 +102,9 @@ namespace DbcLib.DBC.Lex
                 {
                     return LexNumber(new StringBuilder());
                 }
-                else if (ch == '-')
+                else if (ch == '-' || ch == '+')
                 {
-                    return LexMinusSign();
+                    return LexPlusMinusSign();
                 }
                 else if (ch == '"')
                 {
@@ -117,7 +117,7 @@ namespace DbcLib.DBC.Lex
                 else
                 {
                     reader.Read();
-                    return new Token(ch.ToString());
+                    return new Token(ch);
                 }
             }
 
@@ -164,16 +164,19 @@ namespace DbcLib.DBC.Lex
             return new Token(double.Parse(builder.ToString()));
         }
 
-        private Token LexMinusSign()
+        private Token LexPlusMinusSign()
         {
-            reader.Read();
+            char ch = (char)reader.Read();
 
             if (!reader.EndOfStream && IsDigit((char)reader.Peek()))
             {
-                return LexNumber(new StringBuilder("-"));
+                var builder = new StringBuilder();
+                builder.Append(ch);
+
+                return LexNumber(builder);
             }
 
-            return new Token("-");
+            return new Token(ch);
         }
 
         //no longer collects '"'
