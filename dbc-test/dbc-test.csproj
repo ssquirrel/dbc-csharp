@@ -58,7 +58,6 @@
     <None Include="ParserTestFiles\ISO11783Template.dbc" />
     <None Include="ParserTestFiles\J1939Template.dbc" />
     <None Include="ParserTestFiles\J1939Template_old.dbc" />
-    <None Include="ParserTestFiles\j1939_utf8.dbc" />
     <None Include="ParserTestFiles\LINdb-Template.dbc" />
     <None Include="ParserTestFiles\MOSTTemplate.dbc" />
     <None Include="ParserTestFiles\NMEATemplate.dbc" />

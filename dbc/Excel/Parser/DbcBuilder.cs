@@ -10,168 +10,105 @@ namespace DbcLib.Excel.Parser
 {
     class DbcBuilder
     {
-        private Model.DBC dbc = new Model.DBC();
+        private HashSet<string> defs = new HashSet<string>();
 
-        public IList<Message> Messages => dbc.Messages;
+        public Model.DBC DBC { get; } = new Model.DBC();
 
-        public IList<Comment> Comments => dbc.Comments;
-
-        public IList<int> SendTypes { get; } = new List<int>();
-
-        public IList<int> CycleTime { get; } = new List<int>();
+        public IList<Message> Messages => DBC.Messages;
 
         public IList<SignalValueDescription> ValueDescriptions =>
-            dbc.ValueDescriptions;
+            DBC.ValueDescriptions;
 
-        public Model.DBC ToDBC()
+        public void NewMsgComment(long id, string cm)
         {
-            ReduceSendTypes();
-            ReduceCycleTime();
-
-            return dbc;
-        }
-
-        private void ReduceSendTypes()
-        {
-            int[] sendTypeCount = { 0, 0, 0, 0 };
-
-            foreach (var st in SendTypes)
-            {
-                ++sendTypeCount[st];
-            }
-
-            int winner = FindMaxIndex(sendTypeCount);
-
-            if (winner == 3 &&
-                sendTypeCount[winner] == SendTypes.Count)
+            if (cm.Length == 0)
                 return;
 
-            dbc.AttributeDefinitions.Add(new AttributeDefinition
+            DBC.Comments.Add(new Comment
             {
-                AttributeName = DbcStruct.Attr_MsgSendType,
-                ObjectType = Keyword.MESSAGES,
-                ValueType = "ENUM",
-                Values = DbcStruct.MSG_STs
+                Type = Keyword.MESSAGES,
+                MsgID = id,
+                Val = cm
             });
-
-            dbc.AttributeDefaults.Add(new AttributeDefault
-            {
-                AttributeName = DbcStruct.Attr_MsgSendType,
-                Value = new AttributeValue
-                {
-                    Val = DbcStruct.MSG_STs[winner]
-                }
-            });
-
-            for (int i = 0; i < SendTypes.Count; ++i)
-            {
-                if (SendTypes[i] == winner)
-                    continue;
-
-                dbc.AttributeValues.Add(new ObjAttributeValue
-                {
-                    AttributeName = DbcStruct.Attr_MsgSendType,
-                    ObjType = Keyword.MESSAGES,
-                    MsgID = dbc.Messages[i].MsgID,
-                    Value = new AttributeValue
-                    {
-                        Num = SendTypes[i]
-                    }
-                });
-            }
         }
 
-        private void ReduceCycleTime()
+        public void NewSigComment(long id, string name, string cm)
         {
-            Dictionary<int, int> count = new Dictionary<int, int>();
-
-            foreach (var t in CycleTime)
-            {
-                if (count.ContainsKey(t))
-                {
-                    ++count[t];
-                }
-                else
-                {
-                    count[t] = 1;
-                }
-            }
-
-            int winner = 0;
-            int maxCount = 0;
-
-            int max = 0;
-
-            foreach (var pair in count)
-            {
-                if(pair.Key > max)
-                {
-                    max = pair.Key;
-                }
-
-                if (pair.Value > maxCount)
-                {
-                    winner = pair.Key;
-                    maxCount = pair.Value;
-                }
-            }
-
-            if (winner == 0)
+            if (cm.Length == 0)
                 return;
 
-            dbc.AttributeDefinitions.Add(new AttributeDefinition
+            DBC.Comments.Add(new Comment
             {
-                AttributeName = DbcStruct.Attr_MsgCycleTime,
-                ObjectType = Keyword.MESSAGES,
-                ValueType = "INT",
-                Num1 = 0,
-                Num2 = max
+                Type = Keyword.SIGNAL,
+                MsgID = id,
+                Name = name,
+                Val = cm
             });
+        }
 
-            dbc.AttributeDefaults.Add(new AttributeDefault
+        public void NewMsgSendType(long id, MsgSendTypeEnum type)
+        {
+            if (type == MsgSendTypeEnum.NoMsgSendType)
+                return;
+
+            if (defs.Add(MsgSendType.AttributeName))
             {
-                AttributeName = DbcStruct.Attr_MsgCycleTime,
+                DBC.AttributeDefinitions.Add(MsgSendType.Definition());
+                DBC.AttributeDefaults.Add(MsgSendType.Default());
+            }
+
+            DBC.AttributeValues.Add(new ObjAttributeValue
+            {
+                AttributeName = MsgSendType.AttributeName,
+                ObjType = Keyword.MESSAGES,
+                MsgID = id,
                 Value = new AttributeValue
                 {
-                    Num = winner
+                    Num = (int)type
                 }
             });
-
-            for (int i = 0; i < CycleTime.Count; ++i)
-            {
-                int t = CycleTime[i];
-
-                if (t == winner)
-                    continue;
-
-                dbc.AttributeValues.Add(new ObjAttributeValue
-                {
-                    AttributeName = DbcStruct.Attr_MsgCycleTime,
-                    ObjType = Keyword.MESSAGES,
-                    MsgID = dbc.Messages[i].MsgID,
-                    Value = new AttributeValue
-                    {
-                        Num = t
-                    }
-                });
-            }
         }
 
-        private static int FindMaxIndex(int[] a)
+        public void NewCycleTime(long id, MsgSendTypeEnum type, int time)
         {
-            int idx = 0;
-            int max = a[0];
+            if (type != MsgSendTypeEnum.Cyclic)
+                return;
 
-            for (int i = 1; i < a.Length; ++i)
+            if (defs.Add(MsgCycleTime.AttributeName))
             {
-                if (a[i] > max)
-                {
-                    idx = i;
-                    max = a[i];
-                }
+                DBC.AttributeDefinitions.Add(MsgCycleTime.Definition());
+                DBC.AttributeDefaults.Add(MsgCycleTime.Default());
             }
 
-            return idx;
+            DBC.AttributeValues.Add(new ObjAttributeValue
+            {
+                AttributeName = MsgCycleTime.AttributeName,
+                ObjType = Keyword.MESSAGES,
+                MsgID = id,
+                Value = new AttributeValue
+                {
+                    Num = time
+                }
+            });
         }
+
+        /*
+        public static ObjAttributeValue
+        NewSigStartValue(long id, string name, int num)
+        {
+            return new ObjAttributeValue
+            {
+                AttributeName = Attr_SigStartValue,
+                ObjType = Keyword.SIGNAL,
+                MsgID = id,
+                Name = name,
+                Value = new AttributeValue
+                {
+                    Num = num
+                }
+            };
+        }
+        */
     }
+
 }

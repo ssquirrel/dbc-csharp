@@ -123,24 +123,27 @@ namespace DbcLib.Excel.Writer
             if (prop.Comment.Length > 0)
                 row.MsgComment.Set(prop.CM.Val);
 
-            var sendType = prop.Attributes[DbcStruct.Attr_MsgSendType];
+            var sendType = prop.Attributes[MsgSendType.AttributeName];
             var type = analysis.GetSendType(sendType);
 
-            if (type == analysis.MsgST_Cyclic)
+            switch (type)
             {
-                var cycleTime = prop.Attributes[DbcStruct.Attr_MsgCycleTime];
+                case MsgSendTypeEnum.Cyclic:
+                    var cycleTime = prop.Attributes[MsgCycleTime.AttributeName];
 
-                if (cycleTime != PropTree.EmptyAttributeValue)
-                    row.MsgCycleTime.Set(cycleTime.Num);
+                    if (cycleTime != PropTree.EmptyAttributeValue)
+                        row.MsgCycleTime.Set(cycleTime.Num);
+                    break;
+
+                case MsgSendTypeEnum.IfActive:
+                    row.Event.Set("x");
+                    break;
+
+                case MsgSendTypeEnum.CyclicEvent:
+                    row.PeriodicEvent.Set("x");
+                    break;
             }
-            else if (type == analysis.MsgST_IfActive)
-            {
-                row.Event.Set("x");
-            }
-            else if (type == analysis.MsgST_CyclicEvent)
-            {
-                row.PeriodicEvent.Set("x");
-            }
+
         }
 
         private void Signals(DbcRow row, Signal signal, long id)
@@ -155,13 +158,13 @@ namespace DbcLib.Excel.Writer
             row.PhysicalMax.Set(signal.Max);
             row.Receiver.SetReceiver(signal.Receivers);
 
+            row.ByteOrder.SetByteOrder(signal.ByteOrder);
+            row.ValueType.SetValueType(signal.ValueType);
+
             var prop = tree.ID(id).Name(signal.Name);
 
-            if (prop.Comment.Length > 0)
-                row.SigComment.Set(prop.Comment);
-
-            if (prop.Descs.Count > 0)
-                row.ValueDescs.SetValueDescs(prop.Descs);
+            row.SigComment.Set(prop.Comment);
+            row.ValueDescs.SetValueDescs(prop.Descs);
 
             int descHeight = prop.Descs.Count;
             int height = Math.Max(descHeight, signal.Receivers.Count);
@@ -172,12 +175,10 @@ namespace DbcLib.Excel.Writer
             }
 
             var state = row.ValueDescs.NCell;
-            if (state != null)
-                state.CellStyle = stackedTextStyle;
+            state.CellStyle = stackedTextStyle;
 
             var receiver = row.Receiver.NCell;
-            if (receiver != null)
-                receiver.CellStyle = stackedTextStyle;
+            receiver.CellStyle = stackedTextStyle;
         }
 
     }

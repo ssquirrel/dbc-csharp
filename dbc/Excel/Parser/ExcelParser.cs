@@ -110,7 +110,7 @@ namespace DbcLib.Excel.Parser
             if (errors.Count > 0)
                 return new ExcelDBC(workbook, errors);
             else
-                return new ExcelDBC(workbook, builder.ToDBC());
+                return new ExcelDBC(workbook, builder.DBC);
         }
 
         private bool Sweep(DbcRow row)
@@ -124,22 +124,22 @@ namespace DbcLib.Excel.Parser
             return errors.Count != 0;
         }
 
-        private int SendType(DbcRow row)
+        private MsgSendTypeEnum SendType(DbcRow row)
         {
             bool cyclic = row.MsgCycleTime.Type != CellType.Blank;
             bool ifActive = row.Event.Type != CellType.Blank;
             bool cyclicEvent = row.PeriodicEvent.Type != CellType.Blank;
 
             if (cyclic && !ifActive && !cyclicEvent)
-                return DbcStruct.MsgST_Cyclic;
+                return MsgSendTypeEnum.Cyclic;
 
             if (ifActive && !cyclic && !cyclicEvent)
-                return DbcStruct.MsgST_IfActive;
+                return MsgSendTypeEnum.IfActive;
 
             if (cyclicEvent && !cyclic && !ifActive)
-                return DbcStruct.MsgST_CyclicEvent;
+                return MsgSendTypeEnum.CyclicEvent;
 
-            return DbcStruct.MsgST_NoSendType;
+            return MsgSendTypeEnum.NoMsgSendType;
         }
 
         private Message NewMessage(DbcRow row)
@@ -152,8 +152,8 @@ namespace DbcLib.Excel.Parser
             msg.Signals = new List<Signal>();
 
             string comment = row.MsgComment.GetCharString();
-            int sendType = SendType(row);
-            int cycleTime = sendType == DbcStruct.MsgST_Cyclic ?
+            var sendType = SendType(row);
+            var cycleTime = sendType == MsgSendTypeEnum.Cyclic ?
                 row.MsgCycleTime.GetInt() : 0;
 
             if (Sweep(row))
@@ -161,16 +161,9 @@ namespace DbcLib.Excel.Parser
 
             builder.Messages.Add(msg);
 
-            if (comment.Length > 0)
-                builder.Comments.Add(new Comment
-                {
-                    Type = Keyword.MESSAGES,
-                    MsgID = msg.MsgID,
-                    Val = comment
-                });
-
-            builder.SendTypes.Add(sendType);
-            builder.CycleTime.Add(cycleTime);
+            builder.NewMsgComment(msg.MsgID, comment);
+            builder.NewMsgSendType(msg.MsgID, sendType);
+            builder.NewCycleTime(msg.MsgID, sendType, cycleTime);
 
             return msg;
         }
@@ -193,7 +186,8 @@ namespace DbcLib.Excel.Parser
 
             var comment = row.SigComment.GetCharString();
             var descs = row.ValueDescs.GetValueDescs();
-            var startVal = row.SigStartValue.GetInt();
+            var startVal = row.SigStartValue.Type != CellType.Blank ?
+                row.SigStartValue.GetInt() : 0;
 
             if (msg == null)
             {
@@ -205,14 +199,8 @@ namespace DbcLib.Excel.Parser
 
             msg.Signals.Add(sig);
 
-            if (comment.Length > 0)
-                builder.Comments.Add(new Comment
-                {
-                    Type = Keyword.SIGNAL,
-                    MsgID = msg.MsgID,
-                    Name = sig.Name,
-                    Val = comment
-                });
+
+            builder.NewSigComment(msg.MsgID, sig.Name, comment);
 
             if (descs.Count > 0)
                 builder.ValueDescriptions.Add(new SignalValueDescription
@@ -221,6 +209,8 @@ namespace DbcLib.Excel.Parser
                     Name = sig.Name,
                     Descs = descs
                 });
+
+            //builder.SigStartValues.Add(startVal);
         }
     }
 

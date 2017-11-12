@@ -11,36 +11,28 @@ namespace DbcLib.Excel.Writer
 {
     class SemanticAnalysis
     {
+        private IList<string> sendTypes;
+
         public SemanticAnalysis(Model.DBC dbc)
         {
-            var sendType = dbc.AttributeDefinitions.FirstOrDefault(ad =>
+            var def = dbc.AttributeDefinitions.FirstOrDefault(ad =>
             {
-                return ad.AttributeName == DbcStruct.Attr_MsgSendType;
+                return ad.AttributeName == MsgSendType.AttributeName;
             });
 
-            if (sendType != null && sendType.Values != null)
-            {
-                var values = sendType.Values;
-
-                MsgST_Cyclic = values.IndexOf(DbcStruct.MsgST_Cyclic_Key);
-                MsgST_IfActive = values.IndexOf(DbcStruct.MsgST_IfActive_Key);
-                MsgST_CyclicEvent = values.IndexOf(DbcStruct.MsgST_CyclicEvent_Key);
-                MsgST_NoSendType = values.IndexOf(DbcStruct.MsgST_NoSendType_Key);
-            }
+            sendTypes = def.Values;
         }
 
-        public int MsgST_Cyclic { get; }
-        public int MsgST_IfActive { get; }
-        public int MsgST_CyclicEvent { get; }
-        public int MsgST_NoSendType { get; }
-
-        public int GetSendType(IAttributeValue val)
+        public MsgSendTypeEnum GetSendType(IAttributeValue av)
         {
-            if (val.Type == AttrValType.Number)
-                return (int)val.Num;
+            if(av.Type == AttrValType.Number)
+            {
+                var type = sendTypes[(int)av.Num];
 
-            int idx = DbcStruct.MSG_STs.IndexOf(val.Val);
-            return idx >= 0 ? idx : int.MinValue;
+                return MsgSendType.ToEnum(type);
+            }
+
+            return MsgSendType.ToEnum(av.Val);
         }
     }
 }

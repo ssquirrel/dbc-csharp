@@ -10,26 +10,98 @@ using DbcLib.Model.PropTree;
 
 namespace DbcLib.Excel
 {
-    static class DbcStruct
+    enum MsgSendTypeEnum
     {
-        public static string Attr_MsgSendType => "GenMsgSendType";
-        public static string Attr_MsgCycleTime => "GenMsgCycleTime";
+        Cyclic,
+        IfActive,
+        CyclicEvent,
+        NoMsgSendType
+    }
 
-        public static IList<string> MSG_STs = new List<string> {
-            "Cyclic",
-            "IfActive",
-            "CyclicEvent",
-            "NoMsgSendType"
-        };
+    static class MsgSendType
+    {
+        public const string AttributeName = "GenMsgSendType";
 
-        public static int MsgST_Cyclic => 0;
-        public static int MsgST_IfActive => 1;
-        public static int MsgST_CyclicEvent => 2;
-        public static int MsgST_NoSendType => 3;
+        public const string Cyclic = "Cyclic";
+        public const string IfActive = "IfActive";
+        public const string CyclicEvent = "CyclicEvent";
+        public const string NoMsgSendType = "NoMsgSendType";
 
-        public static string MsgST_Cyclic_Key => MSG_STs[0];
-        public static string MsgST_IfActive_Key => MSG_STs[1];
-        public static string MsgST_CyclicEvent_Key => MSG_STs[2];
-        public static string MsgST_NoSendType_Key => MSG_STs[3];
+        public static MsgSendTypeEnum ToEnum(string type)
+        {
+            switch (type)
+            {
+                case Cyclic:
+                    return MsgSendTypeEnum.Cyclic;
+                case IfActive:
+                    return MsgSendTypeEnum.IfActive;
+                case CyclicEvent:
+                    return MsgSendTypeEnum.CyclicEvent;
+                default:
+                    return MsgSendTypeEnum.NoMsgSendType;
+            }
+        }
+
+        public static AttributeDefinition Definition()
+        {
+            return new AttributeDefinition
+            {
+                AttributeName = AttributeName,
+                ObjectType = Keyword.MESSAGES,
+                ValueType = "ENUM",
+                Values = new List<string>
+                {
+                    Cyclic,IfActive,CyclicEvent,NoMsgSendType
+                }
+            };
+        }
+
+        public static AttributeDefault Default()
+        {
+            return new AttributeDefault
+            {
+                AttributeName = AttributeName,
+                Value = new AttributeValue
+                {
+                    Val = NoMsgSendType
+                }
+            };
+        }
+
+    }
+
+    static class MsgCycleTime
+    {
+        public const string AttributeName = "GenMsgCycleTime";
+
+        public static AttributeDefinition Definition()
+        {
+            return new AttributeDefinition
+            {
+                AttributeName = AttributeName,
+                ObjectType = Keyword.MESSAGES,
+                ValueType = "INT",
+                Num1 = 0,
+                Num2 = 100000
+            };
+        }
+
+        public static AttributeDefault Default()
+        {
+            return new AttributeDefault
+            {
+                AttributeName = AttributeName,
+                Value = new AttributeValue
+                {
+                    Num = 0
+                }
+            };
+        }
+
+    }
+
+    static class SigStartValue
+    {
+        public const string AttributeName = "GenSigStartValue";
     }
 }

@@ -13,8 +13,8 @@ namespace DbcLib.Model
         public int MultiplexerSwitchValue { get; set; }
         public int StartBit { get; set; }
         public int SignalSize { get; set; }
-        public string ByteOrder { get; set; } //"0" Motorola, big endian{get;set;} "1" Intel, little endian
-        public string ValueType { get; set; }
+        public int ByteOrder { get; set; } //0 Motorola, big endian; 1 Intel, little endian
+        public string ValueType { get; set; } //"-" signed "+" unsigned
         public double Factor { get; set; }
         public double Offset { get; set; }
         public double Min { get; set; }

@@ -297,7 +297,7 @@ namespace DbcLib.DBC.Parser
             EXPECT("|");
             signal.SignalSize = EXPECT(TokenType.UNSIGNED).INT;
             EXPECT("@");
-            signal.ByteOrder = EXPECT(0, 1).ToString();
+            signal.ByteOrder = (int)EXPECT(0, 1);
             signal.ValueType = EXPECT("+", "-");
 
             EXPECT("(");

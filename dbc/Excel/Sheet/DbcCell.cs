@@ -109,14 +109,42 @@ namespace DbcLib.Excel
             return PARSE_FAILURE(0);
         }
 
-        public string GetByteOrder()
+        //"0" Motorola, big endian; "1" Intel, little endian
+        public int GetByteOrder()
         {
-            return "0";
+            if (Type == CellType.Blank)
+                return PARSE_SUCCESS(0);
+
+            switch (Val.ToLower())
+            {
+                case "intel":
+                case "little":
+                    return PARSE_SUCCESS(1);
+
+                case "motorola":
+                case "big":
+                    return PARSE_SUCCESS(0);
+            }
+
+            return PARSE_FAILURE(-1);
         }
 
+        //"-" signed "+" unsigned
         public string GetValueType()
         {
-            return "0";
+            if (Type == CellType.Blank)
+                return PARSE_SUCCESS("+");
+
+            switch (Val.ToLower())
+            {
+                case "signed":
+                    return PARSE_SUCCESS("-");
+
+                case "unsigned":
+                    return PARSE_SUCCESS("+");
+            }
+
+            return PARSE_FAILURE("");
         }
 
         public IList<ValueDesc> GetValueDescs()
@@ -170,36 +198,56 @@ namespace DbcLib.Excel
             Set("0x" + hex.ToString("X3"));
         }
 
-        public void SetByteOrder(string bo)
+        //"0" Motorola, big endian; "1" Intel, little endian
+        public void SetByteOrder(int order)
         {
-
+            switch (order)
+            {
+                case 0:
+                    Set("Motorola");
+                    break;
+                case 1:
+                    Set("Intel");
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
         }
 
+        //"-" signed "+" unsigned
         public void SetValueType(string vt)
         {
-
+            switch (vt)
+            {
+                case "-":
+                    Set("Signed");
+                    break;
+                case "+":
+                    Set("Unsigned");
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
         }
 
         public void SetValueDescs(IEnumerable<ValueDesc> descs)
         {
-            if (!descs.Any())
-                return;
-
             StringBuilder builder = new StringBuilder();
 
-            {
-                var desc = descs.First();
+            var first = descs.FirstOrDefault();
 
+            if (first != null)
+            {
                 builder.AppendFormat("0x{0}:{1}",
-                    ((int)desc.Num).ToString("X"),
-                    desc.Val);
-            }
+                    ((int)first.Num).ToString("X"),
+                    first.Val);
 
-            foreach (var desc in descs.Skip(1))
-            {
-                builder.AppendFormat("\n0x{0}:{1}",
-                    ((int)desc.Num).ToString("X"),
-                    desc.Val);
+                foreach (var desc in descs.Skip(1))
+                {
+                    builder.AppendFormat("\n0x{0}:{1}",
+                        ((int)desc.Num).ToString("X"),
+                        desc.Val);
+                }
             }
 
             Set(builder.ToString());
