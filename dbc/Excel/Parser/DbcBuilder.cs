@@ -8,16 +8,72 @@ using DbcLib.Model;
 
 namespace DbcLib.Excel.Parser
 {
+    class MsgBuilder
+    {
+        public MsgBuilder Comment(string val)
+        {
+            return this;
+        }
+
+        public MsgBuilder SendType(MsgSendTypeEnum type)
+        {
+            return this;
+        }
+
+        public MsgBuilder CycleTime(int time)
+        {
+            return this;
+        }
+    }
+
+    class SignalBuider
+    {
+        public SignalBuider Comment(string val)
+        {
+            return this;
+        }
+
+        public SignalBuider ValueDescs(IList<ValueDesc> descs)
+        {
+
+            if (descs.Count > 0)
+                return this;
+
+            /*
+            builder.ValueDescriptions.Add(new SignalValueDescription
+            {
+                MsgID = msg.MsgID,
+                Name = sig.Name,
+                Descs = descs
+            });
+            */
+
+            return this;
+        }
+
+        public SignalBuider StartVal(int val)
+        {
+
+
+            return this;
+        }
+    }
+
     class DbcBuilder
     {
         private HashSet<string> defs = new HashSet<string>();
 
         public Model.DBC DBC { get; } = new Model.DBC();
 
-        public IList<Message> Messages => DBC.Messages;
+        public MsgBuilder NewMessage(Message msg)
+        {
+            return new MsgBuilder();
+        }
 
-        public IList<SignalValueDescription> ValueDescriptions =>
-            DBC.ValueDescriptions;
+        public SignalBuider NewSignal(Signal sig)
+        {
+            return new SignalBuider();
+        }
 
         public void NewMsgComment(long id, string cm)
         {

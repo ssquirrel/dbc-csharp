@@ -153,17 +153,22 @@ namespace DbcLib.Excel.Parser
 
             string comment = row.MsgComment.GetCharString();
             var sendType = SendType(row);
-            var cycleTime = sendType == MsgSendTypeEnum.Cyclic ?
+            var time = sendType == MsgSendTypeEnum.Cyclic ?
                 row.MsgCycleTime.GetInt() : 0;
 
             if (Sweep(row))
                 return msg;
 
-            builder.Messages.Add(msg);
+            //builder.Messages.Add(msg);
 
-            builder.NewMsgComment(msg.MsgID, comment);
-            builder.NewMsgSendType(msg.MsgID, sendType);
-            builder.NewCycleTime(msg.MsgID, sendType, cycleTime);
+            //builder.NewMsgComment(msg.MsgID, comment);
+            //builder.NewMsgSendType(msg.MsgID, sendType);
+            //builder.NewCycleTime(msg.MsgID, sendType, time);
+
+            builder.NewMessage(msg)
+                .Comment(comment)
+                .SendType(sendType)
+                .CycleTime(time);
 
             return msg;
         }
@@ -199,15 +204,12 @@ namespace DbcLib.Excel.Parser
 
             msg.Signals.Add(sig);
 
-            builder.NewSigComment(msg.MsgID, sig.Name, comment);
+            //builder.NewSigComment(msg.MsgID, sig.Name, comment);
 
-            if (descs.Count > 0)
-                builder.ValueDescriptions.Add(new SignalValueDescription
-                {
-                    MsgID = msg.MsgID,
-                    Name = sig.Name,
-                    Descs = descs
-                });
+            builder.NewSignal(sig)
+                .Comment(comment)
+                .ValueDescs(descs)
+                .StartVal(startVal);
 
             //builder.SigStartValues.Add(startVal);
         }
