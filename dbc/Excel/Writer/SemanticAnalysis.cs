@@ -20,12 +20,18 @@ namespace DbcLib.Excel.Writer
                 return ad.AttributeName == MsgSendType.AttributeName;
             });
 
-            sendTypes = def.Values;
+            if (def != null)
+                sendTypes = def.Values;
         }
 
         public MsgSendTypeEnum GetSendType(IAttributeValue av)
         {
-            if(av.Type == AttrValType.Number)
+            if (sendTypes == null)
+            {
+                return MsgSendTypeEnum.NoMsgSendType;
+            }
+
+            if (av.Type == AttrValType.Number)
             {
                 var type = sendTypes[(int)av.Num];
 

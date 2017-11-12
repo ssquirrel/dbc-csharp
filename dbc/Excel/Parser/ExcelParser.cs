@@ -199,7 +199,6 @@ namespace DbcLib.Excel.Parser
 
             msg.Signals.Add(sig);
 
-
             builder.NewSigComment(msg.MsgID, sig.Name, comment);
 
             if (descs.Count > 0)

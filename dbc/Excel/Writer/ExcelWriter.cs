@@ -129,10 +129,8 @@ namespace DbcLib.Excel.Writer
             switch (type)
             {
                 case MsgSendTypeEnum.Cyclic:
-                    var cycleTime = prop.Attributes[MsgCycleTime.AttributeName];
-
-                    if (cycleTime != PropTree.EmptyAttributeValue)
-                        row.MsgCycleTime.Set(cycleTime.Num);
+                    var ct = prop.Attributes[MsgCycleTime.AttributeName];
+                    row.MsgCycleTime.Set(ct.Num);
                     break;
 
                 case MsgSendTypeEnum.IfActive:
@@ -166,6 +164,8 @@ namespace DbcLib.Excel.Writer
             row.SigComment.Set(prop.Comment);
             row.ValueDescs.SetValueDescs(prop.Descs);
 
+
+            //styling
             int descHeight = prop.Descs.Count;
             int height = Math.Max(descHeight, signal.Receivers.Count);
 
