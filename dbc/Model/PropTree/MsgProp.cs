@@ -13,7 +13,7 @@ namespace DbcLib.Model.PropTree
         public MsgProp(long id, DefaultAttributes def)
         {
             ID = id;
-            Attributes = new MsgAttributes(id, def);
+            Attributes = new Attributes(def);
         }
 
         public long ID { get; }
@@ -31,13 +31,13 @@ namespace DbcLib.Model.PropTree
 
         public Comment CM { get; set; }
 
-        public MsgAttributes Attributes { get; }
+        public Attributes Attributes { get; }
 
         public IEnumerable<SignalProp> SignalProps => list;
 
-        IAttributes IMsgProp.Attributes => Attributes;
-
         IMsgProp IQueryById.MsgProp => this;
+
+        IAttributes IMsgProp.Attributes => Attributes;
 
         public ISignalProp Name(string name)
         {
@@ -61,7 +61,7 @@ namespace DbcLib.Model.PropTree
             if (prop != null)
                 return prop;
 
-            prop = new SignalProp(ID, name);
+            prop = new SignalProp(ID, name, Attributes.Defaults);
             list.Add(prop);
 
             return prop;

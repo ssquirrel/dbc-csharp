@@ -36,6 +36,12 @@ namespace DbcLib.Model.PropTree
                     case Keyword.MESSAGES:
                         Internal_Insert(av.MsgID).Attributes.Insert(av);
                         break;
+                    case Keyword.SIGNAL:
+                        Internal_Insert(av.MsgID)
+                            .Internal_Insert(av.Name)
+                            .Attributes
+                            .Insert(av);
+                        break;
                 }
             }
 
@@ -48,7 +54,7 @@ namespace DbcLib.Model.PropTree
         public static IAttributeValue EmptyAttributeValue { get; } = new AttributeValue();
         public static IQueryById EmptyQuery { get; }
         public static IMsgProp EmptyMsgProp { get; }
-        public static ISignalProp EmptySignalProp { get; } = new SignalProp(0, "");
+        public static ISignalProp EmptySignalProp { get; }
 
         static PropTree()
         {
@@ -59,6 +65,8 @@ namespace DbcLib.Model.PropTree
 
             EmptyQuery = prop;
             EmptyMsgProp = prop;
+
+            EmptySignalProp = new SignalProp(0, "", def);
         }
 
 
@@ -71,7 +79,7 @@ namespace DbcLib.Model.PropTree
                 return leaf;
             }
 
-            return leaf;
+            return EmptyQuery;
         }
 
         public IQueryById Insert(long id)

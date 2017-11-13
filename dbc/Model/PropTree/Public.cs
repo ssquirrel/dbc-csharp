@@ -40,6 +40,7 @@ namespace DbcLib.Model.PropTree
         string Name { get; }
 
         string Comment { get; }
+        IAttributes Attributes { get; }
         IReadOnlyCollection<ValueDesc> Descs { get; }
 
         Comment CM { get; }

@@ -9,10 +9,11 @@ namespace DbcLib.Model.PropTree
 {
     class SignalProp : ISignalProp
     {
-        public SignalProp(long id, string name)
+        public SignalProp(long id, string name, DefaultAttributes def)
         {
             ID = id;
             Name = name;
+            Attributes = new Attributes(def);
         }
 
         public long ID { get; }
@@ -41,7 +42,10 @@ namespace DbcLib.Model.PropTree
         }
 
         public Comment CM { get; set; }
+        public Attributes Attributes { get; }
         public SignalValueDescription VD { get; set; }
+
+        IAttributes ISignalProp.Attributes => Attributes;
     }
 
 }

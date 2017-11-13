@@ -113,7 +113,7 @@ namespace DbcLib.Excel
         public int GetByteOrder()
         {
             if (Type == CellType.Blank)
-                return PARSE_SUCCESS(0);
+                return PARSE_SUCCESS(1);
 
             switch (Val.ToLower())
             {
@@ -133,7 +133,7 @@ namespace DbcLib.Excel
         public string GetValueType()
         {
             if (Type == CellType.Blank)
-                return PARSE_SUCCESS("+");
+                return PARSE_SUCCESS("-");
 
             switch (Val.ToLower())
             {

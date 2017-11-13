@@ -164,6 +164,11 @@ namespace DbcLib.Excel.Writer
             row.SigComment.Set(prop.Comment);
             row.ValueDescs.SetValueDescs(prop.Descs);
 
+            var startVal = prop.Attributes[SigStartValue.AttributeName];
+            if (startVal.Type == AttrValType.Number)
+            {
+                row.SigStartValue.Set(startVal.Num);
+            }
 
             //styling
             int descHeight = prop.Descs.Count;

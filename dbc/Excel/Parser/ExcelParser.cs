@@ -159,12 +159,6 @@ namespace DbcLib.Excel.Parser
             if (Sweep(row))
                 return msg;
 
-            //builder.Messages.Add(msg);
-
-            //builder.NewMsgComment(msg.MsgID, comment);
-            //builder.NewMsgSendType(msg.MsgID, sendType);
-            //builder.NewCycleTime(msg.MsgID, sendType, time);
-
             builder.NewMessage(msg)
                 .Comment(comment)
                 .SendType(sendType)
@@ -202,16 +196,11 @@ namespace DbcLib.Excel.Parser
             if (Sweep(row))
                 return;
 
-            msg.Signals.Add(sig);
-
-            //builder.NewSigComment(msg.MsgID, sig.Name, comment);
-
-            builder.NewSignal(sig)
+            builder.NewSignal(msg, sig)
                 .Comment(comment)
                 .ValueDescs(descs)
                 .StartVal(startVal);
-
-            //builder.SigStartValues.Add(startVal);
+            
         }
     }
 
