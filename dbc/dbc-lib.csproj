@@ -58,12 +58,12 @@
     <Compile Include="DBC\Lex\Common.cs" />
     <Compile Include="DBC\Writer\DbcWriter.cs" />
     <Compile Include="Excel\Parser\DbcBuilder.cs" />
-    <Compile Include="Excel\Sheet\DbcCell.cs" />
+    <Compile Include="Excel\Sheet\ReadingCell.cs" />
     <Compile Include="Excel\DbcStruct.cs" />
-    <Compile Include="Excel\Sheet\EmptyCell.cs" />
-    <Compile Include="Excel\Sheet\DbcRow.cs" />
-    <Compile Include="Excel\Sheet\NormalCell.cs" />
+    <Compile Include="Excel\Sheet\WritingCell.cs" />
+    <Compile Include="Excel\Sheet\ReadingRow.cs" />
     <Compile Include="Excel\Parser\ExcelParser.cs" />
+    <Compile Include="Excel\Sheet\WritingRow.cs" />
     <Compile Include="Excel\Writer\ExcelWriter.cs" />
     <Compile Include="Excel\Writer\SemanticAnalysis.cs" />
     <Compile Include="Model\Keyword.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,16 +8,16 @@ using System.Threading.Tasks;
 using System.IO;
 
 using DbcLib.Model;
+using DbcLib.Excel.Sheet;
 using NPOI.SS.UserModel;
-using System.Collections;
 
 namespace DbcLib.Excel.Parser
 {
     class ParseError
     {
-        private DbcCell cell;
+        private ReadingCell cell;
 
-        public ParseError(string msg, DbcCell cell)
+        public ParseError(string msg, ReadingCell cell)
         {
             this.cell = cell;
         }
@@ -91,13 +92,13 @@ namespace DbcLib.Excel.Parser
             Message parent = null;
             foreach (IRow raw in rows)
             {
-                DbcRow row = new DbcRow(raw);
+                ReadingRow row = new ReadingRow(raw);
 
-                if (row.MsgName.Type != CellType.Blank)
+                if (row.MsgName.IsEmpty)
                 {
                     parent = NewMessage(row);
                 }
-                else if (row.SignalName.Type != CellType.Blank)
+                else if (row.SignalName.IsEmpty)
                 {
                     NewSignal(row, parent);
                 }
@@ -113,7 +114,7 @@ namespace DbcLib.Excel.Parser
                 return new ExcelDBC(workbook, builder.DBC);
         }
 
-        private bool Sweep(DbcRow row)
+        private bool Sweep(ReadingRow row)
         {
             foreach (var cell in row)
             {
@@ -124,11 +125,11 @@ namespace DbcLib.Excel.Parser
             return errors.Count != 0;
         }
 
-        private MsgSendTypeEnum SendType(DbcRow row)
+        private MsgSendTypeEnum SendType(ReadingRow row)
         {
-            bool cyclic = row.MsgCycleTime.Type != CellType.Blank;
-            bool ifActive = row.Event.Type != CellType.Blank;
-            bool cyclicEvent = row.PeriodicEvent.Type != CellType.Blank;
+            bool cyclic = row.MsgCycleTime.IsEmpty;
+            bool ifActive = row.Event.IsEmpty;
+            bool cyclicEvent = row.PeriodicEvent.IsEmpty;
 
             if (cyclic && !ifActive && !cyclicEvent)
                 return MsgSendTypeEnum.Cyclic;
@@ -142,19 +143,19 @@ namespace DbcLib.Excel.Parser
             return MsgSendTypeEnum.NoMsgSendType;
         }
 
-        private Message NewMessage(DbcRow row)
+        private Message NewMessage(ReadingRow row)
         {
             Message msg = new Message();
-            msg.MsgID = row.MsgID.GetHex();
-            msg.Name = row.MsgName.GetIdentifier();
-            msg.Size = row.MsgSize.GetInt();
-            msg.Transmitter = row.Transmitter.GetIdentifier();
+            msg.MsgID = row.MsgID.Hex();
+            msg.Name = row.MsgName.Identifier();
+            msg.Size = row.MsgSize.Int();
+            msg.Transmitter = row.Transmitter.Identifier();
             msg.Signals = new List<Signal>();
 
-            string comment = row.MsgComment.GetCharString();
+            string comment = row.MsgComment.CharString();
             var sendType = SendType(row);
             var time = sendType == MsgSendTypeEnum.Cyclic ?
-                row.MsgCycleTime.GetInt() : 0;
+                row.MsgCycleTime.Int() : 0;
 
             if (Sweep(row))
                 return msg;
@@ -168,25 +169,25 @@ namespace DbcLib.Excel.Parser
         }
 
 
-        private void NewSignal(DbcRow row, Message msg)
+        private void NewSignal(ReadingRow row, Message msg)
         {
             var sig = new Signal();
-            sig.Name = row.SignalName.GetIdentifier();
-            sig.StartBit = row.StartBit.GetInt();
-            sig.SignalSize = row.SizeInBits.GetInt();
-            sig.ByteOrder = row.ByteOrder.GetByteOrder();
-            sig.ValueType = row.ValueType.GetValueType();
-            sig.Unit = row.Unit.GetCharString();
-            sig.Factor = row.Factor.GetDouble();
-            sig.Offset = row.Offset.GetDouble();
-            sig.Min = row.PhysicalMin.GetDouble();
-            sig.Max = row.PhysicalMax.GetDouble();
-            sig.Receivers = row.Receiver.GetReceiver();
-
-            var comment = row.SigComment.GetCharString();
-            var descs = row.ValueDescs.GetValueDescs();
-            var startVal = row.SigStartValue.Type != CellType.Blank ?
-                row.SigStartValue.GetInt() : 0;
+            sig.Name = row.SignalName.Identifier();
+            sig.StartBit = row.StartBit.Int();
+            sig.SignalSize = row.SizeInBits.Int();
+            sig.ByteOrder = row.ByteOrder.ByteOrder();
+            sig.ValueType = row.ValueType.ValueType();
+            sig.Unit = row.Unit.CharString();
+            sig.Factor = row.Factor.Double();
+            sig.Offset = row.Offset.Double();
+            sig.Min = row.PhysicalMin.Double();
+            sig.Max = row.PhysicalMax.Double();
+            sig.Receivers = row.Receiver.Receivers();
+            
+            var comment = row.SigComment.CharString();
+            var descs = row.ValueDescs.ValueDescs();
+            var startVal = row.SigStartValue.IsEmpty ?
+                row.SigStartValue.Int() : 0;
 
             if (msg == null)
             {
@@ -200,7 +201,7 @@ namespace DbcLib.Excel.Parser
                 .Comment(comment)
                 .ValueDescs(descs)
                 .StartVal(startVal);
-            
+
         }
     }
 

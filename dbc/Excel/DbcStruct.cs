@@ -31,8 +31,11 @@ namespace DbcLib.Excel
         {
             switch (type)
             {
+                case "FixedPeriodic":
+                case "cyclic":
                 case Cyclic:
                     return MsgSendTypeEnum.Cyclic;
+                case "Event":
                 case IfActive:
                     return MsgSendTypeEnum.IfActive;
                 case CyclicEvent:
@@ -103,5 +106,29 @@ namespace DbcLib.Excel
     static class SigStartValue
     {
         public const string AttributeName = "GenSigStartValue";
+
+        public static AttributeDefinition Definition()
+        {
+            return new AttributeDefinition
+            {
+                AttributeName = AttributeName,
+                ObjectType = Keyword.SIGNAL,
+                ValueType = "INT",
+                Num1 = 0,
+                Num2 = 100000
+            };
+        }
+
+        public static AttributeDefault Default()
+        {
+            return new AttributeDefault
+            {
+                AttributeName = AttributeName,
+                Value = new AttributeValue
+                {
+                    Num = 0
+                }
+            };
+        }
     }
 }
