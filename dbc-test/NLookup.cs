@@ -42,12 +42,12 @@ namespace dbc_test
             sw2.Start();
             foreach (var key in access)
             {
-                for (int i = 0; i < list.Count; ++i)
+                foreach (var pair in list)
                 {
-                    var pair = list[i];
                     if (pair.key == key)
                     {
                         pair.count += 1;
+                        break;
                     }
                 }
 
