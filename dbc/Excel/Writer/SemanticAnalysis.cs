@@ -13,20 +13,39 @@ namespace DbcLib.Excel.Writer
     {
         private IList<string> sendTypes;
 
-        public SemanticAnalysis(Model.DBC dbc)
+        public SemanticAnalysis(Tree tree)
         {
-            var def = dbc.AttributeDefinitions.FirstOrDefault(ad =>
+            var def = tree.DBC.AttributeDefinitions.FirstOrDefault(ad =>
             {
                 return ad.AttributeName == MsgSendType.AttributeName;
             });
 
-            if (def != null)
-                sendTypes = def.Values;
+            sendTypes = def?.Values;
+
+
+            if (tree.Def.TryGetValue(MsgSendType.AttributeName, out var st))
+            {
+                MsgCycleTimeDefault = st.Value;
+            }
+
+            if (tree.Def.TryGetValue(MsgCycleTime.AttributeName, out var ct))
+            {
+                MsgCycleTimeDefault = ct.Value;
+            }
+
+            if (tree.Def.TryGetValue(SigStartValue.AttributeName, out var sv))
+            {
+                SigStartValDefault = sv.Value;
+            }
         }
 
-        public MsgSendTypeEnum GetSendType(IAttributeValue av)
+        public AttributeValue MsgSendTypeDefault { get; }
+        public AttributeValue MsgCycleTimeDefault { get; }
+        public AttributeValue SigStartValDefault { get; }
+
+        public MsgSendTypeEnum GetSendType(AttributeValue av)
         {
-            if (sendTypes == null)
+            if (sendTypes == null || av == null)
             {
                 return MsgSendTypeEnum.NoMsgSendType;
             }
@@ -34,7 +53,6 @@ namespace DbcLib.Excel.Writer
             if (av.Type == AttrValType.Number)
             {
                 var type = sendTypes[(int)av.Num];
-
                 return MsgSendType.ToEnum(type);
             }
 

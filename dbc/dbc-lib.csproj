@@ -78,10 +78,9 @@
     <Compile Include="Model\Message.cs" />
     <Compile Include="Model\ObjAttributeValue.cs" />
     <Compile Include="Model\PropTree\Attributes.cs" />
-    <Compile Include="Model\PropTree\DefaultAttributes.cs" />
     <Compile Include="Model\PropTree\MsgProp.cs" />
-    <Compile Include="Model\PropTree\Public.cs" />
     <Compile Include="Model\PropTree\SignalProp.cs" />
+    <Compile Include="Model\PropTree\SignalStore.cs" />
     <Compile Include="Model\PropTree\Tree.cs" />
     <Compile Include="Model\Signal.cs" />
     <Compile Include="Model\SignalValueDescription.cs" />

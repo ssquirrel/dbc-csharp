@@ -60,14 +60,14 @@ namespace dbc_test
             Console.WriteLine("------------------------------");
         }
 
-        private static string[] RandomRepeat(string[] arr, int N)
+        public static T[] RandomRepeat<T>(IList<T> arr, int N)
         {
-            var rr = new string[N];
+            T[] rr = new T[N];
             var random = new Random();
 
             for (int i = 0; i < N; ++i)
             {
-                rr[i] = arr[random.Next(arr.Length)];
+                rr[i] = arr[random.Next(arr.Count)];
             }
 
             return rr;
@@ -95,7 +95,7 @@ namespace dbc_test
             return dict;
         }
 
-        private static string[] Sample(int N)
+        public static string[] Sample(int N)
         {
             string[] sample = new string[N];
 
@@ -107,7 +107,7 @@ namespace dbc_test
             return sample;
         }
 
-        private static string RandomString()
+        public static string RandomString()
         {
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             var random = new Random(Guid.NewGuid().GetHashCode());

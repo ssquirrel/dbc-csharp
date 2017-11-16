@@ -6,66 +6,49 @@ using System.Threading.Tasks;
 
 namespace DbcLib.Model.PropTree
 {
-    class MsgProp : IMsgProp, IQueryById
+    public interface IMsgProp
     {
-        private List<SignalProp> list = new List<SignalProp>();
+        long ID { get; }
+        string Comment { get; }
+        Comment CM { get; }
 
-        public MsgProp(long id, DefaultAttributes def)
+        AttributeValue Attribute(string name, AttributeValue def);
+    }
+
+    class MsgProp : IMsgProp
+    {
+        class EmptyMsgProp : IMsgProp
         {
-            ID = id;
-            Attributes = new Attributes(def);
-        }
+            public long ID => 0;
 
-        public long ID { get; }
+            public string Comment => "";
 
-        public string Comment
-        {
-            get
+            public Comment CM => null;
+
+            public AttributeValue Attribute(string name, AttributeValue def)
             {
-                if (CM == null)
-                    return "";
-
-                return CM.Val;
+                return def;
             }
         }
 
+        public MsgProp(long id)
+        {
+            ID = id;
+        }
+
+        public static IMsgProp EmptyProp { get; } = new EmptyMsgProp();
+
+        public long ID { get; }
+
+        public Attributes Attributes { get; } = new Attributes();
+
+        public string Comment => CM?.Val ?? "";
+
         public Comment CM { get; set; }
 
-        public Attributes Attributes { get; }
-
-        public IEnumerable<SignalProp> SignalProps => list;
-
-        IMsgProp IQueryById.MsgProp => this;
-
-        IAttributes IMsgProp.Attributes => Attributes;
-
-        public ISignalProp Name(string name)
+        public AttributeValue Attribute(string name, AttributeValue def)
         {
-            return Internal_Name(name) ?? PropTree.EmptySignalProp;
+            return Attributes.Get(name, def);
         }
-
-        public ISignalProp Insert(string name)
-        {
-            return Internal_Insert(name);
-        }
-
-        public SignalProp Internal_Name(string name)
-        {
-            return list.Find(p => p.Name == name);
-        }
-
-        public SignalProp Internal_Insert(string name)
-        {
-            var prop = Internal_Name(name);
-
-            if (prop != null)
-                return prop;
-
-            prop = new SignalProp(ID, name, Attributes.Defaults);
-            list.Add(prop);
-
-            return prop;
-        }
-
     }
 }

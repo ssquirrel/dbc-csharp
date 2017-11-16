@@ -7,35 +7,39 @@ using System.Threading.Tasks;
 
 namespace DbcLib.Model.PropTree
 {
-    class Attributes : IAttributes
+    class Attributes
     {
         private List<ObjAttributeValue> list = new List<ObjAttributeValue>();
 
-        public Attributes(DefaultAttributes def)
+        public Attributes()
         {
-            Defaults = def;
         }
 
-        public DefaultAttributes Defaults { get; set; }
-
-        public IAttributeValue this[string name]
-        {
-            get => Get(name);
-        }
-
-        public ObjAttributeValue Insert(ObjAttributeValue attribute)
+        public void Add(ObjAttributeValue attribute)
         {
             list.Add(attribute);
-
-            return attribute;
         }
 
-        private IAttributeValue Get(string name)
+        public AttributeValue Get(string name)
         {
-            var attr = list.Find(a => a.AttributeName == name);
+            for (int i = 0; i < list.Count; ++i)
+            {
+                var av = list[i];
 
-            return attr != null ? attr.Value : Defaults[name];
+                if (av.AttributeName == name)
+                    return av.Value;
+            }
+
+            return null;
         }
+
+        public AttributeValue Get(string name, AttributeValue def)
+        {
+            var value = Get(name);
+
+            return value ?? def;
+        }
+
     }
 
 }

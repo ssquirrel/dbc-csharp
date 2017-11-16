@@ -6,92 +6,84 @@ using System.Threading.Tasks;
 
 namespace DbcLib.Model.PropTree
 {
-    public class PropTree
+    public class Tree
     {
         private IDictionary<long, MsgProp> byID =
             new Dictionary<long, MsgProp>();
 
-        public PropTree(DBC dbc)
+        private SignalStore sigStore = new SignalStore();
+
+        public Tree(DBC dbc)
         {
-            Def = new DefaultAttributes(dbc.AttributeDefaults);
+            DBC = dbc;
+
+            Def = dbc.AttributeDefaults.ToDictionary(ad => ad.AttributeName);
 
             foreach (Comment cm in dbc.Comments)
             {
                 switch (cm.Type)
                 {
                     case Keyword.MESSAGES:
-                        Internal_Insert(cm.MsgID).CM = cm;
+                        GetOrCreate(cm.MsgID).CM = cm;
                         break;
 
                     case Keyword.SIGNAL:
-                        Internal_Insert(cm.MsgID).Internal_Insert(cm.Name).CM = cm;
+                        sigStore.GetOrCreate(cm.MsgID, cm.Name).CM = cm;
                         break;
                 }
             }
+
+            List<SignalProp> list = new List<PropTree.SignalProp>();
 
             foreach (ObjAttributeValue av in dbc.AttributeValues)
             {
                 switch (av.ObjType)
                 {
                     case Keyword.MESSAGES:
-                        Internal_Insert(av.MsgID).Attributes.Insert(av);
+                        GetOrCreate(av.MsgID).Attributes.Add(av);
                         break;
                     case Keyword.SIGNAL:
-                        Internal_Insert(av.MsgID)
-                            .Internal_Insert(av.Name)
-                            .Attributes
-                            .Insert(av);
+                        sigStore.GetOrCreate(av.MsgID, av.Name)
+                            .Attributes.Add(av);
                         break;
                 }
             }
 
             foreach (SignalValueDescription vd in dbc.ValueDescriptions)
             {
-                Internal_Insert(vd.MsgID).Internal_Insert(vd.Name).VD = vd;
+                sigStore.GetOrCreate(vd.MsgID, vd.Name).VD = vd;
             }
         }
 
-        public static IAttributeValue EmptyAttributeValue { get; } = new AttributeValue();
-        public static IQueryById EmptyQuery { get; }
-        public static IMsgProp EmptyMsgProp { get; }
-        public static ISignalProp EmptySignalProp { get; }
+        public DBC DBC { get; }
 
-        static PropTree()
+        public IReadOnlyDictionary<string, AttributeDefault> Def { get; }
+
+        public IMsgProp MsgProp(long id)
         {
-            DefaultAttributes def =
-                new DefaultAttributes(Enumerable.Empty<AttributeDefault>());
-
-            MsgProp prop = new MsgProp(0, def);
-
-            EmptyQuery = prop;
-            EmptyMsgProp = prop;
-
-            EmptySignalProp = new SignalProp(0, "", def);
+            return Get(id) ?? PropTree.MsgProp.EmptyProp;
         }
 
+        public ISignalProp SignalProp(long id, string name)
+        {
+            return sigStore.Get(id, name) ?? PropTree.SignalProp.EmptyProp;
+        }
 
-        public DefaultAttributes Def { get; set; }
-
-        public IQueryById ID(long id)
+        private MsgProp Get(long id)
         {
             if (byID.TryGetValue(id, out var leaf))
             {
                 return leaf;
             }
 
-            return EmptyQuery;
+            return null;
         }
 
-        public IQueryById Insert(long id)
-        {
-            return Internal_Insert(id);
-        }
-
-        private MsgProp Internal_Insert(long id)
+        private MsgProp GetOrCreate(long id)
         {
             if (!byID.TryGetValue(id, out var prop))
             {
-                prop = byID[id] = new MsgProp(id, Def);
+                prop = byID[id] = new MsgProp(id);
             }
 
             return prop;

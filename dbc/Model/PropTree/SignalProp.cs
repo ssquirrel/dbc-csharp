@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,45 +8,51 @@ using System.Threading.Tasks;
 
 namespace DbcLib.Model.PropTree
 {
+    public interface ISignalProp
+    {
+        string Comment { get; }
+        IList<ValueDesc> Descs { get; }
+
+        Comment CM { get; }
+        SignalValueDescription VD { get; }
+
+        AttributeValue Attribute(string name, AttributeValue def);
+    }
+
     class SignalProp : ISignalProp
     {
-        public SignalProp(long id, string name, DefaultAttributes def)
+        class EmptySigProp : ISignalProp
         {
-            ID = id;
-            Name = name;
-            Attributes = new Attributes(def);
-        }
+            public string Comment => "";
 
-        public long ID { get; }
-        public string Name { get; }
+            public IList<ValueDesc> Descs => Array.Empty<ValueDesc>();
 
-        public string Comment
-        {
-            get
+            public Comment CM => null;
+
+            public SignalValueDescription VD => null;
+
+            public AttributeValue Attribute(string name, AttributeValue def)
             {
-                if (CM == null)
-                    return "";
-
-                return CM.Val;
+                return def;
             }
         }
 
-        public IReadOnlyCollection<ValueDesc> Descs
-        {
-            get
-            {
-                if (VD == null)
-                    return Array.Empty<ValueDesc>();
+        public static ISignalProp EmptyProp { get; } = new EmptySigProp();
 
-                return new ReadOnlyCollection<ValueDesc>(VD.Descs);
-            }
-        }
+        public Attributes Attributes { get; } = new Attributes();
+
+        public string Comment => CM?.Val ?? "";
+
+        public IList<ValueDesc> Descs => VD?.Descs ?? Array.Empty<ValueDesc>();
 
         public Comment CM { get; set; }
-        public Attributes Attributes { get; }
         public SignalValueDescription VD { get; set; }
 
-        IAttributes ISignalProp.Attributes => Attributes;
+        public AttributeValue Attribute(string name, AttributeValue def)
+        {
+            return Attributes.Get(name, def);
+        }
+
     }
 
 }

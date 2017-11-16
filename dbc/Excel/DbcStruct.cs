@@ -22,23 +22,17 @@ namespace DbcLib.Excel
     {
         public const string AttributeName = "GenMsgSendType";
 
-        public const string Cyclic = "Cyclic";
-        public const string IfActive = "IfActive";
-        public const string CyclicEvent = "CyclicEvent";
-        public const string NoMsgSendType = "NoMsgSendType";
-
         public static MsgSendTypeEnum ToEnum(string type)
         {
-            switch (type)
+            switch (type.ToLower())
             {
-                case "FixedPeriodic":
+                case "fixedperiodic":
                 case "cyclic":
-                case Cyclic:
                     return MsgSendTypeEnum.Cyclic;
-                case "Event":
-                case IfActive:
+                case "ifactive":
+                case "event":
                     return MsgSendTypeEnum.IfActive;
-                case CyclicEvent:
+                case "cyclicevent":
                     return MsgSendTypeEnum.CyclicEvent;
                 default:
                     return MsgSendTypeEnum.NoMsgSendType;
@@ -54,7 +48,7 @@ namespace DbcLib.Excel
                 ValueType = "ENUM",
                 Values = new List<string>
                 {
-                    Cyclic,IfActive,CyclicEvent,NoMsgSendType
+                    "Cyclic","IfActive","CyclicEvent","NoMsgSendType"
                 }
             };
         }
@@ -66,7 +60,7 @@ namespace DbcLib.Excel
                 AttributeName = AttributeName,
                 Value = new AttributeValue
                 {
-                    Val = NoMsgSendType
+                    Val = "NoMsgSendType"
                 }
             };
         }

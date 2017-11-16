@@ -10,6 +10,7 @@ using NPOI.SS.UserModel;
 using DbcLib.Model;
 using DbcLib.Model.PropTree;
 using System.Threading;
+using DbcLib.Excel.Sheet;
 
 namespace DbcLib.Excel.Writer
 {
@@ -47,40 +48,43 @@ namespace DbcLib.Excel.Writer
     {
         private SemanticAnalysis analysis;
 
-        private PropTree tree;
+        private Tree tree;
 
         private string filename;
         private IWorkbook workbook;
 
-        private ICellStyle stackedTextStyle;
 
         public ExcelWriter(string fn)
         {
             filename = fn;
 
             workbook = ExcelTemplate.LoadTemplate(fn);
-
-            stackedTextStyle = workbook.CreateCellStyle();
-            stackedTextStyle.Alignment = HorizontalAlignment.Left;
-            stackedTextStyle.VerticalAlignment = VerticalAlignment.Bottom;
-            stackedTextStyle.WrapText = true;
         }
 
         public void Add(string sn, Model.DBC dbc)
         {
-            analysis = new SemanticAnalysis(dbc);
+            tree = new Tree(dbc);
 
-            tree = new PropTree(dbc);
+            analysis = new SemanticAnalysis(tree);
 
             ISheet sheet = AllocateSheet(sn);
 
             foreach (var msg in dbc.Messages)
             {
-                Messages(AllocateRow(sheet), msg);
+                {
+                    var row = AllocateRow(sheet);
+
+                    Messages(row, msg);
+                    MsgRowStyle(row);
+                }
+
 
                 foreach (var signal in msg.Signals)
                 {
-                    Signals(AllocateRow(sheet), signal, msg.MsgID);
+                    var row = AllocateRow(sheet);
+
+                    Signals(row, signal, msg.MsgID);
+                    SigRowStyle(row);
                 }
             }
         }
@@ -105,32 +109,39 @@ namespace DbcLib.Excel.Writer
             return workbook.GetSheetAt(0);
         }
 
-        private DbcRow AllocateRow(ISheet sheet)
+        private WritingRow AllocateRow(ISheet sheet)
         {
             var raw = sheet.CreateRow(sheet.LastRowNum + 1);
-            return new DbcRow(raw);
+            return new WritingRow(raw);
         }
 
-        private void Messages(DbcRow row, Message msg)
+        private void Messages(WritingRow row, Message msg)
         {
             row.MsgID.SetHex(msg.MsgID);
             row.MsgName.Set(msg.Name);
             row.MsgSize.Set(msg.Size);
             row.Transmitter.Set(msg.Transmitter);
 
-            var prop = tree.ID(msg.MsgID).MsgProp;
+            var prop = tree.MsgProp(msg.MsgID);
+
+            if (prop == null)
+                return;
 
             if (prop.Comment.Length > 0)
-                row.MsgComment.Set(prop.CM.Val);
+                row.MsgComment.Set(prop.Comment);
 
-            var sendType = prop.Attributes[MsgSendType.AttributeName];
+            var sendType = prop.Attribute(MsgSendType.AttributeName,
+                analysis.MsgSendTypeDefault);
             var type = analysis.GetSendType(sendType);
 
             switch (type)
             {
                 case MsgSendTypeEnum.Cyclic:
-                    var ct = prop.Attributes[MsgCycleTime.AttributeName];
-                    row.MsgCycleTime.Set(ct.Num);
+                    var ct = prop.Attribute(MsgCycleTime.AttributeName,
+                        analysis.MsgCycleTimeDefault);
+
+                    if (ct != null)
+                        row.MsgCycleTime.Set(ct.Num);
                     break;
 
                 case MsgSendTypeEnum.IfActive:
@@ -144,7 +155,12 @@ namespace DbcLib.Excel.Writer
 
         }
 
-        private void Signals(DbcRow row, Signal signal, long id)
+        private void MsgRowStyle(WritingRow row)
+        {
+
+        }
+
+        private void Signals(WritingRow row, Signal signal, long id)
         {
             row.SignalName.Set(signal.Name);
             row.SizeInBits.Set(signal.SignalSize);
@@ -159,18 +175,22 @@ namespace DbcLib.Excel.Writer
             row.ByteOrder.SetByteOrder(signal.ByteOrder);
             row.ValueType.SetValueType(signal.ValueType);
 
-            var prop = tree.ID(id).Name(signal.Name);
+            var prop = tree.SignalProp(id, signal.Name);
+
+            if (prop == null)
+                return;
 
             row.SigComment.Set(prop.Comment);
             row.ValueDescs.SetValueDescs(prop.Descs);
 
-            var startVal = prop.Attributes[SigStartValue.AttributeName];
-            if (startVal.Type == AttrValType.Number)
+            var startVal = prop.Attribute(SigStartValue.AttributeName,
+                analysis.SigStartValDefault);
+            if (startVal != null)
             {
                 row.SigStartValue.Set(startVal.Num);
             }
 
-            //styling
+            /*styling
             int descHeight = prop.Descs.Count;
             int height = Math.Max(descHeight, signal.Receivers.Count);
 
@@ -184,7 +204,12 @@ namespace DbcLib.Excel.Writer
 
             var receiver = row.Receiver.NCell;
             receiver.CellStyle = stackedTextStyle;
+            */
         }
 
+        private void SigRowStyle(WritingRow row)
+        {
+
+        }
     }
 }
