@@ -69,24 +69,41 @@ namespace DbcLib.Excel.Writer
 
             ISheet sheet = AllocateSheet(sn);
 
-            foreach (var msg in dbc.Messages)
+            var groups = dbc.Messages.ToLookup(msg => msg.Transmitter);
+
+            foreach (var group in groups)
             {
                 {
                     var row = AllocateRow(sheet);
-
-                    Messages(row, msg);
-                    MsgRowStyle(row);
+                    row.Transmitter.Set(group.Key);
                 }
 
-
-                foreach (var signal in msg.Signals)
+                var topLevel = Group.Begin(sheet);
+                foreach (var msg in group)
                 {
-                    var row = AllocateRow(sheet);
+                    {
+                        var row = AllocateRow(sheet);
 
-                    Signals(row, signal, msg.MsgID);
-                    SigRowStyle(row);
+                        Messages(row, msg);
+                        MsgRowStyle(row);
+                    }
+
+                    var subLevel = Group.Begin(sheet);
+                    foreach (var signal in msg.Signals)
+                    {
+                        var row = AllocateRow(sheet);
+
+                        Signals(row, signal, msg.MsgID);
+                        SigRowStyle(row);
+                    }
+                    subLevel.End();
                 }
+
+                AllocateRow(sheet);
+
+                topLevel.End();
             }
+
         }
 
         public void Write()
@@ -123,9 +140,6 @@ namespace DbcLib.Excel.Writer
             row.Transmitter.Set(msg.Transmitter);
 
             var prop = tree.MsgProp(msg.MsgID);
-
-            if (prop == null)
-                return;
 
             if (prop.Comment.Length > 0)
                 row.MsgComment.Set(prop.Comment);
@@ -176,9 +190,6 @@ namespace DbcLib.Excel.Writer
             row.ValueType.SetValueType(signal.ValueType);
 
             var prop = tree.SignalProp(id, signal.Name);
-
-            if (prop == null)
-                return;
 
             row.SigComment.Set(prop.Comment);
             row.ValueDescs.SetValueDescs(prop.Descs);

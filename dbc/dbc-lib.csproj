@@ -65,6 +65,7 @@
     <Compile Include="Excel\Parser\ExcelParser.cs" />
     <Compile Include="Excel\Sheet\WritingRow.cs" />
     <Compile Include="Excel\Writer\ExcelWriter.cs" />
+    <Compile Include="Excel\Writer\Group.cs" />
     <Compile Include="Excel\Writer\SemanticAnalysis.cs" />
     <Compile Include="Model\Keyword.cs" />
     <Compile Include="DBC\Lex\Lexer.cs" />

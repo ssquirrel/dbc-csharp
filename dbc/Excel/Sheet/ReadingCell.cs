@@ -64,6 +64,14 @@ namespace DbcLib.Excel.Sheet
 
         public bool IsEmpty => type == CellType.Blank;
 
+        public int Int(bool pred)
+        {
+            if (pred)
+                return Int();
+
+            return PARSE_SUCCESS(0);
+        }
+
         public int Int()
         {
             bool p = TryGetDouble(out var num);

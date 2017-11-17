@@ -25,7 +25,7 @@ namespace DbcLib.Excel.Writer
 
             if (tree.Def.TryGetValue(MsgSendType.AttributeName, out var st))
             {
-                MsgCycleTimeDefault = st.Value;
+                MsgSendTypeDefault = st.Value;
             }
 
             if (tree.Def.TryGetValue(MsgCycleTime.AttributeName, out var ct))
@@ -58,5 +58,6 @@ namespace DbcLib.Excel.Writer
 
             return MsgSendType.ToEnum(av.Val);
         }
+
     }
 }

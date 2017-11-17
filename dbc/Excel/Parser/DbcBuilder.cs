@@ -70,7 +70,7 @@ namespace DbcLib.Excel.Parser
 
             public MsgBuilder CycleTime(int time)
             {
-                if (sendType != MsgSendTypeEnum.Cyclic)
+                if (sendType != MsgSendTypeEnum.Cyclic || time == 0)
                     return this;
 
                 Model.DBC dbc = ctx.DBC;

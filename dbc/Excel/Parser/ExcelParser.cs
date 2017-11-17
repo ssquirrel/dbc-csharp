@@ -94,11 +94,11 @@ namespace DbcLib.Excel.Parser
             {
                 ReadingRow row = new ReadingRow(raw);
 
-                if (row.MsgName.IsEmpty)
+                if (!row.MsgName.IsEmpty)
                 {
                     parent = NewMessage(row);
                 }
-                else if (row.SignalName.IsEmpty)
+                else if (!row.SignalName.IsEmpty)
                 {
                     NewSignal(row, parent);
                 }
@@ -131,13 +131,13 @@ namespace DbcLib.Excel.Parser
             bool ifActive = row.Event.IsEmpty;
             bool cyclicEvent = row.PeriodicEvent.IsEmpty;
 
-            if (cyclic && !ifActive && !cyclicEvent)
+            if (!cyclic && ifActive && cyclicEvent)
                 return MsgSendTypeEnum.Cyclic;
 
-            if (ifActive && !cyclic && !cyclicEvent)
+            if (!ifActive && cyclic && cyclicEvent)
                 return MsgSendTypeEnum.IfActive;
 
-            if (cyclicEvent && !cyclic && !ifActive)
+            if (!cyclicEvent && cyclic && ifActive)
                 return MsgSendTypeEnum.CyclicEvent;
 
             return MsgSendTypeEnum.NoMsgSendType;
@@ -153,16 +153,15 @@ namespace DbcLib.Excel.Parser
             msg.Signals = new List<Signal>();
 
             string comment = row.MsgComment.CharString();
-            var sendType = SendType(row);
-            var time = sendType == MsgSendTypeEnum.Cyclic ?
-                row.MsgCycleTime.Int() : 0;
+            var type = SendType(row);
+            var time = row.MsgCycleTime.Int(type == MsgSendTypeEnum.Cyclic);
 
             if (Sweep(row))
                 return msg;
 
             builder.NewMessage(msg)
                 .Comment(comment)
-                .SendType(sendType)
+                .SendType(type)
                 .CycleTime(time);
 
             return msg;
@@ -183,11 +182,10 @@ namespace DbcLib.Excel.Parser
             sig.Min = row.PhysicalMin.Double();
             sig.Max = row.PhysicalMax.Double();
             sig.Receivers = row.Receiver.Receivers();
-            
+
             var comment = row.SigComment.CharString();
             var descs = row.ValueDescs.ValueDescs();
-            var startVal = row.SigStartValue.IsEmpty ?
-                row.SigStartValue.Int() : 0;
+            var startVal = row.SigStartValue.Int(!row.SigStartValue.IsEmpty);
 
             if (msg == null)
             {
