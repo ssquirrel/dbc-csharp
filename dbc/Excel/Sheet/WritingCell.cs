@@ -23,6 +23,13 @@ namespace DbcLib.Excel.Sheet
 
         public ICell NCell => lazy.Value;
 
+        public ICellStyle Style
+        {
+            get => NCell.CellStyle;
+
+            set => NCell.CellStyle = value;
+        }
+
         public void Set(string val)
         {
             NCell.SetCellValue(val);
@@ -72,22 +79,22 @@ namespace DbcLib.Excel.Sheet
 
         public void SetValueDescs(IEnumerable<ValueDesc> descs)
         {
-            StringBuilder builder = new StringBuilder();
-
             var first = descs.FirstOrDefault();
 
-            if (first != null)
-            {
-                builder.AppendFormat("0x{0}:{1}",
-                    ((int)first.Num).ToString("X"),
-                    first.Val);
+            if (first == null)
+                return;
 
-                foreach (var desc in descs.Skip(1))
-                {
-                    builder.AppendFormat("\n0x{0}:{1}",
-                        ((int)desc.Num).ToString("X"),
-                        desc.Val);
-                }
+            StringBuilder builder = new StringBuilder();
+
+            builder.AppendFormat("0x{0}:{1}",
+                ((int)first.Num).ToString("X"),
+                first.Val.Trim());
+
+            foreach (var desc in descs.Skip(1))
+            {
+                builder.AppendFormat("\n0x{0}:{1}",
+                    ((int)desc.Num).ToString("X"),
+                    desc.Val.Trim());
             }
 
             Set(builder.ToString());

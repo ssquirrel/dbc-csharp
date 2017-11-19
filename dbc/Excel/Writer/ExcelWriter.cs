@@ -14,33 +14,42 @@ using DbcLib.Excel.Sheet;
 
 namespace DbcLib.Excel.Writer
 {
-    class ExcelTemplate
+    class ExcelTemplate : IDisposable
     {
         public ExcelTemplate(string fn)
         {
-            File.Copy("template.xlsx", fn, true);
+            Name = fn;
 
-            FileStream stream = new FileStream(fn, FileMode.Open);
+            using (var stream = new FileStream("template.xlsx", FileMode.Open))
+            {
+                Workbook = WorkbookFactory.Create(stream);
+            }
 
-            Workbook = WorkbookFactory.Create(stream);
+            CenterText = Workbook.CreateCellStyle();
+            CenterText.Alignment = HorizontalAlignment.Center;
 
-            StackedTextStyle = Workbook.CreateCellStyle();
-            StackedTextStyle.Alignment = HorizontalAlignment.Left;
-            StackedTextStyle.VerticalAlignment = VerticalAlignment.Bottom;
-            StackedTextStyle.WrapText = true;
+            TextWrap = Workbook.CreateCellStyle();
+            TextWrap.WrapText = true;
         }
+
+        public string Name { get; }
 
         public IWorkbook Workbook { get; }
 
-        public ICellStyle StackedTextStyle { get; }
+        public ICellStyle CenterText { get; }
+        public ICellStyle TextWrap { get; }
 
-        public static IWorkbook LoadTemplate(string fn)
+        public void Dispose()
         {
-            File.Copy("template.xlsx", fn, true);
+            Workbook.Close();
+        }
 
-            FileStream stream = new FileStream(fn, FileMode.Open);
-
-            return WorkbookFactory.Create(stream);
+        public void Save()
+        {
+            using (var stream = new FileStream(Name, FileMode.Create))
+            {
+                Workbook.Write(stream);
+            }
         }
     }
 
@@ -50,15 +59,16 @@ namespace DbcLib.Excel.Writer
 
         private Tree tree;
 
-        private string filename;
+        ExcelTemplate excel;
+
         private IWorkbook workbook;
 
 
         public ExcelWriter(string fn)
         {
-            filename = fn;
+            excel = new ExcelTemplate(fn);
 
-            workbook = ExcelTemplate.LoadTemplate(fn);
+            workbook = excel.Workbook;
         }
 
         public void Add(string sn, Model.DBC dbc)
@@ -108,16 +118,12 @@ namespace DbcLib.Excel.Writer
 
         public void Write()
         {
-            using (var stream = new FileStream(filename, FileMode.Open))
-            {
-                workbook.Write(stream);
-            }
-
+            excel.Save();
         }
 
         public void Dispose()
         {
-            workbook.Close();
+            excel.Dispose();
         }
 
         private ISheet AllocateSheet(string name)
@@ -171,7 +177,12 @@ namespace DbcLib.Excel.Writer
 
         private void MsgRowStyle(WritingRow row)
         {
-
+            row.MsgID.Style = excel.CenterText;
+            row.MsgCycleTime.Style = excel.CenterText;
+            row.Event.Style = excel.CenterText;
+            row.PeriodicEvent.Style = excel.CenterText;
+            row.MsgSize.Style = excel.CenterText;
+            row.MsgComment.Style = excel.TextWrap;
         }
 
         private void Signals(WritingRow row, Signal signal, long id)
@@ -220,7 +231,13 @@ namespace DbcLib.Excel.Writer
 
         private void SigRowStyle(WritingRow row)
         {
-
+            row.SizeInBits.Style = excel.CenterText;
+            row.StartBit.Style = excel.CenterText;
+            row.ByteOrder.Style = excel.CenterText;
+            row.ValueType.Style = excel.CenterText;
+            row.ValueDescs.Style = excel.TextWrap;
+            row.SigComment.Style = excel.TextWrap;
+            row.Receiver.Style = excel.TextWrap;
         }
     }
 }

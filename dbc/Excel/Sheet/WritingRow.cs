@@ -9,7 +9,7 @@ using NPOI.SS.UserModel;
 
 namespace DbcLib.Excel.Sheet
 {
-    class WritingRow : IEnumerable<WritingCell>
+    class WritingRow
     {
         private WritingCell[] cells = new WritingCell[24];
 
@@ -49,15 +49,5 @@ namespace DbcLib.Excel.Sheet
         public WritingCell SigStartValue => cells[21];
         public WritingCell Receiver => cells[22];
         public WritingCell MsgComment => cells[23];
-
-        public IEnumerator<WritingCell> GetEnumerator()
-        {
-            return cells.AsEnumerable().GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }
