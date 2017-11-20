@@ -79,22 +79,24 @@ namespace DbcLib.Excel.Sheet
 
         public void SetValueDescs(IEnumerable<ValueDesc> descs)
         {
-            var first = descs.FirstOrDefault();
-
-            if (first == null)
+            if (!descs.Any())
                 return;
+
+            descs = descs.OrderBy(desc => desc.Num);
+
+            var first = descs.FirstOrDefault();
 
             StringBuilder builder = new StringBuilder();
 
             builder.AppendFormat("0x{0}:{1}",
                 ((int)first.Num).ToString("X"),
-                first.Val.Trim());
+                first.Val);
 
             foreach (var desc in descs.Skip(1))
             {
                 builder.AppendFormat("\n0x{0}:{1}",
                     ((int)desc.Num).ToString("X"),
-                    desc.Val.Trim());
+                    desc.Val);
             }
 
             Set(builder.ToString());
