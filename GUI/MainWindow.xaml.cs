@@ -27,91 +27,40 @@ namespace GUI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : Window
     {
         private bool running = false;
-
-        private string from = "";
-        private string to = "";
-        private string status = "Ready";
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public string FromPath
-        {
-            get
-            {
-                return from;
-            }
-
-            set
-            {
-                from = value;
-
-                OnPropertyChanged("FromPath");
-            }
-        }
-
-        public string ToPath
-        {
-            get
-            {
-                return to;
-            }
-            set
-            {
-                to = value;
-
-                OnPropertyChanged("ToPath");
-            }
-        }
-
-        public string StatusText
-        {
-            get { return status; }
-            set
-            {
-                status = value;
-
-                OnPropertyChanged("StatusText");
-            }
-        }
-
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        private Task<bool> ExcelToDBC()
+        private Task<bool> ExcelToDBC(string from, string to)
         {
             running = true;
 
             return Task.Run(() =>
             {
-                using (ExcelDBC d = ExcelParser.Parse(FromPath, "Message_Detail"))
+                using (ExcelDBC d = ExcelParser.Parse(from, "Message_Detail"))
                 {
-                    if (d.DBC != null)
+                    if (d.DBC == null)
                     {
-                        using (var stream = new StreamWriter(ToPath, false, Encoding.Default))
-                        using (DbcWriter writer = new DbcWriter(stream))
-                        {
-                            writer.Write(d.DBC);
-                        }
-
-                        return true;
+                        return false;
                     }
 
-                    return false;
+                    using (var stream = new StreamWriter(to, false, Encoding.Default))
+                    using (DbcWriter writer = new DbcWriter(stream))
+                    {
+                        writer.Write(d.DBC);
+                    }
+
+                    return true;
                 }
             });
         }
 
-        private Task<bool> DbcToExcel()
+        private Task<bool> DbcToExcel(string from, string to)
         {
             running = true;
 
@@ -119,9 +68,9 @@ namespace GUI
             {
                 try
                 {
-                    DBC dbc = DbcParser.Parse(FromPath);
+                    DBC dbc = DbcParser.Parse(from);
 
-                    using (ExcelWriter writer = new ExcelWriter(ToPath))
+                    using (ExcelWriter writer = new ExcelWriter(to))
                     {
                         writer.Add("Message_Detail", dbc);
                         writer.Write();
@@ -141,9 +90,9 @@ namespace GUI
             running = false;
 
             if (result)
-                StatusText = "Success!";
+                StatusText.Text = "Success!";
             else
-                StatusText = "Failure!";
+                StatusText.Text = "Failure!";
         }
 
         private string FileChooser()
@@ -163,34 +112,54 @@ namespace GUI
             return result == true ? dlg.FileName : null;
         }
 
-        private void Set_From_Path(object sender, RoutedEventArgs e)
+        private void Set_Input_Path(object sender, RoutedEventArgs e)
         {
             var path = FileChooser();
 
             if (path == null)
                 return;
 
-            FromPath = path;
-
-            StatusText = "Ready";
+            InputTextBox.Text = path;
+            StatusText.Text = "Ready";
 
             InputTextBox.ScrollToHorizontalOffset(99999);
 
-            if (ToPath == "")
+            var output = OutputTextBox.Text;
+
+            if (output == "")
             {
-                ToPath = Inverse(FromPath);
+                OutputTextBox.Text = Inverse(path);
 
                 OutputTextBox.ScrollToHorizontalOffset(99999);
             }
-            else if (ToPath[ToPath.Length - 1] == '\\')
+            else
             {
-                ToPath += Inverse(Path.GetFileName(FromPath));
+                string fn = Path.GetFileName(path);
 
-                OutputTextBox.ScrollToHorizontalOffset(99999);
+                if (output == "")
+                {
+                    OutputTextBox.Text = output + Inverse(fn);
+                    OutputTextBox.ScrollToHorizontalOffset(99999);
+                }
+                else
+                {
+                    string ofn = GetFileName(output);
+
+                    if (ofn.EndsWith(".dbc") ||
+                        ofn.EndsWith(".xlsx") ||
+                        ofn.EndsWith(".xls"))
+                    {
+                        output = output.Substring(0, output.Length - ofn.Length);
+                    }
+
+                    OutputTextBox.Text = Path.Combine(output, Inverse(fn));
+                    OutputTextBox.ScrollToHorizontalOffset(99999);
+                }
+
             }
         }
 
-        private void Set_To_Path(object sender, RoutedEventArgs e)
+        private void Set_Output_Path(object sender, RoutedEventArgs e)
         {
             var dialog = new CommonOpenFileDialog
             {
@@ -201,71 +170,103 @@ namespace GUI
             if (result != CommonFileDialogResult.Ok)
                 return;
 
-            string complement = null;
+            var file = Inverse(GetFileName(InputTextBox.Text));
 
-            try
+            if (file != "")
             {
-                complement = Inverse(Path.GetFileName(FromPath));
-            }
-            catch (ArgumentException) { }
-
-            if (complement != null)
-            {
-                ToPath = dialog.FileName + "\\" + complement;
+                OutputTextBox.Text = dialog.FileName + "\\" + file;
             }
             else
             {
-                ToPath = dialog.FileName + "\\";
+                OutputTextBox.Text = dialog.FileName;
             }
 
-            StatusText = "Ready";
+
+            StatusText.Text = "Ready";
 
             OutputTextBox.ScrollToHorizontalOffset(99999);
         }
 
-
-
-        private int ValidatePathExt()
+        private bool CheckFiles(string from, string to)
         {
-            if ((FromPath.EndsWith(".xlsx") || FromPath.EndsWith(".xls")) &&
-                ToPath.EndsWith(".dbc"))
-            {
-                return 0;
-            }
-
-            if ((ToPath.EndsWith(".xlsx") || ToPath.EndsWith(".xls")) &&
-                  FromPath.EndsWith(".dbc"))
-            {
-                return 1;
-            }
-
-            MessageBox.Show("Please specify files with correct ext", "Error");
-
-            return -1;
-        }
-
-        private bool ValidatePath()
-        {
-            if (!File.Exists(FromPath))
+            if (!File.Exists(from))
             {
                 MessageBox.Show("The Input file doesn't exist.", "Error");
-
                 return false;
             }
 
-            if (File.Exists(ToPath))
+            if (File.Exists(to))
             {
                 string text = "Output file already exists.\nDo you wish to override it?";
 
                 var result = MessageBox.Show(text,
-                    "Error",
+                    "Warning",
                     MessageBoxButton.YesNoCancel);
 
-                if (result != MessageBoxResult.Yes)
-                    return false;
+                if (result == MessageBoxResult.Yes)
+                    return true;
+
+                return false;
+            }
+
+            try
+            {
+                using (File.Create(to, 1, FileOptions.DeleteOnClose)) { }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("Program doesn't have permission to write to the target location.", "Error");
+                return false;
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("The path contains invalid characters ", "Error");
+                return false;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("Output directory doesn't exist.", "Error");
+                return false;
+            }
+            catch (PathTooLongException)
+            {
+                MessageBox.Show("Output path is too long", "Error");
+                return false;
+            }
+            catch (NotSupportedException)
+            {
+                MessageBox.Show("Output path is illegal.", "Error");
+                return false;
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("An unkonwn IO exception occurred.", "Error");
+                return false;
             }
 
             return true;
+        }
+
+        private int Validate(string from, string to)
+        {
+            if ((from.EndsWith(".xlsx") || from.EndsWith(".xls"))
+                && to.EndsWith(".dbc"))
+            {
+                if (CheckFiles(from, to))
+                    return 0;
+            }
+            else if (from.EndsWith(".dbc") &&
+                (to.EndsWith(".xlsx") || to.EndsWith(".xls")))
+            {
+                if (CheckFiles(from, to))
+                    return 1;
+            }
+            else
+            {
+                MessageBox.Show("Please specify files with correct ext", "Error");
+            }
+
+            return -1;
         }
 
         async private void Convert(object sender, RoutedEventArgs e)
@@ -273,28 +274,26 @@ namespace GUI
             if (running)
                 return;
 
-            int which = ValidatePathExt();
+            string from = InputTextBox.Text;
+            string to = OutputTextBox.Text;
 
-            if (which == -1 || !ValidatePath())
+            int which = Validate(from, to);
+
+            if (which == -1)
                 return;
 
             try
             {
                 if (which == 0)
                 {
-                    bool result = await ExcelToDBC();
+                    bool result = await ExcelToDBC(from, to);
                     HandleResult(result);
                 }
                 else if (which == 1)
                 {
-                    bool result = await DbcToExcel();
+                    bool result = await DbcToExcel(from, to);
                     HandleResult(result);
                 }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                running = false;
-                MessageBox.Show("Program doesn't have permission to write to the target location", "Error");
             }
             catch (IOException)
             {
@@ -302,6 +301,12 @@ namespace GUI
                 MessageBox.Show("An unkonwn IO exception occurred.", "Error");
             }
 
+        }
+
+        private void Open_About(object sender, RoutedEventArgs e)
+        {
+            About about = new About();
+            about.ShowDialog();
         }
 
         private static string Inverse(string path)
@@ -321,7 +326,17 @@ namespace GUI
                 return path.Substring(0, path.Length - 5) + ".dbc";
             }
 
-            return null;
+            return "";
+        }
+
+        private static string GetFileName(string path)
+        {
+            int ps = path.LastIndexOf(@"\");
+
+            if (ps == -1)
+                return path;
+
+            return path.Substring(ps + 1);
         }
     }
 }

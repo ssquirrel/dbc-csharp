@@ -26,20 +26,25 @@
             <ColumnDefinition  Width="5"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Margin="10,10,10,20" FontSize="16" Grid.Row="0" Grid.ColumnSpan="2"><Run Text="Hello World!"/></TextBlock>
+        <Menu Grid.Row="0" Grid.ColumnSpan="5" Background="Transparent" Padding="0,0,0,15">
+            <MenuItem Header="_Help" IsEnabled="True">
+                <MenuItem Header="_About" Click="Open_About"/>
+            </MenuItem>
+        </Menu>
 
         <TextBlock FontSize="14" Grid.Row="1" Margin="10" Text="Input:"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  Margin="10" FontSize="14" Name="InputTextBox"
-                 Text="{Binding FromPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=Window}}"/>
-        <Button Grid.Row="1" Grid.Column="4" Margin="10" Content="Browse" Click="Set_From_Path"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  Margin="10" FontSize="14" Name="InputTextBox"/>
+        <Button Grid.Row="1" Grid.Column="4" Margin="10" Content="Browse" Click="Set_Input_Path"/>
 
         <TextBlock Grid.Row="2" Margin="10" FontSize="14" Text="Output:"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"  Margin="10" FontSize="14"  Name="OutputTextBox"
-                 Text="{Binding ToPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType=Window}}"/>
-        <Button Grid.Row="2" Grid.Column="4" Margin="10" Content="Browse" Click="Set_To_Path"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"  Margin="10" FontSize="14"  Name="OutputTextBox"/>
+        <Button Grid.Row="2" Grid.Column="4" Margin="10" Content="Browse" Click="Set_Output_Path"/>
 
-        <TextBlock Foreground="Gray"  FontSize="14" Grid.Row="4" Grid.ColumnSpan="4" Margin="10"
-                   Text="{Binding StatusText, Mode=OneWay, RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <Image Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Source="pack://application:,,,/GUI;component/Resources/logo.png"/>
+
+        <Image Grid.Row="3" Grid.Column="4" Source="pack://application:,,,/GUI;component/Resources/QR_code.jpg"/>
+
+        <TextBlock Foreground="Gray"  FontSize="14" Grid.Row="4" Grid.ColumnSpan="4" Margin="10" Name="StatusText"/>
         <Button Grid.Row="4" Grid.Column="4" Margin="10"  Content="Convert" Click="Convert"/>
     </Grid>
 </Window>
