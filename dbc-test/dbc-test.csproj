@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CompositeKey.cs" />
     <Compile Include="DbcParserTests.cs" />
     <Compile Include="NLookup.cs" />
     <Compile Include="Program.cs" />
