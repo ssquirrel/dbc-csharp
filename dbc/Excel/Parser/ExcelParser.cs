@@ -172,7 +172,6 @@ namespace DbcLib.Excel.Parser
         {
             var sig = new Signal();
             sig.Name = row.SignalName.Identifier();
-            sig.StartBit = row.StartBit.Int();
             sig.SignalSize = row.SizeInBits.Int();
             sig.ByteOrder = row.ByteOrder.ByteOrder();
             sig.ValueType = row.ValueType.ValueType();
@@ -183,6 +182,8 @@ namespace DbcLib.Excel.Parser
             sig.Max = row.PhysicalMax.Double();
             sig.Receivers = row.Receiver.Receivers();
 
+            sig.StartBit = row.StartBit.StartBit(sig.SignalSize, sig.ByteOrder);
+
             var comment = row.SigComment.CharString();
             var descs = row.ValueDescs.ValueDescs();
             var startVal = row.SigStartValue.Int(!row.SigStartValue.IsEmpty);
@@ -190,6 +191,14 @@ namespace DbcLib.Excel.Parser
             if (msg == null)
             {
                 errors.Add(new ParseError("a sig without parent", row.Transmitter));
+            }
+
+            if (!errors.Any())
+            {
+                if (sig.StartBit > 8 * msg.Size)
+                {
+                    errors.Add(new ParseError("startBit out of range", row.StartBit));
+                }
             }
 
             if (Sweep(row))

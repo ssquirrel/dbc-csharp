@@ -20,7 +20,9 @@ namespace DbcLib.Excel.Writer
         {
             Name = fn;
 
-            using (var stream = new FileStream("template.xlsx", FileMode.Open))
+            string template = fn.EndsWith(".xlsx") ? "template.xlsx" : "template.xls";
+
+            using (var stream = new FileStream(template, FileMode.Open))
             {
                 Workbook = WorkbookFactory.Create(stream);
             }
@@ -189,7 +191,7 @@ namespace DbcLib.Excel.Writer
         {
             row.SignalName.Set(signal.Name);
             row.SizeInBits.Set(signal.SignalSize);
-            row.StartBit.Set(signal.StartBit);
+            row.StartBit.SetStartBit(signal.StartBit, signal.SignalSize, signal.ByteOrder);
             row.Unit.Set(signal.Unit);
             row.Factor.Set(signal.Factor);
             row.Offset.Set(signal.Offset);

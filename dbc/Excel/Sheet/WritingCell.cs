@@ -45,15 +45,26 @@ namespace DbcLib.Excel.Sheet
             Set("0x" + hex.ToString("X3"));
         }
 
-        //"0" Motorola, big endian; "1" Intel, little endian
+        public void SetStartBit(int bit, int len, int order)
+        {
+            if (order == Signal.Intel)
+            {
+                Set(bit);
+            }
+            else
+            {
+                Set(StartBitConverter.LSB(bit, len));
+            }
+        }
+
         public void SetByteOrder(int order)
         {
             switch (order)
             {
-                case 0:
+                case Signal.Motorola:
                     Set("Motorola");
                     break;
-                case 1:
+                case Signal.Intel:
                     Set("Intel");
                     break;
                 default:

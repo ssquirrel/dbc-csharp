@@ -8,6 +8,11 @@ namespace DbcLib.Model
 {
     public class Signal
     {
+        public const int Motorola = 0;
+        public const int Intel = 1;
+        public const string Signed = "";
+        public const string Unsigned = "+";
+
         public string Name { get; set; }
         public bool IsMultiplexerSwitch { get; set; }
         public int MultiplexerSwitchValue { get; set; }

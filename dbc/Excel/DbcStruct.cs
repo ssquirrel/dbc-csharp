@@ -18,6 +18,53 @@ namespace DbcLib.Excel
         NoMsgSendType
     }
 
+    static class StartBitConverter
+    {
+        public static int MSB(int lsb, int len)
+        {
+            int b = lsb / 8;
+            int bM = b * 8 + 7;
+
+            int sub1 = bM - lsb + 1;
+
+            if (sub1 >= len)
+            {
+                return lsb + len - 1;
+            }
+
+            int f = (len - sub1) / 8;
+            int sub2 = len - f * 8 - sub1;
+
+            int rest = sub2 == 0 ? 7 : sub2 - 9;
+
+            int startBit = (b - f) * 8 + rest;
+
+            return startBit;
+        }
+
+        public static int LSB(int msb, int len)
+        {
+            int b = msb / 8;
+            int bl = b * 8;
+
+            int sub1 = msb - bl + 1;
+
+            if (sub1 >= len)
+            {
+                return msb - len + 1;
+            }
+
+            int f = (len - sub1) / 8;
+            int sub2 = len - f * 8 - sub1;
+
+            int rest = sub2 == 0 ? 0 : 16 - sub2;
+
+            int startBit = (f + b) * 8 + rest;
+
+            return startBit;
+        }
+    }
+
     static class MsgSendType
     {
         public const string AttributeName = "GenMsgSendType";
