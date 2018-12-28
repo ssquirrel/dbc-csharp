@@ -249,6 +249,9 @@ namespace GUI
 
         private int Validate(string from, string to)
         {
+            from = from.ToLower();
+            to = to.ToLower();
+
             if ((from.EndsWith(".xlsx") || from.EndsWith(".xls"))
                 && to.EndsWith(".dbc"))
             {
