@@ -81,9 +81,6 @@ namespace DbcLib.DBC.Parser
                 ObjAttributeValues();
                 SignalValueDescriptions();
 
-                if (curr != stream.Peek())
-                    break;
-
                 stream.Read();
             }
 
